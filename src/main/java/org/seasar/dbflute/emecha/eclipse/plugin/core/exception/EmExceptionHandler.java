@@ -9,7 +9,7 @@ public class EmExceptionHandler {
     public static void show(Throwable cause) {
         cause.printStackTrace();
     }
-    
+
     public static void show(String msg, Throwable cause) {
         System.out.println(msg);
         cause.printStackTrace();
