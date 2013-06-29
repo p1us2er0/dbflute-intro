@@ -2,10 +2,15 @@ package org.seasar.dbflute.intro.wizard;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import org.seasar.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClientPageResult;
 
+/**
+ * @author ecode
+ * @author jflute
+ */
 public class SchemaSyncCheckPage extends JPanel {
 
     private static final long serialVersionUID = 1L;
@@ -13,7 +18,7 @@ public class SchemaSyncCheckPage extends JPanel {
     private JTextField databaseInfoUrlText;
     private JTextField databaseInfoSchemaText;
     private JTextField databaseInfoUserText;
-    private JTextField databaseInfoPasswordText;
+    private JPasswordField databaseInfoPasswordText;
 
     /**
      * Create the application.
@@ -60,7 +65,7 @@ public class SchemaSyncCheckPage extends JPanel {
         databaseInfoPasswordLabel.setBounds(10, 85, 150, 20);
         this.add(databaseInfoPasswordLabel);
 
-        databaseInfoPasswordText = new JTextField();
+        databaseInfoPasswordText = new JPasswordField();
         databaseInfoPasswordText.setBounds(150, 85, 300, 20);
         databaseInfoPasswordText.setColumns(10);
         this.add(databaseInfoPasswordText);

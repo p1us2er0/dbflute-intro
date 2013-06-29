@@ -35,6 +35,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTabbedPane;
@@ -51,6 +52,10 @@ import org.seasar.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClientP
 import org.seasar.dbflute.emecha.eclipse.plugin.wizards.client.definition.DatabaseInfoDef;
 import org.seasar.dbflute.intro.util.SwingUtil;
 
+/**
+ * @author ecode
+ * @author jflute
+ */
 public class DBFluteIntroPage {
 
     private JFrame frame;
@@ -64,7 +69,7 @@ public class DBFluteIntroPage {
     private JTextField databaseInfoUrlText;
     private JTextField databaseInfoSchemaText;
     private JTextField databaseInfoUserText;
-    private JTextField databaseInfoPasswordText;
+    private JPasswordField databaseInfoPasswordText;
     private JTextField jdbcDriverJarPathText;
     private JComboBox versionInfoDBFluteCombo;
     private JButton clientCreateButton;
@@ -131,7 +136,7 @@ public class DBFluteIntroPage {
         clientPanel.setLayout(null);
         tabPanel.addTab("Client", clientPanel);
 
-        JLabel projectLabel = new JLabel("Client Project(*)");
+        JLabel projectLabel = new JLabel("DB名(*)");
         projectLabel.setBounds(10, 10, 150, 20);
         clientPanel.add(projectLabel);
 
@@ -140,22 +145,22 @@ public class DBFluteIntroPage {
         fireProjectCombo(projectCombo);
         clientPanel.add(projectCombo);
 
-        File scheamHTMLFile = new File(DBFluteIntro.BASIC_DIR_PATH
+        File schemaHTMLFile = new File(DBFluteIntro.BASIC_DIR_PATH
                 + "/dbflute_${project}/output/doc/schema-${project}.html");
-        String scheamHTMLFileLinkMessge = "<a href='" + scheamHTMLFile.toURI() + "'>ScheamHTML</a>";
+        String schemaHTMLFileLinkMessge = "<a href='" + schemaHTMLFile.toURI() + "'>テーブル定義を開く</a> (SchemaHTML)";
 
-        JEditorPane scheamHTMLLink = new JEditorPane("text/html", scheamHTMLFileLinkMessge);
-        scheamHTMLLink.setBounds(10, 35, 300, 20);
-        scheamHTMLLink.setEditable(false);
-        scheamHTMLLink.setOpaque(false);
-        scheamHTMLLink.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-        scheamHTMLLink.setFont(new JLabel().getFont());
-        scheamHTMLLink.addHyperlinkListener(new HyperlinkHandler());
-        clientPanel.add(scheamHTMLLink);
+        JEditorPane schemaHTMLLink = new JEditorPane("text/html", schemaHTMLFileLinkMessge);
+        schemaHTMLLink.setBounds(10, 35, 300, 20);
+        schemaHTMLLink.setEditable(false);
+        schemaHTMLLink.setOpaque(false);
+        schemaHTMLLink.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+        schemaHTMLLink.setFont(new JLabel().getFont());
+        schemaHTMLLink.addHyperlinkListener(new HyperlinkHandler());
+        clientPanel.add(schemaHTMLLink);
 
         File historyHTMLFile = new File(DBFluteIntro.BASIC_DIR_PATH
                 + "/dbflute_${project}/output/doc/history-${project}.html");
-        String historyHTMLFileLinkMessge = "<a href='" + historyHTMLFile.toURI() + "'>HistoryHTML</a>";
+        String historyHTMLFileLinkMessge = "<a href='" + historyHTMLFile.toURI() + "'>DB変更履歴を開く</a> (HistoryHTML)";
 
         JEditorPane historyHTMLLink = new JEditorPane("text/html", historyHTMLFileLinkMessge);
         historyHTMLLink.setBounds(10, 60, 300, 20);
@@ -168,7 +173,8 @@ public class DBFluteIntroPage {
 
         File syncCheckHTMLFile = new File(DBFluteIntro.BASIC_DIR_PATH
                 + "/dbflute_${project}/output/doc/sync-check-result_${env}.html");
-        String syncCheckHTMLFileLinkMessge = "<a href='" + syncCheckHTMLFile.toURI() + "'>SyncCheckHTML</a>";
+        String syncCheckHTMLFileLinkMessge = "<a href='" + syncCheckHTMLFile.toURI()
+                + "'>差分チェック結果を開く</a> (SyncCheckHTML)";
 
         JEditorPane syncCheckHTMLLink = new JEditorPane("text/html", syncCheckHTMLFileLinkMessge);
         syncCheckHTMLLink.setBounds(10, 85, 300, 20);
@@ -189,7 +195,7 @@ public class DBFluteIntroPage {
             jdbcDocList.add(new ProcessBuilder("sh", "doc.sh"));
         }
 
-        jdbcDocButton = new JButton(new TaskAction("jdbc,doc", jdbcDocList));
+        jdbcDocButton = new JButton(new TaskAction("ドキュメント生成", jdbcDocList));
         jdbcDocButton.setBounds(10, 220, 200, 20);
         clientPanel.add(jdbcDocButton);
 
@@ -200,7 +206,7 @@ public class DBFluteIntroPage {
             schemaSyncCheckList.add(new ProcessBuilder("sh", "manage.sh", "schema-sync-check"));
         }
 
-        schemaSyncCheckButton = new JButton(new TaskAction("schemaSyncCheck", schemaSyncCheckList));
+        schemaSyncCheckButton = new JButton(new TaskAction("スキーマの差分チェック", schemaSyncCheckList));
         schemaSyncCheckButton.setBounds(220, 220, 200, 20);
         clientPanel.add(schemaSyncCheckButton);
 
@@ -276,7 +282,7 @@ public class DBFluteIntroPage {
         databaseInfoPasswordLabel.setBounds(10, 135, 150, 20);
         newClientPanel.add(databaseInfoPasswordLabel);
 
-        databaseInfoPasswordText = new JTextField();
+        databaseInfoPasswordText = new JPasswordField();
         databaseInfoPasswordText.setBounds(150, 135, 300, 20);
         databaseInfoPasswordText.setColumns(10);
         newClientPanel.add(databaseInfoPasswordText);
