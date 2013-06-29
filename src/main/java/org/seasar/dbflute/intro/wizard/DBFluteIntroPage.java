@@ -55,6 +55,7 @@ import org.seasar.dbflute.intro.util.SwingUtil;
 /**
  * @author ecode
  * @author jflute
+ * @author shin1988
  */
 public class DBFluteIntroPage {
 
@@ -215,11 +216,11 @@ public class DBFluteIntroPage {
         newClientPanel.setLayout(null);
         tabPanel.addTab("+", newClientPanel);
 
-        JLabel project2Label = new JLabel("Client Project(*)");
+        JLabel project2Label = new JLabel("DB名(*)");
         project2Label.setBounds(10, 10, 150, 20);
         newClientPanel.add(project2Label);
 
-        projectText = new JTextField();
+        projectText = new JTextField("yourdb");
         projectText.setBounds(150, 10, 300, 20);
         projectText.setColumns(10);
         newClientPanel.add(projectText);
@@ -234,6 +235,7 @@ public class DBFluteIntroPage {
         for (String database : DatabaseInfoDef.extractDatabaseList()) {
             databaseCombo.addItem(database);
         }
+        databaseCombo.setSelectedIndex(-1); // means no selection
         databaseCombo.addActionListener(new ActionListener() {
 
             @Override
@@ -246,8 +248,6 @@ public class DBFluteIntroPage {
             }
         });
 
-        DatabaseInfoDef databaseInfoDef = DatabaseInfoDef.findDatabaseInfo(databaseCombo.getSelectedItem().toString());
-
         JLabel databaseInfoUrlLabel = new JLabel("Url(*)");
         databaseInfoUrlLabel.setBounds(10, 60, 150, 20);
         newClientPanel.add(databaseInfoUrlLabel);
@@ -255,8 +255,6 @@ public class DBFluteIntroPage {
         databaseInfoUrlText = new JTextField();
         databaseInfoUrlText.setBounds(150, 60, 300, 20);
         databaseInfoUrlText.setColumns(10);
-        databaseInfoUrlText.setText(databaseInfoDef.getUrlTemplate());
-        fireDatabaseInfoUrlText(databaseInfoDef);
         newClientPanel.add(databaseInfoUrlText);
 
         JLabel databaseInfoSchemaLabel = new JLabel("Schema");
@@ -266,7 +264,6 @@ public class DBFluteIntroPage {
         databaseInfoSchemaText = new JTextField();
         databaseInfoSchemaText.setBounds(150, 85, 300, 20);
         databaseInfoSchemaText.setColumns(10);
-        fireDatabaseInfoSchemaText(databaseInfoDef);
         newClientPanel.add(databaseInfoSchemaText);
 
         JLabel databaseInfoUserLabel = new JLabel("User(*)");
@@ -304,7 +301,6 @@ public class DBFluteIntroPage {
 
         jdbcDriverJarPathText.setToolTipText("Please download Jdbc Driver Jar. And Drag & Drop. Database is "
                 + needJdbcDriverJarMessage);
-        fireJdbcDriverJarText(databaseInfoDef);
         newClientPanel.add(jdbcDriverJarPathText);
 
         JLabel versionInfoDBFluteLabel = new JLabel("DBFlute Version(*)");
@@ -385,8 +381,10 @@ public class DBFluteIntroPage {
     public DBFluteNewClientPageResult asResult() {
 
         final String projectName = projectText.getText();
-        final String database = databaseCombo.getSelectedItem().toString();
-        final String databaseInfoDriver = DatabaseInfoDef.findDatabaseInfo(database).getDriverName();
+        Object selectedItem = databaseCombo.getSelectedItem();
+        final String database = selectedItem != null ? selectedItem.toString() : null;
+        DatabaseInfoDef databaseInfo = DatabaseInfoDef.findDatabaseInfo(database);
+        final String databaseInfoDriver = databaseInfo != null ? databaseInfo.getDriverName() : null;
         final String databaseInfoUrl = databaseInfoUrlText.getText();
         final String databaseInfoSchema = databaseInfoSchemaText.getText();
         final String databaseInfoUser = databaseInfoUserText.getText();
@@ -818,10 +816,16 @@ public class DBFluteIntroPage {
     }
 
     private boolean needDatabaseInfoSchema(DatabaseInfoDef databaseInfoDef) {
+        if (databaseInfoDef == null) {
+            return false;
+        }
         return Arrays.asList("mssql").contains(databaseInfoDef.getDatabaseName());
     }
 
     private boolean needJdbcDriverJar(DatabaseInfoDef databaseInfoDef) {
+        if (databaseInfoDef == null) {
+            return false;
+        }
         return !Arrays.asList("h2", "mysql", "postgresql").contains(databaseInfoDef.getDatabaseName());
     }
 
