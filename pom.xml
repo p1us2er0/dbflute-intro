@@ -11,8 +11,8 @@
 	<description>Intro of DBFlute</description>
 
 	<properties>
-		<utflute.version>0.1.7</utflute.version>
-		<junit.version>3.8.2</junit.version>
+		<utflute.version>0.3.0</utflute.version>
+		<junit.version>4.8.2</junit.version>
 	</properties>
 
 	<build>

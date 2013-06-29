@@ -21,9 +21,22 @@ import org.seasar.dbflute.emecha.eclipse.plugin.core.util.util.zip.EmZipInputStr
 import org.seasar.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClientPageResult;
 import org.seasar.dbflute.intro.util.Monitor;
 
+/**
+ * @author ecode
+ * @author jflute
+ */
 public class DBFluteIntro {
 
-	protected static final String BASIC_DIR_PATH = "./dbflute-intro";
+	/**
+	 * <pre>
+	 * e.g. "./"
+	 *  dbflute-intro
+	 *   |-dbflute_exampledb // DBFlute client
+	 *   |-mydbflute         // DBFlute module
+	 *   |-dbflute-intro.jar
+	 * </pre>
+	 */
+	protected static final String BASIC_DIR_PATH = "./";
 
 	protected static final String INI_FILE_PATH = BASIC_DIR_PATH + "/dbflute-intro.ini";
 
