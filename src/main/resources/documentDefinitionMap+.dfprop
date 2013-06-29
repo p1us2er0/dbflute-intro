@@ -1,0 +1,10 @@
+map:{
+    ; schemaSyncCheckMap = map:{
+        ; url = jdbc:...
+        ; schema = EXAMPLEDB
+        ; user = exampuser
+        ; password = exampword
+        ; resultHtmlFileName = sync-check-result_${env}.html
+        ; craftMetaDirPath = ./output/doc/craftdiff/${env}
+    }
+}
