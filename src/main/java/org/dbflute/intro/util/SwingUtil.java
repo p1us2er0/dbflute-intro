@@ -1,10 +1,16 @@
 package org.dbflute.intro.util;
 
+import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
 import java.util.List;
 
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
@@ -66,5 +72,53 @@ public class SwingUtil {
         public boolean canImport(TransferSupport support) {
             return support.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
         }
+    }
+
+    public static abstract class ProgressBarDialog {
+
+        private JFrame frame;
+
+        public ProgressBarDialog(JFrame frame) {
+            this.frame = frame;
+        }
+
+        public void start(String title, String message) {
+            final JDialog dialog = new JDialog(frame, title, true);
+            dialog.setBounds(100, 100, 200, 100);
+            dialog.getContentPane().setLayout(new CardLayout(0, 0));
+            dialog.setLocationRelativeTo(null);
+
+            JPanel panel = new JPanel();
+            // TODO
+            dialog.getContentPane().add(panel, "panel");
+            panel.setLayout(null);
+
+            JLabel downloadMessageLabel = new JLabel(message);
+            downloadMessageLabel.setBounds(10, 10, 200, 20);
+            panel.add(downloadMessageLabel);
+
+            JProgressBar progressBar = new JProgressBar(0, 100);
+            progressBar.setBounds(10, 35, 180, 20);
+            progressBar.setValue(0);
+            progressBar.setIndeterminate(true);
+            panel.add(progressBar);
+
+            Thread thread = new Thread() {
+
+                @Override
+                public void run() {
+                    try {
+                        execute();
+                    } finally {
+                        dialog.setVisible(false);
+                    }
+                }
+            };
+            thread.start();
+
+            dialog.setVisible(true);
+        }
+
+        public abstract void execute();
     }
 }

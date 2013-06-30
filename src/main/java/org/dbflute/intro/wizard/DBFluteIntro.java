@@ -5,10 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.Charsets;
@@ -19,6 +22,7 @@ import org.dbflute.emecha.eclipse.plugin.core.util.io.EmFileUtil;
 import org.dbflute.emecha.eclipse.plugin.core.util.net.EmURLUtil;
 import org.dbflute.emecha.eclipse.plugin.core.util.util.zip.EmZipInputStreamUtil;
 import org.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClientPageResult;
+import org.dbflute.emecha.eclipse.plugin.wizards.client.definition.DatabaseInfoDef;
 import org.dbflute.intro.util.Monitor;
 
 /**
@@ -92,6 +96,76 @@ public class DBFluteIntro {
             System.setProperty("proxyPort", properties.getProperty("proxyPort"));
         }
 
+    }
+
+    protected List<String> getProjectList() {
+
+        List<String> list = new ArrayList<String>();
+        final File projectDir = new File(DBFluteIntro.BASIC_DIR_PATH);
+        if (projectDir.exists()) {
+            for (File file : projectDir.listFiles()) {
+                if (file.isDirectory() && file.getName().startsWith("dbflute_")) {
+                    list.add(file.getName().substring(8));
+                }
+            }
+        }
+
+        return list;
+    }
+
+    protected static boolean needDatabaseInfoSchema(DatabaseInfoDef databaseInfoDef) {
+        if (databaseInfoDef == null) {
+            return false;
+        }
+        return Arrays.asList("mssql").contains(databaseInfoDef.getDatabaseName());
+    }
+
+    protected static boolean needJdbcDriverJar(DatabaseInfoDef databaseInfoDef) {
+        if (databaseInfoDef == null) {
+            return false;
+        }
+        return !Arrays.asList("h2", "mysql", "postgresql").contains(databaseInfoDef.getDatabaseName());
+    }
+
+    protected List<String> getExistedDBFluteVersionList() {
+
+        List<String> list = new ArrayList<String>();
+        final File mydbfluteDir = new File(DBFluteIntro.BASIC_DIR_PATH + "/mydbflute");
+        if (mydbfluteDir.exists()) {
+            for (File file : mydbfluteDir.listFiles()) {
+                if (file.isDirectory() && file.getName().startsWith("dbflute-")) {
+                    list.add(file.getName().substring(8));
+                }
+            }
+        }
+
+        return list;
+    }
+
+    protected static List<ProcessBuilder> getJdbcDocList() {
+        List<ProcessBuilder> jdbcDocList = new ArrayList<ProcessBuilder>();
+        String onName = System.getProperty("os.name");
+        if (onName != null && onName.startsWith("Windows")) {
+            jdbcDocList.add(new ProcessBuilder("cmd", "/c", "jdbc.bat"));
+            jdbcDocList.add(new ProcessBuilder("cmd", "/c", "doc.bat"));
+        } else {
+            jdbcDocList.add(new ProcessBuilder("sh", "jdbc.sh"));
+            jdbcDocList.add(new ProcessBuilder("sh", "doc.sh"));
+        }
+
+        return jdbcDocList;
+    }
+
+    protected static List<ProcessBuilder> getSchemaSyncCheckList() {
+        List<ProcessBuilder> schemaSyncCheckList = new ArrayList<ProcessBuilder>();
+        String onName = System.getProperty("os.name");
+        if (onName != null && onName.startsWith("Windows")) {
+            schemaSyncCheckList.add(new ProcessBuilder("cmd", "/c", "manage.bat", "schema-sync-check"));
+        } else {
+            schemaSyncCheckList.add(new ProcessBuilder("sh", "manage.sh", "schema-sync-check"));
+        }
+
+        return schemaSyncCheckList;
     }
 
     protected void downloadDBFlute(String dbfluteVersion) {

@@ -11,7 +11,7 @@ import org.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClientPageResu
  * @author ecode
  * @author jflute
  */
-public class SchemaSyncCheckPage extends JPanel {
+public class SchemaSyncCheckPanal extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
@@ -23,7 +23,7 @@ public class SchemaSyncCheckPage extends JPanel {
     /**
      * Create the application.
      */
-    public SchemaSyncCheckPage() {
+    public SchemaSyncCheckPanal() {
         initialize();
     }
 
@@ -34,41 +34,37 @@ public class SchemaSyncCheckPage extends JPanel {
 
         this.setLayout(null);
 
-        JLabel databaseInfoUrlLabel = new JLabel("Url");
-        databaseInfoUrlLabel.setBounds(10, 10, 150, 20);
-        this.add(databaseInfoUrlLabel);
+        this.add(createLabale(NewClientPanel.LABEL_URL, 10));
+        this.add(createLabale(NewClientPanel.LABEL_SCHEMA, 35));
+        this.add(createLabale(NewClientPanel.LABEL_USER + NewClientPanel.LABEL_REQUIRED, 60));
+        this.add(createLabale(NewClientPanel.LABEL_PASSWORD, 85));
 
         databaseInfoUrlText = new JTextField();
         databaseInfoUrlText.setBounds(150, 10, 300, 20);
         databaseInfoUrlText.setColumns(10);
         this.add(databaseInfoUrlText);
 
-        JLabel databaseInfoSchemaLabel = new JLabel("Schema");
-        databaseInfoSchemaLabel.setBounds(10, 35, 150, 20);
-        this.add(databaseInfoSchemaLabel);
-
         databaseInfoSchemaText = new JTextField();
         databaseInfoSchemaText.setBounds(150, 35, 300, 20);
         databaseInfoSchemaText.setColumns(10);
         this.add(databaseInfoSchemaText);
-
-        JLabel databaseInfoUserLabel = new JLabel("User(*)");
-        databaseInfoUserLabel.setBounds(10, 60, 150, 20);
-        this.add(databaseInfoUserLabel);
 
         databaseInfoUserText = new JTextField();
         databaseInfoUserText.setBounds(150, 60, 300, 20);
         databaseInfoUserText.setColumns(10);
         this.add(databaseInfoUserText);
 
-        JLabel databaseInfoPasswordLabel = new JLabel("Password");
-        databaseInfoPasswordLabel.setBounds(10, 85, 150, 20);
-        this.add(databaseInfoPasswordLabel);
-
         databaseInfoPasswordText = new JPasswordField();
         databaseInfoPasswordText.setBounds(150, 85, 300, 20);
         databaseInfoPasswordText.setColumns(10);
         this.add(databaseInfoPasswordText);
+    }
+
+    private JLabel createLabale(String label, int y) {
+        JLabel jLabel = new JLabel(label);
+        jLabel.setBounds(10, y, 150, 20);
+
+        return jLabel;
     }
 
     public DBFluteNewClientPageResult asResult() {
