@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.seasar.dbflute</groupId>
+	<groupId>org.dbflute</groupId>
 	<artifactId>dbflute-intro</artifactId>
 	<version>0.0.1-SNAPSHOT</version><!-- Latest RC version is 00-SNAPSHOT -->
 	<packaging>jar</packaging>
@@ -91,7 +91,7 @@
 					</descriptorRefs>
 					<archive>
 					<manifest>
-						<mainClass>org.seasar.dbflute.intro.wizard.DBFluteIntroPage</mainClass>
+						<mainClass>org.dbflute.intro.wizard.DBFluteIntroPage</mainClass>
 					</manifest>
 					</archive>
 				</configuration>
