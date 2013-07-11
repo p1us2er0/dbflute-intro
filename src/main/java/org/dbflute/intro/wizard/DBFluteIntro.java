@@ -19,7 +19,6 @@ import org.apache.commons.io.IOUtils;
 import org.dbflute.emecha.eclipse.plugin.core.meta.website.EmMetaFromWebSite;
 import org.dbflute.emecha.eclipse.plugin.core.util.util.zip.EmZipInputStreamUtil;
 import org.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClientPageResult;
-import org.dbflute.intro.util.Monitor;
 
 /**
  * @author ecode
@@ -182,8 +181,6 @@ public class DBFluteIntro {
             downloadUrl = meta.buildDownloadUrlDBFlute(downloadVersion);
         }
         final String dbfluteVersionExpression = "dbflute-" + downloadVersion;
-
-        Monitor.output("...Downloading DBFlute to " + mydbflutePureFile.getAbsolutePath() + dbfluteVersionExpression);
 
         final String zipFilename;
         {

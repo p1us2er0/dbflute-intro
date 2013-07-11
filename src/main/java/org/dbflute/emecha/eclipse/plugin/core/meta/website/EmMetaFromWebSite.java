@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
-import org.dbflute.emecha.eclipse.plugin.core.util.lang.EmStringUtil;
-
 /**
  *
  * @author jflute
@@ -15,7 +13,6 @@ import org.dbflute.emecha.eclipse.plugin.core.util.lang.EmStringUtil;
 public class EmMetaFromWebSite {
 
     protected String urlString = "http://dbflute.seasar.org/meta/emecha.html";
-    //    protected String netUrlString = "http://dbflute.net.sandbox.seasar.org/meta/emecha.html";
     protected Properties prop;
 
     public EmMetaFromWebSite() {
@@ -40,10 +37,6 @@ public class EmMetaFromWebSite {
         }
     }
 
-    public String getLatestVersionS2Dao() {
-        return getMetaValue("latest.version.s2dao");
-    }
-
     public String getLatestVersionDBFlute() {
         return getMetaValue("latest.version.dbflute");
     }
@@ -52,13 +45,9 @@ public class EmMetaFromWebSite {
         return getMetaValue("latest.snapshot.version.dbflute");
     }
 
-    public String getLatest88VersionDBFlute() {
-        return getMetaValue("latest.88.version.dbflute");
-    }
-
     public String buildDownloadUrlDBFlute(String downloadVersion) {
         final String downloadTemplateUrlDBFlute = getDownloadTemplateUrlDBFlute();
-        return EmStringUtil.replace(downloadTemplateUrlDBFlute, "${downloadVersion}", downloadVersion);
+        return downloadTemplateUrlDBFlute.replace("${downloadVersion}", downloadVersion);
     }
 
     public String getDownloadTemplateUrlDBFlute() {
