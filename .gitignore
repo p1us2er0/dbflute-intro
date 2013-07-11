@@ -2,3 +2,6 @@
 /dbflute_exampledb
 /dbflute_yourdb
 /mydbflute
+/build
+/.gradle
+/bin

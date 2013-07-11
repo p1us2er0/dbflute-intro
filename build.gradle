@@ -1,0 +1,61 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'project-report'
+
+group = 'org.dbflute'
+version = '0.0.1-SNAPSHOT'
+artifact = 'dbflute-intro'
+
+def encoding = "UTF-8"
+def compatibility = '1.6'
+def utfluteVersion = '0.3.0'
+def junitVersion ='4.8.2'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}
+
+tasks.withType(AbstractCompile) each { it.options.encoding = encoding }
+tasks.withType(GroovyCompile) each { it.groovyOptions.encoding = encoding }
+tasks.withType(Compile) {
+    sourceCompatibility = compatibility
+    targetCompatibility = compatibility
+}
+
+eclipse {
+    pathVariables 'GRADLE_USER_HOME': gradle.gradleUserHomeDir
+    classpath {
+        downloadSources=true
+    }
+}
+
+eclipse.jdt.file {
+	withProperties { properties ->
+		def formatter = new XmlSlurper().parse('./gradle/eclipse/formatter.xml')
+
+		formatter.profile.setting.each {
+			properties.put(it.@id as String, it.@value as String)
+		}
+	}
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://maven.seasar.org/maven2'
+    }
+    maven {
+        url 'http://maven.seasar.org/maven2-snapshot'
+    }
+}
+
+dependencies {
+    compile 'commons-io:commons-io:2.4'
+    testCompile "org.seasar.dbflute:utflute-spring:${utfluteVersion}"
+    testCompile "junit:junit:${junitVersion}"
+}
+
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    manifest.mainAttributes('Main-Class' : 'org.dbflute.intro.wizard.DBFluteIntroPage')
+}
