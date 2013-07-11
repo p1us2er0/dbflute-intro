@@ -104,7 +104,7 @@ public class NewClientPanel extends JPanel {
         projectText.setColumns(10);
         this.add(projectText);
 
-        databaseCombo = new JComboBox(DatabaseInfoDef.extractDatabaseList().toArray());
+        databaseCombo = new JComboBox(DatabaseInfoDef.values());
         databaseCombo.setBounds(150, 35, 300, 20);
         databaseCombo.setSelectedIndex(-1); // means no selection
         this.add(databaseCombo);
@@ -113,8 +113,7 @@ public class NewClientPanel extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                String atabaseInfo = databaseCombo.getSelectedItem().toString();
-                DatabaseInfoDef databaseInfoDef = DatabaseInfoDef.findDatabaseInfo(atabaseInfo);
+                DatabaseInfoDef databaseInfoDef = (DatabaseInfoDef) databaseCombo.getSelectedItem();
                 fireDatabaseInfoUrlText(databaseInfoDef);
                 fireDatabaseInfoSchemaText(databaseInfoDef);
                 fireJdbcDriverJarText(databaseInfoDef);
@@ -146,9 +145,9 @@ public class NewClientPanel extends JPanel {
         jdbcDriverJarPathText.setColumns(10);
 
         List<String> needJdbcDriverJarMessage = new ArrayList<String>();
-        for (String database : DatabaseInfoDef.extractDatabaseList()) {
-            if (DBFluteIntro.needJdbcDriverJar(DatabaseInfoDef.findDatabaseInfo(database))) {
-                needJdbcDriverJarMessage.add(database);
+        for (DatabaseInfoDef databaseInfoDef : DatabaseInfoDef.values()) {
+            if (databaseInfoDef.needJdbcDriverJar()) {
+                needJdbcDriverJarMessage.add(databaseInfoDef.name());
             }
         }
 
@@ -239,11 +238,12 @@ public class NewClientPanel extends JPanel {
             data.put(LABEL_PROJECT, result.getProject());
             data.put(LABEL_DATABASE, result.getDatabase());
             data.put(LABEL_URL, result.getDatabaseInfoUrl());
-            if (DBFluteIntro.needDatabaseInfoSchema(DatabaseInfoDef.findDatabaseInfo(result.getDatabase()))) {
+            DatabaseInfoDef databaseInfoDef = DatabaseInfoDef.codeOf(result.getDatabase());
+            if (databaseInfoDef != null && databaseInfoDef.needSchema()) {
                 data.put(LABEL_SCHEMA, result.getDatabaseInfoSchema());
             }
             data.put(LABEL_USER, result.getDatabaseInfoUser());
-            if (DBFluteIntro.needJdbcDriverJar(DatabaseInfoDef.findDatabaseInfo(result.getDatabase()))) {
+            if (databaseInfoDef != null && databaseInfoDef.needJdbcDriverJar()) {
                 data.put(LABEL_JDBC_DRIVER_JAR_PATH, result.getJdbcDriverJarPath());
             }
             data.put(LABEL_DBFLUTE_VERSION, result.getVersionInfoDBFlute());
@@ -320,14 +320,13 @@ public class NewClientPanel extends JPanel {
     public DBFluteNewClientPageResult asResult() {
 
         final String projectName = projectText.getText();
-        Object selectedItem = databaseCombo.getSelectedItem();
-        final String database = selectedItem != null ? selectedItem.toString() : null;
-        DatabaseInfoDef databaseInfo = DatabaseInfoDef.findDatabaseInfo(database);
-        final String databaseInfoDriver = databaseInfo != null ? databaseInfo.getDriverName() : null;
+        DatabaseInfoDef databaseInfo = (DatabaseInfoDef) databaseCombo.getSelectedItem();
+        final String database = databaseInfo != null ? databaseInfo.databaseName() : null;
+        final String databaseInfoDriver = databaseInfo != null ? databaseInfo.driverName() : null;
         final String databaseInfoUrl = databaseInfoUrlText.getText();
         final String databaseInfoSchema = databaseInfoSchemaText.getText();
         final String databaseInfoUser = databaseInfoUserText.getText();
-        final String databaseInfoPassword = databaseInfoPasswordText.getText();
+        final String databaseInfoPassword = new String(databaseInfoPasswordText.getPassword());
         final String jdbcDriverJarPath = jdbcDriverJarPathText.getText();
         final String versionInfoDBFlute = versionInfoDBFluteCombo.getSelectedItem().toString();
 
@@ -368,7 +367,7 @@ public class NewClientPanel extends JPanel {
 
         databaseInfoSchemaText.setText("");
 
-        if (DBFluteIntro.needDatabaseInfoSchema(databaseInfoDef)) {
+        if (databaseInfoDef != null && databaseInfoDef.needSchema()) {
             databaseInfoSchemaText.setText("dbo");
         }
     }
@@ -377,7 +376,7 @@ public class NewClientPanel extends JPanel {
 
         jdbcDriverJarPathText.setText("");
 
-        if (DBFluteIntro.needJdbcDriverJar(databaseInfoDef)) {
+        if (databaseInfoDef != null && databaseInfoDef.needJdbcDriverJar()) {
             jdbcDriverJarPathText.setEnabled(true);
             jdbcDriverJarPathText.setTransferHandler(new SwingUtil.FileTransferHandler(jdbcDriverJarPathText));
         } else {

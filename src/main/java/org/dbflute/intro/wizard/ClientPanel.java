@@ -9,8 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -35,24 +38,38 @@ public class ClientPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String LABEL_SCHEMA_HTML = "<a href='%1$s'>テーブル定義を開く</a> (SchemaHTML)";
-    private static final String LABEL_HISTORY_HTML = "<a href='%1$s'>DB変更履歴を開く</a> (HistoryHTML)";
-    private static final String LABEL_SYNC_CHECK_HTML = "<a href='%1$s'>差分チェック結果を開く</a> (SyncCheckHTML)";
+    private static final String LABEL_SCHEMA_HTML;
+    private static final String LABEL_HISTORY_HTML;
+    private static final String LABEL_SYNC_CHECK_HTML;
     private static final String LABEL_DOC = "ドキュメント生成";
     private static final String LABEL_SYNC_CHECK = "スキーマの差分チェック";
+    private static final String LABEL_REPLACE_SCHEMA = "DBスキーマ(再)構築";
     private static final String LABEL_PROJECT_TAB = "DB";
     private static final String LABEL_ENV = "環境名";
 
     private static final String MSG_EXECUTE = "実行中...";
-    private static final String MSG_FINISHED = "終了。ログファイル=%1$s";
+    private static final String MSG_FINISHED_SUCCESS = "正常終了。";
+    private static final String MSG_FINISHED_ERROR = "異常終了。ログファイル=%1$s";
     private static final String MSG_NOT_FOUND_ENV = NewClientPanel.LABEL_SCHEMA_SYNC_CHECK + "が見つかりません。";
-    private static final String MSG_CANCELED_XXX = "キャンセルしました。";
+    private static final String MSG_CANCELED = "キャンセルしました。";
+    private static final String MSG_INVALID_URL = "URLが不正です。";
+    private static final String MSG_NOT_FOUND_URL = "「%1$s」が見つかりません。";
+    private static final String MSG_REPLACE_SCHEMA = "DBスキーマを(再)構築します。";
 
     private JFrame frame;
 
     private JComboBox projectCombo;
-    private JButton jdbcDocButton;
-    private JButton schemaSyncCheckButton;
+
+    static {
+        final File docDir = new File(DBFluteIntro.BASIC_DIR_PATH, "/dbflute_${project}/output/doc/");
+
+        LABEL_SCHEMA_HTML = "<a href='" + new File(docDir, "schema-${project}.html").toURI()
+                + "'>テーブル定義を開く</a> (SchemaHTML)";
+        LABEL_HISTORY_HTML = "<a href='" + new File(docDir, "history-${project}.html").toURI()
+                + "'>DB変更履歴を開く</a> (HistoryHTML)";
+        LABEL_SYNC_CHECK_HTML = "<a href='" + new File(docDir, "sync-check-result_${env}.html").toURI()
+                + "'>差分チェック結果を開く</a> (SyncCheckHTML)";
+    }
 
     /**
      * Create the application.
@@ -77,26 +94,23 @@ public class ClientPanel extends JPanel {
         projectCombo.setBounds(150, 10, 300, 20);
         this.add(projectCombo);
 
-        File docDir = new File(DBFluteIntro.BASIC_DIR_PATH, "/dbflute_${project}/output/doc/");
-        File schemaHTMLFile = new File(docDir, "/schema-${project}.html");
-        String schemaHTMLFileLinkMessge = String.format(LABEL_SCHEMA_HTML, schemaHTMLFile.toURI());
-        this.add(createHTMLLink(schemaHTMLFileLinkMessge, 35));
+        this.add(createHTMLLink(LABEL_SCHEMA_HTML, 35));
+        this.add(createHTMLLink(LABEL_HISTORY_HTML, 60));
+        this.add(createHTMLLink(LABEL_SYNC_CHECK_HTML, 85));
 
-        File historyHTMLFile = new File(docDir, "history-${project}.html");
-        String historyHTMLFileLinkMessge = String.format(LABEL_HISTORY_HTML, historyHTMLFile.toURI());
-        this.add(createHTMLLink(historyHTMLFileLinkMessge, 60));
+        Map<String, List<ProcessBuilder>> map = new LinkedHashMap<String, List<ProcessBuilder>>();
+        map.put(LABEL_DOC, DBFluteIntro.getJdbcDocCommondList());
+        map.put(LABEL_SYNC_CHECK, DBFluteIntro.getSchemaSyncCheckCommondList());
+        map.put(LABEL_REPLACE_SCHEMA, DBFluteIntro.getReplaceSchemaCommondList());
 
-        File syncCheckHTMLFile = new File(docDir, "sync-check-result_${env}.html");
-        String syncCheckHTMLFileLinkMessge = String.format(LABEL_SYNC_CHECK_HTML, syncCheckHTMLFile.toURI());
-        this.add(createHTMLLink(syncCheckHTMLFileLinkMessge, 85));
+        int y = 0;
+        for (Entry<String, List<ProcessBuilder>> entry : map.entrySet()) {
+            JButton jdbcDocButton = new JButton(new TaskAction(entry.getKey(), entry.getValue()));
+            jdbcDocButton.setBounds(10, 150 + y, 200, 20);
+            this.add(jdbcDocButton);
 
-        jdbcDocButton = new JButton(new TaskAction(LABEL_DOC, DBFluteIntro.getJdbcDocList()));
-        jdbcDocButton.setBounds(10, 220, 200, 20);
-        this.add(jdbcDocButton);
-
-        schemaSyncCheckButton = new JButton(new TaskAction(LABEL_SYNC_CHECK, DBFluteIntro.getSchemaSyncCheckList()));
-        schemaSyncCheckButton.setBounds(220, 220, 200, 20);
-        this.add(schemaSyncCheckButton);
+            y += 30;
+        }
 
         fireProjectCombo(null);
     }
@@ -138,13 +152,24 @@ public class ClientPanel extends JPanel {
                 }
             }
 
+            if (getValue(NAME).toString().equals(LABEL_REPLACE_SCHEMA)) {
+                int result = JOptionPane.showConfirmDialog(frame, MSG_REPLACE_SCHEMA, LABEL_REPLACE_SCHEMA,
+                        JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.CANCEL_OPTION) {
+                    return;
+                }
+            }
+
+            final Map<String, Integer> resultMap = new LinkedHashMap<String, Integer>();
             for (final ProcessBuilder processBuilder : taskList) {
                 processBuilder.directory(new File(DBFluteIntro.BASIC_DIR_PATH, "dbflute_" + project));
 
                 Map<String, String> environment = processBuilder.environment();
                 environment.put("pause_at_end", "n");
-                if (getValue(NAME).toString().equals("schemaSyncCheck")) {
+                if (getValue(NAME).toString().equals(LABEL_SYNC_CHECK)) {
                     environment.put("DBFLUTE_ENVIRONMENT_TYPE", "schemaSyncCheck_" + env);
+                } else if (getValue(NAME).toString().equals(LABEL_REPLACE_SCHEMA)) {
+                    environment.put("answer", "y");
                 }
 
                 processBuilder.redirectErrorStream(true);
@@ -164,18 +189,27 @@ public class ClientPanel extends JPanel {
                                 is.close();
                             }
 
+                            resultMap.put(processBuilder.command().toString(), process.exitValue());
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
-
                     }
                 };
 
                 progressBarDialog.start(getValue(NAME).toString(), MSG_EXECUTE);
+
+                if (Collections.frequency(resultMap.values(), 0) != resultMap.size()) {
+                    break;
+                }
             }
 
-            JOptionPane.showMessageDialog(frame, String.format(MSG_FINISHED, DBFluteIntro.INI_FILE_PATH + "/dbflute_"
-                    + project + "/log/dbflute.log"));
+            String message = MSG_FINISHED_SUCCESS;
+            if (Collections.frequency(resultMap.values(), 0) != resultMap.size()) {
+                String logPath = DBFluteIntro.INI_FILE_PATH + "/dbflute_" + project + "/log/dbflute.log";
+                message = String.format(MSG_FINISHED_ERROR, logPath);
+            }
+
+            JOptionPane.showMessageDialog(frame, message);
         }
     }
 
@@ -197,7 +231,7 @@ public class ClientPanel extends JPanel {
         Object obj = JOptionPane.showInputDialog(frame, LABEL_ENV, LABEL_SYNC_CHECK, JOptionPane.QUESTION_MESSAGE,
                 null, envList.toArray(), null);
         if (obj == null) {
-            JOptionPane.showMessageDialog(frame, MSG_CANCELED_XXX);
+            JOptionPane.showMessageDialog(frame, MSG_CANCELED);
             return null;
         }
 
@@ -215,7 +249,7 @@ public class ClientPanel extends JPanel {
                 String project = projectCombo.getSelectedItem().toString();
 
                 if (url == null) {
-                    JOptionPane.showMessageDialog(frame, "not found.");
+                    JOptionPane.showMessageDialog(frame, MSG_INVALID_URL);
                     return;
                 }
 
@@ -223,7 +257,7 @@ public class ClientPanel extends JPanel {
                 try {
                     decodePath = URLDecoder.decode(url.getFile(), System.getProperty("file.encoding"));
                 } catch (UnsupportedEncodingException e1) {
-                    JOptionPane.showMessageDialog(frame, "[" + url.getFile() + "] not found.");
+                    JOptionPane.showMessageDialog(frame, String.format(MSG_NOT_FOUND_URL, url.getFile()));
                     return;
                 }
 
@@ -235,18 +269,19 @@ public class ClientPanel extends JPanel {
                     }
                 }
 
-                File file = new File(decodePath.replaceAll("\\$\\{project\\}",
-                        projectCombo.getSelectedItem().toString()).replaceAll("\\$\\{env\\}", env));
+                String path = decodePath.replaceAll("\\$\\{project\\}", projectCombo.getSelectedItem().toString());
+                path = path.replaceAll("\\$\\{env\\}", env);
+                File file = new File(path);
 
                 try {
                     file = file.getCanonicalFile();
                 } catch (IOException e) {
-                    JOptionPane.showMessageDialog(frame, "[" + file.getAbsolutePath() + "] not found.");
+                    JOptionPane.showMessageDialog(frame, String.format(MSG_NOT_FOUND_URL, file.getAbsolutePath()));
                     return;
                 }
 
                 if (!file.exists()) {
-                    JOptionPane.showMessageDialog(frame, "[" + file.getAbsolutePath() + "] not found.");
+                    JOptionPane.showMessageDialog(frame, String.format(MSG_NOT_FOUND_URL, file.getAbsolutePath()));
                     return;
                 }
 

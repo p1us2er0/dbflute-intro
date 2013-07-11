@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,11 +17,8 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.dbflute.emecha.eclipse.plugin.core.meta.website.EmMetaFromWebSite;
-import org.dbflute.emecha.eclipse.plugin.core.util.io.EmFileUtil;
-import org.dbflute.emecha.eclipse.plugin.core.util.net.EmURLUtil;
 import org.dbflute.emecha.eclipse.plugin.core.util.util.zip.EmZipInputStreamUtil;
 import org.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClientPageResult;
-import org.dbflute.emecha.eclipse.plugin.wizards.client.definition.DatabaseInfoDef;
 import org.dbflute.intro.util.Monitor;
 
 /**
@@ -113,20 +109,6 @@ public class DBFluteIntro {
         return list;
     }
 
-    protected static boolean needDatabaseInfoSchema(DatabaseInfoDef databaseInfoDef) {
-        if (databaseInfoDef == null) {
-            return false;
-        }
-        return Arrays.asList("mssql").contains(databaseInfoDef.getDatabaseName());
-    }
-
-    protected static boolean needJdbcDriverJar(DatabaseInfoDef databaseInfoDef) {
-        if (databaseInfoDef == null) {
-            return false;
-        }
-        return !Arrays.asList("h2", "mysql", "postgresql").contains(databaseInfoDef.getDatabaseName());
-    }
-
     protected List<String> getExistedDBFluteVersionList() {
 
         List<String> list = new ArrayList<String>();
@@ -142,30 +124,42 @@ public class DBFluteIntro {
         return list;
     }
 
-    protected static List<ProcessBuilder> getJdbcDocList() {
-        List<ProcessBuilder> jdbcDocList = new ArrayList<ProcessBuilder>();
+    protected static List<ProcessBuilder> getJdbcDocCommondList() {
+        List<ProcessBuilder> commondList = new ArrayList<ProcessBuilder>();
         String onName = System.getProperty("os.name");
         if (onName != null && onName.startsWith("Windows")) {
-            jdbcDocList.add(new ProcessBuilder("cmd", "/c", "jdbc.bat"));
-            jdbcDocList.add(new ProcessBuilder("cmd", "/c", "doc.bat"));
+            commondList.add(new ProcessBuilder("cmd", "/c", "jdbc.bat"));
+            commondList.add(new ProcessBuilder("cmd", "/c", "doc.bat"));
         } else {
-            jdbcDocList.add(new ProcessBuilder("sh", "jdbc.sh"));
-            jdbcDocList.add(new ProcessBuilder("sh", "doc.sh"));
+            commondList.add(new ProcessBuilder("sh", "jdbc.sh"));
+            commondList.add(new ProcessBuilder("sh", "doc.sh"));
         }
 
-        return jdbcDocList;
+        return commondList;
     }
 
-    protected static List<ProcessBuilder> getSchemaSyncCheckList() {
-        List<ProcessBuilder> schemaSyncCheckList = new ArrayList<ProcessBuilder>();
+    protected static List<ProcessBuilder> getSchemaSyncCheckCommondList() {
+        List<ProcessBuilder> commondList = new ArrayList<ProcessBuilder>();
         String onName = System.getProperty("os.name");
         if (onName != null && onName.startsWith("Windows")) {
-            schemaSyncCheckList.add(new ProcessBuilder("cmd", "/c", "manage.bat", "schema-sync-check"));
+            commondList.add(new ProcessBuilder("cmd", "/c", "manage.bat", "schema-sync-check"));
         } else {
-            schemaSyncCheckList.add(new ProcessBuilder("sh", "manage.sh", "schema-sync-check"));
+            commondList.add(new ProcessBuilder("sh", "manage.sh", "schema-sync-check"));
         }
 
-        return schemaSyncCheckList;
+        return commondList;
+    }
+
+    protected static List<ProcessBuilder> getReplaceSchemaCommondList() {
+        List<ProcessBuilder> commondList = new ArrayList<ProcessBuilder>();
+        String onName = System.getProperty("os.name");
+        if (onName != null && onName.startsWith("Windows")) {
+            commondList.add(new ProcessBuilder("cmd", "/c", "replace-schema.bat"));
+        } else {
+            commondList.add(new ProcessBuilder("sh", "replace-schema.sh"));
+        }
+
+        return commondList;
     }
 
     protected void downloadDBFlute(String dbfluteVersion) {
@@ -194,16 +188,18 @@ public class DBFluteIntro {
         final String zipFilename;
         {
             zipFilename = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression + ".zip";
-            final URL url = EmURLUtil.createURL(downloadUrl);
-
-            EmURLUtil.makeFileAndClose(url, zipFilename);
+            try {
+                FileUtils.copyURLToFile(new URL(downloadUrl), new File(zipFilename));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         final ZipInputStream zipIn = EmZipInputStreamUtil.createZipInputStream(zipFilename);
         final String extractDirectoryBase = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression;
         EmZipInputStreamUtil.extractAndClose(zipIn, extractDirectoryBase);
 
-        EmFileUtil.deleteFile(zipFilename); // After Care!
+        FileUtils.deleteQuietly(new File(zipFilename));
 
         final String templateZipFilename = extractDirectoryBase + "/etc/client-template/dbflute_dfclient.zip";
         final ZipInputStream templateZipIn = EmZipInputStreamUtil.createZipInputStream(templateZipFilename);
@@ -313,9 +309,7 @@ public class DBFluteIntro {
         try {
             for (Entry<File, Map<String, String>> entry : fileMap.entrySet()) {
 
-                String text = null;
-
-                text = FileUtils.readFileToString(entry.getKey(), Charsets.UTF_8);
+                String text = FileUtils.readFileToString(entry.getKey(), Charsets.UTF_8);
 
                 for (Entry<String, String> replaceEntry : entry.getValue().entrySet()) {
                     text = text.replace(replaceEntry.getKey(), replaceEntry.getValue());

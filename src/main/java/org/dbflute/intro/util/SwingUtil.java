@@ -93,9 +93,9 @@ public class SwingUtil {
             dialog.getContentPane().add(panel, "panel");
             panel.setLayout(null);
 
-            JLabel downloadMessageLabel = new JLabel(message);
-            downloadMessageLabel.setBounds(10, 10, 200, 20);
-            panel.add(downloadMessageLabel);
+            JLabel messageLabel = new JLabel(message);
+            messageLabel.setBounds(10, 10, 200, 20);
+            panel.add(messageLabel);
 
             JProgressBar progressBar = new JProgressBar(0, 100);
             progressBar.setBounds(10, 35, 180, 20);

@@ -72,7 +72,7 @@ public class SchemaSyncCheckPanal extends JPanel {
         final String databaseInfoUrl = databaseInfoUrlText.getText();
         final String databaseInfoSchema = databaseInfoSchemaText.getText();
         final String databaseInfoUser = databaseInfoUserText.getText();
-        final String databaseInfoPassword = databaseInfoPasswordText.getText();
+        final String databaseInfoPassword = new String(databaseInfoPasswordText.getPassword());
 
         final DBFluteNewClientPageResult result = new DBFluteNewClientPageResult();
         result.setDatabaseInfoUrl(databaseInfoUrl);
