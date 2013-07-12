@@ -11,15 +11,33 @@ def compatibility = '1.6'
 def utfluteVersion = '0.3.0'
 def junitVersion ='4.8.2'
 
+fileTree(dir: 'gradle', includes: ['*.gradle']).each { apply from: it }
+
 task wrapper(type: Wrapper) {
     gradleVersion = '1.6'
 }
 
 tasks.withType(AbstractCompile) each { it.options.encoding = encoding }
 tasks.withType(GroovyCompile) each { it.groovyOptions.encoding = encoding }
+javadoc { options.encoding = "UTF-8" }
 tasks.withType(Compile) {
     sourceCompatibility = compatibility
     targetCompatibility = compatibility
+}
+
+task sourcesJar(type: Jar, dependsOn:classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn:javadoc) {
+   classifier = 'javadoc'
+   from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
 
 eclipse {
@@ -57,5 +75,16 @@ dependencies {
 
 jar {
     from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    manifest.mainAttributes('Main-Class' : 'org.dbflute.intro.wizard.DBFluteIntroPage')
+
+    version = ''
+
+    manifest {
+        attributes 'Implementation-Title': project.name
+        attributes 'Implementation-Version': project.version
+        attributes 'SCM-Branch': 'TODO'
+        attributes 'SCM-Revision': 'TODO'
+        attributes 'Build-Timestamp': 'TODO'
+        attributes 'Jenkins-Build-Number': 'TODO'
+        attributes 'Main-Class' : 'org.dbflute.intro.wizard.DBFluteIntroPage'
+    }
 }

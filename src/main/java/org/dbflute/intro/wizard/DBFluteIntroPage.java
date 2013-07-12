@@ -37,7 +37,9 @@ import org.dbflute.intro.util.SwingUtil.ProgressBarDialog;
 public class DBFluteIntroPage {
 
     private static final String LABEL_TITLE = "DBFlute Intro";
-    private static final String LABEL_MENU = "メニュー";
+    private static final String LABEL_SETTING = "設定";
+    private static final String LABEL_HELP = "ヘルプ";
+    private static final String LABEL_VERSION = "バージョン";
     private static final String LABEL_PROXY_HOST = "ホスト";
     private static final String LABEL_PROXY_PORT = "ポート";
     private static final String LABEL_DOWNLOAD = "ダウンロード";
@@ -114,14 +116,20 @@ public class DBFluteIntroPage {
         JMenuBar menuBar = new JMenuBar();
         frame.setJMenuBar(menuBar);
 
-        JMenu menu = new JMenu(LABEL_MENU);
-        menuBar.add(menu);
+        JMenu setting = new JMenu(LABEL_SETTING);
+        menuBar.add(setting);
 
         JMenuItem downloadMenuItem = new JMenuItem(downloadAction);
-        menu.add(downloadMenuItem);
+        setting.add(downloadMenuItem);
 
         JMenuItem proxySettingsMenuItem = new JMenuItem(proxySettingsViewAction);
-        menu.add(proxySettingsMenuItem);
+        setting.add(proxySettingsMenuItem);
+
+        JMenu help = new JMenu(LABEL_HELP);
+        menuBar.add(help);
+
+        JMenuItem versionMenuItem = new JMenuItem(LABEL_VERSION + ": " + dbFluteIntro.getVersion());
+        help.add(versionMenuItem);
 
         SwingUtil.updateLookAndFeel(frame);
 
@@ -222,7 +230,7 @@ public class DBFluteIntroPage {
             panel.add(proxyPortText);
 
             JButton proxySettingsButton = new JButton(proxySettingsAction);
-            proxySettingsButton.setBounds(80, 60, 50, 20);
+            proxySettingsButton.setBounds(80, 60, 70, 20);
             panel.add(proxySettingsButton);
 
             dialog.setVisible(true);

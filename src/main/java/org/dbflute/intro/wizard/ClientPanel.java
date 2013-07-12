@@ -4,7 +4,6 @@ import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -145,7 +144,6 @@ public class ClientPanel extends JPanel {
 
             String env = null;
             if (getValue(NAME).toString().equals(LABEL_SYNC_CHECK)) {
-
                 env = showSchemaSyncCheckEnvDialog(project);
                 if (env == null) {
                     return;
@@ -162,6 +160,7 @@ public class ClientPanel extends JPanel {
 
             final Map<String, Integer> resultMap = new LinkedHashMap<String, Integer>();
             for (final ProcessBuilder processBuilder : taskList) {
+
                 processBuilder.directory(new File(DBFluteIntro.BASIC_DIR_PATH, "dbflute_" + project));
 
                 Map<String, String> environment = processBuilder.environment();
@@ -172,27 +171,13 @@ public class ClientPanel extends JPanel {
                     environment.put("answer", "y");
                 }
 
-                processBuilder.redirectErrorStream(true);
-
                 ProgressBarDialog progressBarDialog = new ProgressBarDialog(frame) {
 
                     @Override
                     public void execute() {
-                        try {
-                            Process process = processBuilder.start();
+                        int result = DBFluteIntro.executeCommond(processBuilder);
 
-                            InputStream is = process.getInputStream();
-                            try {
-                                while (is.read() >= 0)
-                                    ;
-                            } finally {
-                                is.close();
-                            }
-
-                            resultMap.put(processBuilder.command().toString(), process.exitValue());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                        resultMap.put(processBuilder.command().toString(), result);
                     }
                 };
 

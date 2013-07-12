@@ -4,13 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.jar.Manifest;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.Charsets;
@@ -93,6 +96,39 @@ public class DBFluteIntro {
 
     }
 
+    protected Map<String, Object> getManifestMap() {
+
+        Map<String, Object> manifestMap = new LinkedHashMap<String, Object>();
+        InputStream inputStream = null;
+        try {
+
+            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+            Enumeration<URL> resources = contextClassLoader.getResources("META-INF/MANIFEST.MF");
+            while (resources.hasMoreElements()) {
+                inputStream = resources.nextElement().openStream();
+                Manifest manifest = new Manifest(inputStream);
+
+                for (Entry<Object, Object> entry : manifest.getMainAttributes().entrySet()) {
+                    manifestMap.put(String.valueOf(entry.getKey()), entry.getValue());
+                }
+
+                if (DBFluteIntroPage.class.getName().equals(manifestMap.get("Main-Class"))) {
+                    break;
+                }
+
+                manifestMap.clear();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return manifestMap;
+    }
+
+    protected String getVersion() {
+        return String.valueOf(getManifestMap().get("Implementation-Version"));
+    }
+
     protected List<String> getProjectList() {
 
         List<String> list = new ArrayList<String>();
@@ -159,6 +195,28 @@ public class DBFluteIntro {
         }
 
         return commondList;
+    }
+
+    protected static int executeCommond(ProcessBuilder processBuilder) {
+
+        processBuilder.redirectErrorStream(true);
+
+        InputStream inputStream = null;
+        Process process;
+        try {
+            process = processBuilder.start();
+            inputStream = process.getInputStream();
+            while (inputStream.read() >= 0)
+                ;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
+
+        int result = process.exitValue();
+
+        return result;
     }
 
     protected void downloadDBFlute(String dbfluteVersion) {
