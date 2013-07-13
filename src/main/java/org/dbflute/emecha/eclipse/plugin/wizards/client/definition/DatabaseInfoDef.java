@@ -13,7 +13,7 @@ public enum DatabaseInfoDef {
     /** mysql. */
     MySQL("mysql", "com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/xxx", "", false, false),
     /** oracle. */
-    Oracle("oracle", "oracle.jdbc.OracleDriver", "jdbc:oracle:thin:@localhost:1521:xxx", "", true, true),
+    Oracle("oracle", "oracle.jdbc.OracleDriver", "jdbc:oracle:thin:@localhost:1521:xxx", "xxx", true, true),
     /** db2. */
     DB2("db2", "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://localhost:50000/xxx", "xxx", true, true),
     /** mssql. */

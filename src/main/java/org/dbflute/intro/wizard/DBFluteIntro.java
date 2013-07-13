@@ -1,10 +1,12 @@
 package org.dbflute.intro.wizard;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -202,19 +204,37 @@ public class DBFluteIntro {
         processBuilder.redirectErrorStream(true);
 
         InputStream inputStream = null;
+        InputStreamReader inputStreamReader = null;
+        BufferedReader bufferedReader = null;
         Process process;
+
+        int result = 0;
         try {
             process = processBuilder.start();
             inputStream = process.getInputStream();
-            while (inputStream.read() >= 0)
-                ;
+            inputStreamReader = new InputStreamReader(inputStream);
+            bufferedReader = new BufferedReader(inputStreamReader);
+
+            while (true) {
+                String line = bufferedReader.readLine();
+                if (line == null) {
+                    break;
+                }
+                if (line.equals("BUILD FAILED")) {
+                    result = 1;
+                }
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
+            IOUtils.closeQuietly(bufferedReader);
+            IOUtils.closeQuietly(inputStreamReader);
             IOUtils.closeQuietly(inputStream);
         }
 
-        int result = process.exitValue();
+        if (result == 0) {
+            result = process.exitValue();
+        }
 
         return result;
     }
