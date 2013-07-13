@@ -11,20 +11,20 @@ import java.util.Map;
 public enum DatabaseInfoDef {
 
     /** mysql. */
-    MY_SQL("mysql", "com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/xxx", true, false),
+    MySQL("mysql", "com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/xxx", "", false, false),
     /** oracle. */
-    ORACLE("oracle", "oracle.jdbc.OracleDriver", "jdbc:oracle:thin:@localhost:1521:xxx", false, true),
+    Oracle("oracle", "oracle.jdbc.OracleDriver", "jdbc:oracle:thin:@localhost:1521:xxx", "", true, true),
     /** db2. */
-    DB2("db2", "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://localhost:50000/xxx", false, true),
+    DB2("db2", "com.ibm.db2.jcc.DB2Driver", "jdbc:db2://localhost:50000/xxx", "xxx", true, true),
     /** mssql. */
-    SQL_SERVER("mssql", "com.microsoft.sqlserver.jdbc.SQLServerDriver",
-            "jdbc:sqlserver://localhost:1433;DatabaseName=xxx;", false, true),
+    SQLServer("mssql", "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+            "jdbc:sqlserver://localhost:1433;DatabaseName=xxx;", "dbo", true, true),
     /** postgresql. */
-    POSTGRE_SQL("postgresql", "org.postgresql.Driver", "jdbc:postgresql://localhost:5432/xxx", false, false),
+    PostgreSQL("postgresql", "org.postgresql.Driver", "jdbc:postgresql://localhost:5432/xxx", "public", true, false),
     /** h2. */
-    H2("h2", "org.h2.Driver", "jdbc:h2:file:xxx", false, false),
+    H2("h2", "org.h2.Driver", "jdbc:h2:file:xxx", "PUBLIC", true, false),
     /** derby. */
-    DERBY("derby", "org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:xxx;create=true", false, true);
+    Derby("derby", "org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:xxx;create=true", "xxx", true, true);
 
     // ===================================================================================
     //                                                                 Definition Accessor
@@ -37,17 +37,19 @@ public enum DatabaseInfoDef {
     private String databaseName;
     private String driverName;
     private String urlTemplate;
+    private String defultSchema;
     private boolean needSchema;
     private boolean needJdbcDriverJar;
 
     // ===================================================================================
     //                                                                         Constructor
     //                                                                         ===========
-    private DatabaseInfoDef(String databaseName, String driverName, String urlTemplate, boolean needSchema,
-            boolean needJdbcDriverJar) {
+    private DatabaseInfoDef(String databaseName, String driverName, String urlTemplate, String defultSchema,
+            boolean needSchema, boolean needJdbcDriverJar) {
         this.databaseName = databaseName;
         this.driverName = driverName;
         this.urlTemplate = urlTemplate;
+        this.defultSchema = defultSchema;
         this.needSchema = needSchema;
         this.needJdbcDriverJar = needJdbcDriverJar;
     }
@@ -71,6 +73,10 @@ public enum DatabaseInfoDef {
 
     public String getUrlTemplate() {
         return urlTemplate;
+    }
+
+    public String getDefultSchema() {
+        return defultSchema;
     }
 
     public boolean needJdbcDriverJar() {

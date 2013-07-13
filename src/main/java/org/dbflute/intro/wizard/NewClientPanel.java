@@ -4,7 +4,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +21,12 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 
 import org.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClientPageResult;
 import org.dbflute.emecha.eclipse.plugin.wizards.client.definition.DatabaseInfoDef;
@@ -35,7 +41,7 @@ public class NewClientPanel extends JPanel {
 
     protected static final String LABEL_REQUIRED = "(*)";
     protected static final String LABEL_PROJECT = "DB名";
-    private static final String LABEL_DATABASE = "RDB";
+    private static final String LABEL_DATABASE = "DBMS";
     protected static final String LABEL_URL = "URL";
     protected static final String LABEL_SCHEMA = "スキーマ";
     protected static final String LABEL_USER = "ユーザ";
@@ -48,7 +54,6 @@ public class NewClientPanel extends JPanel {
 
     private static final String DEF_PROJECT = "yourdb";
 
-    private static final String MSG_JDBC_DRIVER_JAR_PATH = "jdbcドライバをダウンロードして、ドラッグ&ドロップしてください。. jdbcドライバが必要なRDBは、%1$sです。";
     private static final String MSG_SCHEMA_SYNC_CHECK_ENV = "DB環境を入力してください。";
     private static final String MSG_REQUIRED = "「%1$s」を入力してください。";
     private static final String MSG_EXIST_PROJECT = "DB名「%1$s」はすでに存在します。";
@@ -56,6 +61,9 @@ public class NewClientPanel extends JPanel {
     private static final String MSG_DBFLUTE_VERSION = "DBFluteモジュールをダウンロードして下さい。(メニュー　→ ダウンロード(&アップグレード))";
 
     private JFrame frame;
+
+    private JLabel databaseInfoSchemaLabel;
+    private JLabel jdbcDriverJarPathLabel;
 
     private JTextField projectText;
     private JComboBox databaseCombo;
@@ -92,10 +100,12 @@ public class NewClientPanel extends JPanel {
         this.add(createLabale(LABEL_PROJECT + LABEL_REQUIRED, 10));
         this.add(createLabale(LABEL_DATABASE + LABEL_REQUIRED, 35));
         this.add(createLabale(LABEL_URL + LABEL_REQUIRED, 60));
-        this.add(createLabale(LABEL_SCHEMA, 85));
+        databaseInfoSchemaLabel = createLabale(LABEL_SCHEMA, 85);
+        this.add(databaseInfoSchemaLabel);
         this.add(createLabale(LABEL_USER + LABEL_REQUIRED, 110));
         this.add(createLabale(LABEL_PASSWORD, 135));
-        this.add(createLabale(LABEL_JDBC_DRIVER_JAR_PATH, 160));
+        jdbcDriverJarPathLabel = createLabale(LABEL_JDBC_DRIVER_JAR_PATH, 160);
+        this.add(jdbcDriverJarPathLabel);
         this.add(createLabale(LABEL_DBFLUTE_VERSION + LABEL_REQUIRED, 185));
         this.add(createLabale(LABEL_SCHEMA_SYNC_CHECK, 210));
 
@@ -115,8 +125,10 @@ public class NewClientPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 DatabaseInfoDef databaseInfoDef = (DatabaseInfoDef) databaseCombo.getSelectedItem();
                 fireDatabaseInfoUrlText(databaseInfoDef);
+                fireDatabaseInfoSchemaLabel(databaseInfoDef);
                 fireDatabaseInfoSchemaText(databaseInfoDef);
-                fireJdbcDriverJarText(databaseInfoDef);
+                fireJdbcDriverJarPathLabel(databaseInfoDef);
+                fireJdbcDriverJarPathText(databaseInfoDef);
             }
         });
 
@@ -143,15 +155,6 @@ public class NewClientPanel extends JPanel {
         jdbcDriverJarPathText = new JTextField();
         jdbcDriverJarPathText.setBounds(150, 160, 300, 20);
         jdbcDriverJarPathText.setColumns(10);
-
-        List<String> needJdbcDriverJarMessage = new ArrayList<String>();
-        for (DatabaseInfoDef databaseInfoDef : DatabaseInfoDef.values()) {
-            if (databaseInfoDef.needJdbcDriverJar()) {
-                needJdbcDriverJarMessage.add(databaseInfoDef.name());
-            }
-        }
-
-        jdbcDriverJarPathText.setToolTipText(String.format(MSG_JDBC_DRIVER_JAR_PATH, needJdbcDriverJarMessage));
         this.add(jdbcDriverJarPathText);
 
         versionInfoDBFluteCombo = new JComboBox();
@@ -363,16 +366,40 @@ public class NewClientPanel extends JPanel {
         databaseInfoUrlText.setText(databaseInfoDef.getUrlTemplate());
     }
 
-    private void fireDatabaseInfoSchemaText(DatabaseInfoDef databaseInfoDef) {
-
-        databaseInfoSchemaText.setText("");
-
-        if (databaseInfoDef != null && databaseInfoDef.needSchema()) {
-            databaseInfoSchemaText.setText("dbo");
-        }
+    private void fireDatabaseInfoSchemaLabel(DatabaseInfoDef databaseInfoDef) {
+        boolean required = databaseInfoDef != null && databaseInfoDef.needSchema();
+        databaseInfoSchemaLabel.setText(LABEL_SCHEMA + (required ? LABEL_REQUIRED : ""));
     }
 
-    private void fireJdbcDriverJarText(DatabaseInfoDef databaseInfoDef) {
+    private void fireDatabaseInfoSchemaText(DatabaseInfoDef databaseInfoDef) {
+        if (databaseInfoDef == null) {
+            return;
+        }
+
+        if (EnumSet.of(DatabaseInfoDef.Oracle, DatabaseInfoDef.DB2).contains(databaseInfoDef)) {
+            ((AbstractDocument) databaseInfoSchemaText.getDocument()).setDocumentFilter(upperDocumentFilter);
+        } else {
+            ((AbstractDocument) databaseInfoSchemaText.getDocument()).setDocumentFilter(null);
+        }
+
+        // TODO oracleは、ユーザとスキーマが一致することが多いため、入力補助するようにする。
+        //        databaseInfoSchemaText.removeCaretListener(userReflectionCaretListener);
+        //        if (DatabaseInfoDef.Oracle == databaseInfoDef) {
+        //            if (userReflectionCaretListener == null) {
+        //                userReflectionCaretListener = new XxxCaretListener(databaseInfoUserText);
+        //            }
+        //            databaseInfoSchemaText.addCaretListener(userReflectionCaretListener);
+        //        }
+
+        databaseInfoSchemaText.setText(databaseInfoDef.getDefultSchema());
+    }
+
+    private void fireJdbcDriverJarPathLabel(DatabaseInfoDef databaseInfoDef) {
+        boolean required = databaseInfoDef != null && databaseInfoDef.needJdbcDriverJar();
+        jdbcDriverJarPathLabel.setText(LABEL_JDBC_DRIVER_JAR_PATH + (required ? LABEL_REQUIRED : ""));
+    }
+
+    private void fireJdbcDriverJarPathText(DatabaseInfoDef databaseInfoDef) {
 
         jdbcDriverJarPathText.setText("");
 
@@ -384,4 +411,41 @@ public class NewClientPanel extends JPanel {
             jdbcDriverJarPathText.setTransferHandler(null);
         }
     }
+
+    private static DocumentFilter upperDocumentFilter = new DocumentFilter() {
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+                throws BadLocationException {
+            super.insertString(fb, offset, string.toUpperCase(), attr);
+        }
+
+        public void replace(FilterBypass fb, int offset, int length, String string, AttributeSet attr)
+                throws BadLocationException {
+            if (string != null) {
+                string = string.toUpperCase();
+            }
+            super.replace(fb, offset, length, string, attr);
+        }
+    };
+
+    private ReflectionCaretListener userReflectionCaretListener;
+
+    private static class ReflectionCaretListener implements CaretListener {
+
+        private JTextField textField;
+
+        public ReflectionCaretListener(JTextField textField) {
+            super();
+            this.textField = textField;
+        }
+
+        @Override
+        public void caretUpdate(CaretEvent event) {
+            String sourceText = ((JTextField) event.getSource()).getText();
+            String distText = this.textField.getText();
+
+            if (distText == null || distText.equals("") || distText.equals(sourceText)) {
+                this.textField.setText(sourceText);
+            }
+        }
+    };
 }
