@@ -273,7 +273,7 @@ public class NewClientPanel extends JPanel {
                 }
             }
 
-            final File dbfluteClientDir = new File(DBFluteIntro.BASIC_DIR_PATH, "dbflute_" + result.getProject());
+            final File dbfluteClientDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + result.getProject());
 
             if (dbfluteClientDir.exists()) {
                 JOptionPane.showMessageDialog(frame, String.format(MSG_EXIST_PROJECT, result.getProject()));

@@ -1,13 +1,14 @@
 package org.dbflute.intro.wizard;
 
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -60,7 +61,7 @@ public class ClientPanel extends JPanel {
     private JComboBox projectCombo;
 
     static {
-        final File docDir = new File(DBFluteIntro.BASIC_DIR_PATH, "/dbflute_${project}/output/doc/");
+        final File docDir = new File(DBFluteIntro.BASE_DIR_PATH, "/dbflute_${project}/output/doc/");
 
         LABEL_SCHEMA_HTML = "<a href='" + new File(docDir, "schema-${project}.html").toURI()
                 + "'>テーブル定義を開く</a> (SchemaHTML)";
@@ -91,7 +92,16 @@ public class ClientPanel extends JPanel {
 
         projectCombo = new JComboBox();
         projectCombo.setBounds(150, 10, 300, 20);
+        projectCombo.setBounds(150, 10, 300, 20);
         this.add(projectCombo);
+
+        projectCombo.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fireProjectCombo((String) projectCombo.getSelectedItem());
+            }
+        });
 
         this.add(createHTMLLink(LABEL_SCHEMA_HTML, 35));
         this.add(createHTMLLink(LABEL_HISTORY_HTML, 60));
@@ -104,9 +114,9 @@ public class ClientPanel extends JPanel {
 
         int y = 0;
         for (Entry<String, List<ProcessBuilder>> entry : map.entrySet()) {
-            JButton jdbcDocButton = new JButton(new TaskAction(entry.getKey(), entry.getValue()));
-            jdbcDocButton.setBounds(10, 150 + y, 200, 20);
-            this.add(jdbcDocButton);
+            JButton button = new JButton(new TaskAction(entry.getKey(), entry.getValue()));
+            button.setBounds(10, 150 + y, 200, 20);
+            this.add(button);
 
             y += 30;
         }
@@ -161,7 +171,7 @@ public class ClientPanel extends JPanel {
             final Map<String, Integer> resultMap = new LinkedHashMap<String, Integer>();
             for (final ProcessBuilder processBuilder : taskList) {
 
-                processBuilder.directory(new File(DBFluteIntro.BASIC_DIR_PATH, "dbflute_" + project));
+                processBuilder.directory(new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + project));
 
                 Map<String, String> environment = processBuilder.environment();
                 environment.put("pause_at_end", "n");
@@ -200,13 +210,7 @@ public class ClientPanel extends JPanel {
 
     private String showSchemaSyncCheckEnvDialog(String project) {
 
-        List<String> envList = new ArrayList<String>();
-        File dfpropDir = new File(DBFluteIntro.BASIC_DIR_PATH, "dbflute_" + project + "/dfprop");
-        for (File file : dfpropDir.listFiles()) {
-            if (file.isDirectory() && file.getName().startsWith("schemaSyncCheck_")) {
-                envList.add(file.getName().substring("schemaSyncCheck_".length()));
-            }
-        }
+        List<String> envList = DBFluteIntro.getEnvList(project);
 
         if (envList.isEmpty()) {
             JOptionPane.showMessageDialog(frame, MSG_NOT_FOUND_ENV);
@@ -300,6 +304,18 @@ public class ClientPanel extends JPanel {
             if (projectCombo.getItemCount() != 0) {
                 tabPanel.insertTab(LABEL_PROJECT_TAB, null, this, null, 0);
                 tabPanel.setSelectedComponent(this);
+            }
+        }
+
+        String selectedProject = (String) projectCombo.getSelectedItem();
+        boolean selected = selectedProject != null && !selectedProject.equals("");
+
+        for (Component component : this.getComponents()) {
+            if (component instanceof JButton) {
+                JButton button = (JButton) component;
+                if (LABEL_REPLACE_SCHEMA.equals(button.getText())) {
+                    button.setVisible(selected && DBFluteIntro.existReplaceSchemaFile(selectedProject));
+                }
             }
         }
 

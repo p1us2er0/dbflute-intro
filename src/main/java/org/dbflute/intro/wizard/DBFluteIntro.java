@@ -40,9 +40,9 @@ public class DBFluteIntro {
      *   |-dbflute-intro.jar
      * </pre>
      */
-    protected static final String BASIC_DIR_PATH = "./";
+    protected static final String BASE_DIR_PATH = "./";
 
-    protected static final String INI_FILE_PATH = BASIC_DIR_PATH + "/dbflute-intro.ini";
+    protected static final String INI_FILE_PATH = BASE_DIR_PATH + "/dbflute-intro.ini";
 
     private EmMetaFromWebSite site;
 
@@ -134,9 +134,9 @@ public class DBFluteIntro {
     protected List<String> getProjectList() {
 
         List<String> list = new ArrayList<String>();
-        final File projectDir = new File(DBFluteIntro.BASIC_DIR_PATH);
-        if (projectDir.exists()) {
-            for (File file : projectDir.listFiles()) {
+        final File baseDir = new File(DBFluteIntro.BASE_DIR_PATH);
+        if (baseDir.exists()) {
+            for (File file : baseDir.listFiles()) {
                 if (file.isDirectory() && file.getName().startsWith("dbflute_")) {
                     list.add(file.getName().substring(8));
                 }
@@ -146,10 +146,43 @@ public class DBFluteIntro {
         return list;
     }
 
+    protected static List<String> getEnvList(String project) {
+        List<String> envList = new ArrayList<String>();
+        File dfpropDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
+        for (File file : dfpropDir.listFiles()) {
+            if (file.isDirectory() && file.getName().startsWith("schemaSyncCheck_")) {
+                envList.add(file.getName().substring("schemaSyncCheck_".length()));
+            }
+        }
+
+        return envList;
+    }
+
+    protected static boolean existReplaceSchemaFile(String project) {
+
+        boolean exist = false;
+
+        final File playsqlDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + project + "/playsql");
+        for (File file : playsqlDir.listFiles()) {
+            if (file.isFile() && file.getName().startsWith("replace-schema") && file.getName().endsWith(".sql")) {
+                try {
+                    if (FileUtils.readFileToString(file, Charsets.UTF_8).trim().length() > 0) {
+                        exist = true;
+                        ;
+                    }
+                } catch (IOException e) {
+                    continue;
+                }
+            }
+        }
+
+        return exist;
+    }
+
     protected List<String> getExistedDBFluteVersionList() {
 
         List<String> list = new ArrayList<String>();
-        final File mydbfluteDir = new File(DBFluteIntro.BASIC_DIR_PATH + "/mydbflute");
+        final File mydbfluteDir = new File(DBFluteIntro.BASE_DIR_PATH + "/mydbflute");
         if (mydbfluteDir.exists()) {
             for (File file : mydbfluteDir.listFiles()) {
                 if (file.isDirectory() && file.getName().startsWith("dbflute-")) {
@@ -248,7 +281,7 @@ public class DBFluteIntro {
 
         final File mydbflutePureFile;
         {
-            mydbflutePureFile = new File(BASIC_DIR_PATH, "/mydbflute");
+            mydbflutePureFile = new File(BASE_DIR_PATH, "/mydbflute");
             mydbflutePureFile.mkdirs();
         }
 
@@ -286,14 +319,14 @@ public class DBFluteIntro {
 
         final String dbfluteVersionExpression = "dbflute-" + result.getVersionInfoDBFlute();
 
-        final File mydbflutePureFile = new File(BASIC_DIR_PATH, "/mydbflute");
+        final File mydbflutePureFile = new File(BASE_DIR_PATH, "/mydbflute");
         final String extractDirectoryBase = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression;
 
         final String templateZipFileName = extractDirectoryBase + "/etc/client-template/dbflute_dfclient.zip";
         final ZipInputStream templateZipIn = EmZipInputStreamUtil.createZipInputStream(templateZipFileName);
-        EmZipInputStreamUtil.extractAndClose(templateZipIn, BASIC_DIR_PATH);
-        final File dbfluteClientDirTemp = new File(BASIC_DIR_PATH, "dbflute_dfclient");
-        final File dbfluteClientDir = new File(BASIC_DIR_PATH, "dbflute_" + result.getProject());
+        EmZipInputStreamUtil.extractAndClose(templateZipIn, BASE_DIR_PATH);
+        final File dbfluteClientDirTemp = new File(BASE_DIR_PATH, "dbflute_dfclient");
+        final File dbfluteClientDir = new File(BASE_DIR_PATH, "dbflute_" + result.getProject());
 
         dbfluteClientDirTemp.renameTo(dbfluteClientDir);
 
@@ -354,7 +387,7 @@ public class DBFluteIntro {
 
     protected void createSchemaSyncCheck(String env, DBFluteNewClientPageResult result) {
 
-        final File dbfluteClientDir = new File(BASIC_DIR_PATH, "dbflute_" + result.getProject());
+        final File dbfluteClientDir = new File(BASE_DIR_PATH, "dbflute_" + result.getProject());
         final File dfpropEnvDir = new File(dbfluteClientDir, "dfprop/schemaSyncCheck_" + env);
         dfpropEnvDir.mkdir();
 
