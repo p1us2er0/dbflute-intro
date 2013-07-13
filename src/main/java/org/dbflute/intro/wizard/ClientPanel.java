@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -43,7 +42,7 @@ public class ClientPanel extends JPanel {
     private static final String LABEL_SYNC_CHECK_HTML;
     private static final String LABEL_DOC = "ドキュメント生成";
     private static final String LABEL_SYNC_CHECK = "スキーマの差分チェック";
-    private static final String LABEL_REPLACE_SCHEMA = "DBスキーマ(再)構築";
+    private static final String LABEL_REPLACE_SCHEMA = "DBスキーマ(再)構築 (ReplaceSchema)";
     private static final String LABEL_PROJECT_TAB = "DB";
     private static final String LABEL_ENV = "環境名";
 
@@ -68,7 +67,7 @@ public class ClientPanel extends JPanel {
         LABEL_HISTORY_HTML = "<a href='" + new File(docDir, "history-${project}.html").toURI()
                 + "'>DB変更履歴を開く</a> (HistoryHTML)";
         LABEL_SYNC_CHECK_HTML = "<a href='" + new File(docDir, "sync-check-result_${env}.html").toURI()
-                + "'>差分チェック結果を開く</a> (SyncCheckHTML)";
+                + "'>差分チェック結果を開く</a> (SchemaSyncCheck)";
     }
 
     /**
@@ -103,23 +102,22 @@ public class ClientPanel extends JPanel {
             }
         });
 
-        this.add(createHTMLLink(LABEL_SCHEMA_HTML, 35));
-        this.add(createHTMLLink(LABEL_HISTORY_HTML, 60));
-        this.add(createHTMLLink(LABEL_SYNC_CHECK_HTML, 85));
+        this.add(createHTMLLink(LABEL_SCHEMA_HTML, 55));
+        this.add(createHTMLLink(LABEL_HISTORY_HTML, 80));
 
-        Map<String, List<ProcessBuilder>> map = new LinkedHashMap<String, List<ProcessBuilder>>();
-        map.put(LABEL_DOC, DBFluteIntro.getJdbcDocCommondList());
-        map.put(LABEL_SYNC_CHECK, DBFluteIntro.getSchemaSyncCheckCommondList());
-        map.put(LABEL_REPLACE_SCHEMA, DBFluteIntro.getReplaceSchemaCommondList());
+        JButton button = new JButton(new TaskAction(LABEL_DOC, DBFluteIntro.getJdbcDocCommondList()));
+        button.setBounds(10, 105, 250, 20);
+        this.add(button);
 
-        int y = 0;
-        for (Entry<String, List<ProcessBuilder>> entry : map.entrySet()) {
-            JButton button = new JButton(new TaskAction(entry.getKey(), entry.getValue()));
-            button.setBounds(10, 150 + y, 200, 20);
-            this.add(button);
+        this.add(createHTMLLink(LABEL_SYNC_CHECK_HTML, 150));
 
-            y += 30;
-        }
+        button = new JButton(new TaskAction(LABEL_SYNC_CHECK, DBFluteIntro.getSchemaSyncCheckCommondList()));
+        button.setBounds(10, 175, 250, 20);
+        this.add(button);
+
+        button = new JButton(new TaskAction(LABEL_REPLACE_SCHEMA, DBFluteIntro.getReplaceSchemaCommondList()));
+        button.setBounds(10, 230, 250, 20);
+        this.add(button);
 
         fireProjectCombo(null);
     }
