@@ -77,7 +77,7 @@ public class DBFluteIntroPage {
                     DBFluteIntroPage window = new DBFluteIntroPage();
                     window.frame.setVisible(true);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         });

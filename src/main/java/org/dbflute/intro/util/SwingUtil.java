@@ -3,7 +3,10 @@ package org.dbflute.intro.util;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import javax.swing.JDialog;
@@ -11,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
@@ -120,5 +124,32 @@ public class SwingUtil {
         }
 
         public abstract void execute();
+    }
+
+    public static class JTextAreaStream extends OutputStream {
+
+        private JTextArea textArea;
+        private ByteArrayOutputStream out;
+
+        public JTextAreaStream(JTextArea area) {
+            textArea = area;
+            out = new ByteArrayOutputStream();
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            out.write(b);
+        }
+
+        @Override
+        public void flush() throws IOException {
+
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    textArea.append(out.toString());
+                    out.reset();
+                }
+            });
+        }
     }
 }

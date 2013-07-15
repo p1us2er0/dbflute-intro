@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -232,7 +233,7 @@ public class DBFluteIntro {
         return commondList;
     }
 
-    protected static int executeCommond(ProcessBuilder processBuilder) {
+    protected static int executeCommond(ProcessBuilder processBuilder, OutputStream outputStream) {
 
         processBuilder.redirectErrorStream(true);
 
@@ -245,14 +246,19 @@ public class DBFluteIntro {
         try {
             process = processBuilder.start();
             inputStream = process.getInputStream();
-            inputStreamReader = new InputStreamReader(inputStream);
+            // TODO 文字コードの確認。
+            inputStreamReader = new InputStreamReader(inputStream, "MS932");
             bufferedReader = new BufferedReader(inputStreamReader);
-
             while (true) {
                 String line = bufferedReader.readLine();
                 if (line == null) {
                     break;
                 }
+
+                IOUtils.write(line, outputStream, Charsets.UTF_8);
+                IOUtils.write(System.getProperty("line.separator"), outputStream, Charsets.UTF_8);
+                outputStream.flush();
+
                 if (line.equals("BUILD FAILED")) {
                     result = 1;
                 }

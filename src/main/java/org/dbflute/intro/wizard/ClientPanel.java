@@ -22,12 +22,16 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkEvent.EventType;
 import javax.swing.event.HyperlinkListener;
 
+import org.apache.commons.io.IOUtils;
 import org.dbflute.intro.util.SwingUtil;
+import org.dbflute.intro.util.SwingUtil.JTextAreaStream;
 import org.dbflute.intro.util.SwingUtil.ProgressBarDialog;
 
 /**
@@ -45,6 +49,7 @@ public class ClientPanel extends JPanel {
     private static final String LABEL_REPLACE_SCHEMA = "DBスキーマ(再)構築 (ReplaceSchema)";
     private static final String LABEL_PROJECT_TAB = "DB";
     private static final String LABEL_ENV = "環境名";
+    private static final String LABEL_CLEAR = "クリア";
 
     private static final String MSG_EXECUTE = "実行中...";
     private static final String MSG_FINISHED_SUCCESS = "正常終了。";
@@ -58,6 +63,7 @@ public class ClientPanel extends JPanel {
     private JFrame frame;
 
     private JComboBox projectCombo;
+    private JTextArea consoleArea;
 
     static {
         final File docDir = new File(DBFluteIntro.BASE_DIR_PATH, "/dbflute_${project}/output/doc/");
@@ -119,6 +125,22 @@ public class ClientPanel extends JPanel {
         button.setBounds(10, 230, 250, 20);
         this.add(button);
 
+        JButton consoleAreaClearButton = new JButton(LABEL_CLEAR);
+        consoleAreaClearButton.setBounds(390, 240, 70, 30);
+        consoleAreaClearButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                consoleArea.setText("");
+            }
+        });
+        this.add(consoleAreaClearButton);
+
+        consoleArea = new JTextArea(3, 20);
+        consoleArea.setBounds(10, 260, 400, 150);
+        consoleArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(consoleArea);
+        scrollPane.setBounds(10, 270, 450, 140);
+        this.add(scrollPane);
+
         fireProjectCombo(null);
     }
 
@@ -166,6 +188,8 @@ public class ClientPanel extends JPanel {
                 }
             }
 
+            consoleArea.setText("");
+
             final Map<String, Integer> resultMap = new LinkedHashMap<String, Integer>();
             for (final ProcessBuilder processBuilder : taskList) {
 
@@ -183,9 +207,16 @@ public class ClientPanel extends JPanel {
 
                     @Override
                     public void execute() {
-                        int result = DBFluteIntro.executeCommond(processBuilder);
 
-                        resultMap.put(processBuilder.command().toString(), result);
+                        JTextAreaStream textAreaStream = null;
+
+                        try {
+                            textAreaStream = new JTextAreaStream(consoleArea);
+                            int result = DBFluteIntro.executeCommond(processBuilder, textAreaStream);
+                            resultMap.put(processBuilder.command().toString(), result);
+                        } finally {
+                            IOUtils.closeQuietly(textAreaStream);
+                        }
                     }
                 };
 
@@ -198,8 +229,13 @@ public class ClientPanel extends JPanel {
 
             String message = MSG_FINISHED_SUCCESS;
             if (Collections.frequency(resultMap.values(), 0) != resultMap.size()) {
-                String logPath = DBFluteIntro.INI_FILE_PATH + "/dbflute_" + project + "/log/dbflute.log";
-                message = String.format(MSG_FINISHED_ERROR, logPath);
+                try {
+                    String logPath = DBFluteIntro.BASE_DIR_PATH + "dbflute_" + project + "/log/dbflute.log";
+                    logPath = new File(logPath).getCanonicalPath();
+                    message = String.format(MSG_FINISHED_ERROR, logPath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
             JOptionPane.showMessageDialog(frame, message);
