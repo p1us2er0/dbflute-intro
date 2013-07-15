@@ -30,6 +30,7 @@ import javax.swing.event.HyperlinkEvent.EventType;
 import javax.swing.event.HyperlinkListener;
 
 import org.apache.commons.io.IOUtils;
+import org.dbflute.intro.DBFluteIntro;
 import org.dbflute.intro.util.SwingUtil;
 import org.dbflute.intro.util.SwingUtil.JTextAreaStream;
 import org.dbflute.intro.util.SwingUtil.ProgressBarDialog;
@@ -353,8 +354,7 @@ public class ClientPanel extends JPanel {
     protected void fireProjectCombo(String project) {
 
         projectCombo.removeAllItems();
-        DBFluteIntro dbFluteIntro = new DBFluteIntro();
-        for (String projectTemp : dbFluteIntro.getProjectList()) {
+        for (String projectTemp : DBFluteIntro.getProjectList()) {
             projectCombo.addItem(projectTemp);
         }
 

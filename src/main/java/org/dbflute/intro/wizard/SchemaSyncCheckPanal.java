@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import org.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClientPageResult;
+import org.dbflute.intro.DBFluteNewClientDto;
 
 /**
  * @author ecode
@@ -67,14 +67,14 @@ public class SchemaSyncCheckPanal extends JPanel {
         return jLabel;
     }
 
-    public DBFluteNewClientPageResult asResult() {
+    public DBFluteNewClientDto asResult() {
 
         final String databaseInfoUrl = databaseInfoUrlText.getText();
         final String databaseInfoSchema = databaseInfoSchemaText.getText();
         final String databaseInfoUser = databaseInfoUserText.getText();
         final String databaseInfoPassword = new String(databaseInfoPasswordText.getPassword());
 
-        final DBFluteNewClientPageResult result = new DBFluteNewClientPageResult();
+        final DBFluteNewClientDto result = new DBFluteNewClientDto();
         result.setDatabaseInfoUrl(databaseInfoUrl);
         result.setDatabaseInfoSchema(databaseInfoSchema);
         result.setDatabaseInfoUser(databaseInfoUser);

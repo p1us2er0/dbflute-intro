@@ -1,4 +1,4 @@
-package org.dbflute.emecha.eclipse.plugin.wizards.client.definition;
+package org.dbflute.intro.definition;
 
 import java.util.HashMap;
 import java.util.Map;

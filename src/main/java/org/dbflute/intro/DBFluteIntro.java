@@ -1,4 +1,4 @@
-package org.dbflute.intro.wizard;
+package org.dbflute.intro;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,7 +24,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.dbflute.emecha.eclipse.plugin.core.meta.website.EmMetaFromWebSite;
 import org.dbflute.emecha.eclipse.plugin.core.util.util.zip.EmZipInputStreamUtil;
-import org.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClientPageResult;
+import org.dbflute.intro.wizard.DBFluteIntroPage;
 
 /**
  * @author ecode
@@ -41,13 +41,13 @@ public class DBFluteIntro {
      *   |-dbflute-intro.jar
      * </pre>
      */
-    protected static final String BASE_DIR_PATH = "./";
+    public static final String BASE_DIR_PATH = "./";
 
-    protected static final String INI_FILE_PATH = BASE_DIR_PATH + "/dbflute-intro.ini";
+    public static final String INI_FILE_PATH = BASE_DIR_PATH + "/dbflute-intro.ini";
 
     private EmMetaFromWebSite site;
 
-    protected EmMetaFromWebSite getEmMetaFromWebSite() {
+    public EmMetaFromWebSite getEmMetaFromWebSite() {
 
         if (this.site == null) {
             EmMetaFromWebSite site = new EmMetaFromWebSite();
@@ -60,7 +60,7 @@ public class DBFluteIntro {
         return this.site;
     }
 
-    protected Properties getProperties() {
+    public Properties getProperties() {
 
         File file = new File(DBFluteIntro.INI_FILE_PATH);
         Properties properties = new Properties();
@@ -81,7 +81,7 @@ public class DBFluteIntro {
         return properties;
     }
 
-    protected void loadProxy() {
+    public void loadProxy() {
 
         Properties properties = getProperties();
 
@@ -99,7 +99,7 @@ public class DBFluteIntro {
 
     }
 
-    protected Map<String, Object> getManifestMap() {
+    public Map<String, Object> getManifestMap() {
 
         Map<String, Object> manifestMap = new LinkedHashMap<String, Object>();
         InputStream inputStream = null;
@@ -128,11 +128,11 @@ public class DBFluteIntro {
         return manifestMap;
     }
 
-    protected String getVersion() {
+    public String getVersion() {
         return String.valueOf(getManifestMap().get("Implementation-Version"));
     }
 
-    protected List<String> getProjectList() {
+    public static List<String> getProjectList() {
 
         List<String> list = new ArrayList<String>();
         final File baseDir = new File(DBFluteIntro.BASE_DIR_PATH);
@@ -147,7 +147,7 @@ public class DBFluteIntro {
         return list;
     }
 
-    protected static List<String> getEnvList(String project) {
+    public static List<String> getEnvList(String project) {
         List<String> envList = new ArrayList<String>();
         File dfpropDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
         for (File file : dfpropDir.listFiles()) {
@@ -159,7 +159,7 @@ public class DBFluteIntro {
         return envList;
     }
 
-    protected static boolean existReplaceSchemaFile(String project) {
+    public static boolean existReplaceSchemaFile(String project) {
 
         boolean exist = false;
 
@@ -180,7 +180,7 @@ public class DBFluteIntro {
         return exist;
     }
 
-    protected List<String> getExistedDBFluteVersionList() {
+    public List<String> getExistedDBFluteVersionList() {
 
         List<String> list = new ArrayList<String>();
         final File mydbfluteDir = new File(DBFluteIntro.BASE_DIR_PATH + "/mydbflute");
@@ -195,7 +195,7 @@ public class DBFluteIntro {
         return list;
     }
 
-    protected static List<ProcessBuilder> getJdbcDocCommondList() {
+    public static List<ProcessBuilder> getJdbcDocCommondList() {
         List<ProcessBuilder> commondList = new ArrayList<ProcessBuilder>();
         String onName = System.getProperty("os.name");
         if (onName != null && onName.startsWith("Windows")) {
@@ -209,7 +209,7 @@ public class DBFluteIntro {
         return commondList;
     }
 
-    protected static List<ProcessBuilder> getLoadDataReverseCommondList() {
+    public static List<ProcessBuilder> getLoadDataReverseCommondList() {
         List<ProcessBuilder> commondList = new ArrayList<ProcessBuilder>();
         String onName = System.getProperty("os.name");
         if (onName != null && onName.startsWith("Windows")) {
@@ -223,7 +223,7 @@ public class DBFluteIntro {
         return commondList;
     }
 
-    protected static List<ProcessBuilder> getSchemaSyncCheckCommondList() {
+    public static List<ProcessBuilder> getSchemaSyncCheckCommondList() {
         List<ProcessBuilder> commondList = new ArrayList<ProcessBuilder>();
         String onName = System.getProperty("os.name");
         if (onName != null && onName.startsWith("Windows")) {
@@ -235,7 +235,7 @@ public class DBFluteIntro {
         return commondList;
     }
 
-    protected static List<ProcessBuilder> getReplaceSchemaCommondList() {
+    public static List<ProcessBuilder> getReplaceSchemaCommondList() {
         List<ProcessBuilder> commondList = new ArrayList<ProcessBuilder>();
         String onName = System.getProperty("os.name");
         if (onName != null && onName.startsWith("Windows")) {
@@ -247,7 +247,7 @@ public class DBFluteIntro {
         return commondList;
     }
 
-    protected static int executeCommond(ProcessBuilder processBuilder, OutputStream outputStream) {
+    public static int executeCommond(ProcessBuilder processBuilder, OutputStream outputStream) {
 
         processBuilder.redirectErrorStream(true);
 
@@ -292,7 +292,7 @@ public class DBFluteIntro {
         return result;
     }
 
-    protected void downloadDBFlute(String dbfluteVersion) {
+    public void downloadDBFlute(String dbfluteVersion) {
 
         final String downloadVersion = dbfluteVersion;
         if (downloadVersion == null || downloadVersion.trim().length() == 0) {
@@ -335,8 +335,8 @@ public class DBFluteIntro {
         EmZipInputStreamUtil.extractAndClose(templateZipIn, templateExtractDirectoryBase);
     }
 
-    protected void createNewClient(DBFluteNewClientPageResult result,
-            Map<String, DBFluteNewClientPageResult> schemaSyncCheckMap) {
+    public void createNewClient(DBFluteNewClientDto result,
+            Map<String, DBFluteNewClientDto> schemaSyncCheckMap) {
 
         final File dbfluteClientDir = new File(BASE_DIR_PATH, "dbflute_" + result.getProject());
 
@@ -352,47 +352,59 @@ public class DBFluteIntro {
             final File dbfluteClientDirTemp = new File(BASE_DIR_PATH, "dbflute_dfclient");
             dbfluteClientDirTemp.renameTo(dbfluteClientDir);
 
-            File propDir = new File(ClassLoader.getSystemResource("dfprop").getFile());
+            List<String> dfpropFileList = new ArrayList<String>();
+            dfpropFileList.add("basicInfoMap+.dfprop");
+            dfpropFileList.add("databaseInfoMap+.dfprop");
+            dfpropFileList.add("documentDefinitionMap+.dfprop");
+            dfpropFileList.add("outsideSqlDefinitionMap+.dfprop");
+
             try {
-                FileUtils.copyDirectory(propDir, new File(dbfluteClientDir, "dfprop"));
+                for (String dfpropFile : dfpropFileList) {
+                    URL url = ClassLoader.getSystemResource("dfprop/" + dfpropFile);
+                    FileUtils.copyURLToFile(url, new File(dbfluteClientDir, "dfprop/" + dfpropFile));
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
-            Map<File, Map<String, String>> fileMap = new LinkedHashMap<File, Map<String, String>>();
+            Map<File, Map<String, Object>> fileMap = new LinkedHashMap<File, Map<String, Object>>();
 
-            Map<String, String> replaceMap = new LinkedHashMap<String, String>();
+            Map<String, Object> replaceMap = new LinkedHashMap<String, Object>();
             replaceMap.put("MY_PROJECT_NAME=dfclient", "MY_PROJECT_NAME=" + result.getProject());
             fileMap.put(new File(dbfluteClientDir, "/_project.bat"), replaceMap);
             fileMap.put(new File(dbfluteClientDir, "/_project.sh"), replaceMap);
 
-            replaceMap = new LinkedHashMap<String, String>();
+            replaceMap = new LinkedHashMap<String, Object>();
             replaceMap.put("torque.project = dfclient", "torque.project = " + result.getProject());
             fileMap.put(new File(dbfluteClientDir, "/build.properties"), replaceMap);
 
-            replaceMap = new LinkedHashMap<String, String>();
+            replaceMap = new LinkedHashMap<String, Object>();
             replaceMap.put("${database}", result.getDatabase());
             fileMap.put(new File(dbfluteClientDir, "/dfprop/basicInfoMap+.dfprop"), replaceMap);
 
-            replaceMap = new LinkedHashMap<String, String>();
-            replaceMap.put(";${driver}", result.getDatabaseInfoDriver());
+            replaceMap = new LinkedHashMap<String, Object>();
+            replaceMap.put("{Please write your setting! at './dfprop/databaseInfoMap.dfprop'}", "");
+            fileMap.put(new File(dbfluteClientDir, "/dfprop/databaseInfoMap.dfprop"), replaceMap);
+
+            replaceMap = new LinkedHashMap<String, Object>();
+            replaceMap.put("${driver}", result.getDatabaseInfoDriver());
             replaceMap.put("${url}", result.getDatabaseInfoUrl());
             replaceMap.put("${schema}", result.getDatabaseInfoSchema());
             replaceMap.put("${user}", result.getDatabaseInfoUser());
             replaceMap.put("${password}", result.getDatabaseInfoPassword());
             fileMap.put(new File(dbfluteClientDir, "/dfprop/databaseInfoMap+.dfprop"), replaceMap);
 
-            replaceMap = new LinkedHashMap<String, String>();
+            replaceMap = new LinkedHashMap<String, Object>();
             replaceMap.put("${aliasDelimiterInDbComment}", ":");
-            replaceMap.put("${isDbCommentOnAliasBasis}", "true");
-            replaceMap.put("${isCheckColumnDefOrderDiff}", "true");
-            replaceMap.put("${isCheckDbCommentDiff}", "true");
-            replaceMap.put("${isCheckProcedureDiff}", "true");
+            replaceMap.put("${isDbCommentOnAliasBasis}", String.valueOf(result.isDbCommentOnAliasBasis()));
+            replaceMap.put("${isCheckColumnDefOrderDiff}", String.valueOf(result.isCheckColumnDefOrderDiff()));
+            replaceMap.put("${isCheckDbCommentDiff}", String.valueOf(result.isCheckDbCommentDiff()));
+            replaceMap.put("${isCheckProcedureDiff}", String.valueOf(result.isCheckProcedureDiff()));
             fileMap.put(new File(dbfluteClientDir, "/dfprop/documentDefinitionMap+.dfprop"), replaceMap);
 
-            replaceMap = new LinkedHashMap<String, String>();
-            replaceMap.put("${isGenerateProcedureParameterBean}", "; isGenerateProcedureParameterBean = true");
-            replaceMap.put("${procedureSynonymHandlingType}", "; procedureSynonymHandlingType = INCLUDE");
+            replaceMap = new LinkedHashMap<String, Object>();
+            replaceMap.put("${isGenerateProcedureParameterBean}", result.isGenerateProcedureParameterBean());
+            replaceMap.put("${procedureSynonymHandlingType}", "INCLUDE");
             fileMap.put(new File(dbfluteClientDir, "/dfprop/outsideSqlDefinitionMap+.dfprop"), replaceMap);
 
             replaceFile(fileMap);
@@ -408,7 +420,7 @@ public class DBFluteIntro {
                 }
             }
 
-            for (Entry<String, DBFluteNewClientPageResult> entry : schemaSyncCheckMap.entrySet()) {
+            for (Entry<String, DBFluteNewClientDto> entry : schemaSyncCheckMap.entrySet()) {
                 createSchemaSyncCheck(entry.getKey(), entry.getValue());
             }
 
@@ -423,24 +435,24 @@ public class DBFluteIntro {
         }
     }
 
-    private void createSchemaSyncCheck(String env, DBFluteNewClientPageResult result) {
+    private void createSchemaSyncCheck(String env, DBFluteNewClientDto result) {
 
         final File dbfluteClientDir = new File(BASE_DIR_PATH, "dbflute_" + result.getProject());
         final File dfpropEnvDir = new File(dbfluteClientDir, "dfprop/schemaSyncCheck_" + env);
         dfpropEnvDir.mkdir();
 
-        URL documentDefinitionMapURL = ClassLoader.getSystemResource("documentDefinitionMap+schemaSyncCheck.dfprop");
+        URL schemaSyncCheckURL = ClassLoader.getSystemResource("dfprop/documentDefinitionMap+schemaSyncCheck.dfprop");
 
         File documentDefinitionMapFile = new File(dfpropEnvDir, "documentDefinitionMap+.dfprop");
         try {
-            FileUtils.copyURLToFile(documentDefinitionMapURL, documentDefinitionMapFile);
+            FileUtils.copyURLToFile(schemaSyncCheckURL, documentDefinitionMapFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        Map<File, Map<String, String>> fileMap = new LinkedHashMap<File, Map<String, String>>();
+        Map<File, Map<String, Object>> fileMap = new LinkedHashMap<File, Map<String, Object>>();
 
-        Map<String, String> replaceMap = new LinkedHashMap<String, String>();
+        Map<String, Object> replaceMap = new LinkedHashMap<String, Object>();
         replaceMap.put("${driver}", result.getDatabaseInfoDriver());
         replaceMap.put("${url}", result.getDatabaseInfoUrl());
         replaceMap.put("${schema}", result.getDatabaseInfoSchema());
@@ -452,7 +464,7 @@ public class DBFluteIntro {
         replaceFile(fileMap);
     }
 
-    protected static boolean deleteClient(String project) {
+    public static boolean deleteClient(String project) {
 
         if (project == null) {
             return false;
@@ -468,14 +480,14 @@ public class DBFluteIntro {
         return true;
     }
 
-    private void replaceFile(Map<File, Map<String, String>> fileMap) {
+    private void replaceFile(Map<File, Map<String, Object>> fileMap) {
         try {
-            for (Entry<File, Map<String, String>> entry : fileMap.entrySet()) {
+            for (Entry<File, Map<String, Object>> entry : fileMap.entrySet()) {
 
                 String text = FileUtils.readFileToString(entry.getKey(), Charsets.UTF_8);
 
-                for (Entry<String, String> replaceEntry : entry.getValue().entrySet()) {
-                    text = text.replace(replaceEntry.getKey(), replaceEntry.getValue());
+                for (Entry<String, Object> replaceEntry : entry.getValue().entrySet()) {
+                    text = text.replace(replaceEntry.getKey(), String.valueOf(replaceEntry.getValue()));
                 }
 
                 FileUtils.write(entry.getKey(), text, Charsets.UTF_8);
@@ -485,7 +497,7 @@ public class DBFluteIntro {
         }
     }
 
-    protected void upgradeClient(DBFluteNewClientPageResult result) {
+    public void upgradeClient(DBFluteNewClientDto result) {
 
     }
 }

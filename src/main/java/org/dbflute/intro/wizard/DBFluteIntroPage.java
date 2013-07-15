@@ -26,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.dbflute.emecha.eclipse.plugin.core.exception.EmPluginException;
 import org.dbflute.emecha.eclipse.plugin.core.meta.website.EmMetaFromWebSite;
+import org.dbflute.intro.DBFluteIntro;
 import org.dbflute.intro.util.SwingUtil;
 import org.dbflute.intro.util.SwingUtil.ProgressBarDialog;
 
@@ -105,7 +106,7 @@ public class DBFluteIntroPage {
         JTabbedPane tabPanel = new JTabbedPane();
         frame.getContentPane().add(tabPanel, "name_5009361789717");
 
-        if (!dbFluteIntro.getProjectList().isEmpty()) {
+        if (!DBFluteIntro.getProjectList().isEmpty()) {
             ClientPanel clientPanel = new ClientPanel(frame);
             tabPanel.addTab(NewClientPanel.LABEL_PROJECT_TAB, clientPanel);
         }

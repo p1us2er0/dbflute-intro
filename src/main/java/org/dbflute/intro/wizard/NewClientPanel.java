@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,8 +29,9 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
-import org.dbflute.emecha.eclipse.plugin.wizards.client.DBFluteNewClientPageResult;
-import org.dbflute.emecha.eclipse.plugin.wizards.client.definition.DatabaseInfoDef;
+import org.dbflute.intro.DBFluteIntro;
+import org.dbflute.intro.DBFluteNewClientDto;
+import org.dbflute.intro.definition.DatabaseInfoDef;
 import org.dbflute.intro.util.SwingUtil;
 
 /**
@@ -48,6 +50,12 @@ public class NewClientPanel extends JPanel {
     protected static final String LABEL_PASSWORD = "パスワード";
     private static final String LABEL_JDBC_DRIVER_JAR_PATH = "Jdbcドライバのパス";
     private static final String LABEL_DBFLUTE_VERSION = "DBFluteバージョン";
+    private static final String LABEL_OPTION = "オプション";
+    private static final String LABEL_IS_DB_COMMENT_ON_ALIAS_BASIS = "DBコメントを別名基準で利用";
+    private static final String LABEL_IS_CHECK_COLUMN_DEF_ORDER_DIFF = "差分判定でカラム定義順をチェック";
+    private static final String LABEL_IS_CHECK_DB_COMMENT_DIFF = "差分判定でDBコメントをチェック";
+    private static final String LABEL_IS_CHECK_PROCEDURE_DIFF = "差分判定でプロシージャをチェック";
+    private static final String LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN = "isGenerateProcedureParameterBean";
     protected static final String LABEL_SCHEMA_SYNC_CHECK = "他のDB環境";
     private static final String LABEL_CLIENT_CREATE = "作成";
     protected static final String LABEL_PROJECT_TAB = "DB";
@@ -75,6 +83,7 @@ public class NewClientPanel extends JPanel {
     private JPasswordField databaseInfoPasswordText;
     private JTextField jdbcDriverJarPathText;
     private JComboBox versionInfoDBFluteCombo;
+    private Map<String, JCheckBox> optionMap = new LinkedHashMap<String, JCheckBox>();
 
     private JTabbedPane schemaSyncCheckTabPanel;
 
@@ -99,17 +108,25 @@ public class NewClientPanel extends JPanel {
 
         this.setLayout(null);
 
-        this.add(createLabale(LABEL_PROJECT + LABEL_REQUIRED, 10));
-        this.add(createLabale(LABEL_DATABASE + LABEL_REQUIRED, 35));
-        this.add(createLabale(LABEL_URL + LABEL_REQUIRED, 60));
-        databaseInfoSchemaLabel = createLabale(LABEL_SCHEMA, 85);
+        this.add(createLabal(LABEL_PROJECT + LABEL_REQUIRED, 10));
+        this.add(createLabal(LABEL_DATABASE + LABEL_REQUIRED, 35));
+        this.add(createLabal(LABEL_URL + LABEL_REQUIRED, 60));
+        databaseInfoSchemaLabel = createLabal(LABEL_SCHEMA, 85);
         this.add(databaseInfoSchemaLabel);
-        this.add(createLabale(LABEL_USER + LABEL_REQUIRED, 110));
-        this.add(createLabale(LABEL_PASSWORD, 135));
-        jdbcDriverJarPathLabel = createLabale(LABEL_JDBC_DRIVER_JAR_PATH, 160);
+        this.add(createLabal(LABEL_USER + LABEL_REQUIRED, 110));
+        this.add(createLabal(LABEL_PASSWORD, 135));
+        jdbcDriverJarPathLabel = createLabal(LABEL_JDBC_DRIVER_JAR_PATH, 160);
         this.add(jdbcDriverJarPathLabel);
-        this.add(createLabale(LABEL_DBFLUTE_VERSION + LABEL_REQUIRED, 185));
-        this.add(createLabale(LABEL_SCHEMA_SYNC_CHECK, 210));
+        this.add(createLabal(LABEL_DBFLUTE_VERSION + LABEL_REQUIRED, 185));
+        this.add(createLabal(LABEL_OPTION, 210));
+        this.add(createOption(LABEL_IS_DB_COMMENT_ON_ALIAS_BASIS, 210));
+        this.add(createOption(LABEL_IS_CHECK_COLUMN_DEF_ORDER_DIFF, 235));
+        this.add(createOption(LABEL_IS_CHECK_DB_COMMENT_DIFF, 260));
+        this.add(createOption(LABEL_IS_CHECK_PROCEDURE_DIFF, 285));
+        this.add(createOption(LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN, 310));
+        // TODO ドキュメント生成や差分チェックに影響がないことがわかれば、処理自体削除する。
+        optionMap.get(LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN).setVisible(false);
+        this.add(createLabal(LABEL_SCHEMA_SYNC_CHECK, 340));
 
         projectText = new JTextField(DEF_PROJECT);
         projectText.setBounds(150, 10, 300, 20);
@@ -164,25 +181,33 @@ public class NewClientPanel extends JPanel {
         this.add(versionInfoDBFluteCombo);
 
         JButton schemaSyncCheckAddButton = new JButton(schemaSyncCheckAddAction);
-        schemaSyncCheckAddButton.setBounds(150, 210, 40, 20);
+        schemaSyncCheckAddButton.setBounds(150, 340, 40, 20);
         this.add(schemaSyncCheckAddButton);
 
         JButton schemaSyncCheckRemoveButton = new JButton(schemaSyncCheckRemoveAction);
-        schemaSyncCheckRemoveButton.setBounds(190, 210, 40, 20);
+        schemaSyncCheckRemoveButton.setBounds(190, 340, 40, 20);
         this.add(schemaSyncCheckRemoveButton);
 
         clientCreateButton = new JButton(clientCreateAction);
-        clientCreateButton.setBounds(150, 390, 300, 20);
+        clientCreateButton.setBounds(150, 520, 300, 20);
         this.add(clientCreateButton);
 
         fireVersionInfoDBFlute();
     }
 
-    private JLabel createLabale(String label, int y) {
+    private JLabel createLabal(String label, int y) {
         JLabel jLabel = new JLabel(label);
         jLabel.setBounds(10, y, 150, 20);
 
         return jLabel;
+    }
+
+    private JCheckBox createOption(String label, int y) {
+        JCheckBox checkBox = new JCheckBox(label, true);
+        checkBox.setBounds(150, y, 300, 20);
+        optionMap.put(label, checkBox);
+
+        return checkBox;
     }
 
     private class SchemaSyncCheckAddAction extends AbstractAction {
@@ -200,7 +225,7 @@ public class NewClientPanel extends JPanel {
             if (env != null) {
                 if (schemaSyncCheckTabPanel == null) {
                     schemaSyncCheckTabPanel = new JTabbedPane();
-                    schemaSyncCheckTabPanel.setBounds(0, 230, 480, 160);
+                    schemaSyncCheckTabPanel.setBounds(0, 360, 480, 160);
                     add(schemaSyncCheckTabPanel);
                 }
 
@@ -237,7 +262,7 @@ public class NewClientPanel extends JPanel {
 
         public void actionPerformed(ActionEvent event) {
 
-            DBFluteNewClientPageResult result = asResult();
+            DBFluteNewClientDto result = asResult();
 
             Map<String, String> data = new LinkedHashMap<String, String>();
             data.put(LABEL_PROJECT, result.getProject());
@@ -261,7 +286,7 @@ public class NewClientPanel extends JPanel {
                     }
 
                     SchemaSyncCheckPanal schemaSyncCheckPage = (SchemaSyncCheckPanal) tabComponent;
-                    DBFluteNewClientPageResult dbFluteNewClientPageResult = schemaSyncCheckPage.asResult();
+                    DBFluteNewClientDto dbFluteNewClientPageResult = schemaSyncCheckPage.asResult();
 
                     String env = schemaSyncCheckTabPanel.getTitleAt(i);
                     data.put(env + "." + LABEL_USER, dbFluteNewClientPageResult.getDatabaseInfoUser());
@@ -289,7 +314,7 @@ public class NewClientPanel extends JPanel {
                 return;
             }
 
-            Map<String, DBFluteNewClientPageResult> schemaSyncCheckMap = new LinkedHashMap<String, DBFluteNewClientPageResult>();
+            Map<String, DBFluteNewClientDto> schemaSyncCheckMap = new LinkedHashMap<String, DBFluteNewClientDto>();
             if (schemaSyncCheckTabPanel != null) {
                 for (int i = 0; i < schemaSyncCheckTabPanel.getTabCount(); i++) {
                     Component tabComponent = schemaSyncCheckTabPanel.getComponent(i);
@@ -298,7 +323,7 @@ public class NewClientPanel extends JPanel {
                     }
 
                     SchemaSyncCheckPanal schemaSyncCheckPage = (SchemaSyncCheckPanal) tabComponent;
-                    DBFluteNewClientPageResult dbFluteNewClientPageResult = schemaSyncCheckPage.asResult();
+                    DBFluteNewClientDto dbFluteNewClientPageResult = schemaSyncCheckPage.asResult();
                     // TODO
                     dbFluteNewClientPageResult.setProject(projectText.getText());
 
@@ -336,7 +361,7 @@ public class NewClientPanel extends JPanel {
         }
     }
 
-    public DBFluteNewClientPageResult asResult() {
+    public DBFluteNewClientDto asResult() {
 
         final String projectName = projectText.getText();
         DatabaseInfoDef databaseInfo = (DatabaseInfoDef) databaseCombo.getSelectedItem();
@@ -349,7 +374,7 @@ public class NewClientPanel extends JPanel {
         final String jdbcDriverJarPath = jdbcDriverJarPathText.getText();
         final String versionInfoDBFlute = versionInfoDBFluteCombo.getSelectedItem().toString();
 
-        final DBFluteNewClientPageResult result = new DBFluteNewClientPageResult();
+        final DBFluteNewClientDto result = new DBFluteNewClientDto();
         result.setProject(projectName);
         result.setDatabase(database);
         result.setDatabaseInfoDriver(databaseInfoDriver);
@@ -359,6 +384,12 @@ public class NewClientPanel extends JPanel {
         result.setDatabaseInfoPassword(databaseInfoPassword);
         result.setJdbcDriverJarPath(jdbcDriverJarPath);
         result.setVersionInfoDBFlute(versionInfoDBFlute);
+
+        result.setDbCommentOnAliasBasis(optionMap.get(LABEL_IS_DB_COMMENT_ON_ALIAS_BASIS).isSelected());
+        result.setCheckColumnDefOrderDiff(optionMap.get(LABEL_IS_CHECK_COLUMN_DEF_ORDER_DIFF).isSelected());
+        result.setCheckDbCommentDiff(optionMap.get(LABEL_IS_CHECK_DB_COMMENT_DIFF).isSelected());
+        result.setCheckProcedureDiff(optionMap.get(LABEL_IS_CHECK_PROCEDURE_DIFF).isSelected());
+        result.setGenerateProcedureParameterBean(optionMap.get(LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN).isSelected());
 
         return result;
     }

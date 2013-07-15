@@ -144,12 +144,14 @@ public class SwingUtil {
         @Override
         public void flush() throws IOException {
 
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    textArea.append(out.toString());
-                    out.reset();
-                }
-            });
+            // TODO この処理を入れると、ストリームの内容が抜け落ちてしまうため、暫定でコメントアウト
+            // SwingUtilities.invokeLater(new Runnable() {
+            //     public void run() {
+            textArea.append(out.toString());
+            textArea.setCaretPosition(textArea.getText().length());
+            out.reset();
+            //     }
+            // });
         }
     }
 }
