@@ -97,7 +97,7 @@ public class DBFluteIntroPage {
         dbFluteIntro.loadProxy();
 
         frame = new JFrame(LABEL_TITLE);
-        frame.setBounds(100, 100, 500, 510);
+        frame.setBounds(100, 100, 500, 650);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new CardLayout(0, 0));
         frame.setLocationRelativeTo(null);

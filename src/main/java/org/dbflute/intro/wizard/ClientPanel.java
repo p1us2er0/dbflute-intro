@@ -42,9 +42,11 @@ public class ClientPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private static final String LABEL_SCHEMA_HTML;
+    private static final String LABEL_LOAD_DATA_REVERSE_HTML;
     private static final String LABEL_HISTORY_HTML;
     private static final String LABEL_SYNC_CHECK_HTML;
     private static final String LABEL_DOC = "ドキュメント生成";
+    private static final String LABEL_LOAD_DATA_REVERSE = "データ抽出";
     private static final String LABEL_SYNC_CHECK = "スキーマの差分チェック";
     private static final String LABEL_REPLACE_SCHEMA = "DBスキーマ(再)構築 (ReplaceSchema)";
     private static final String LABEL_PROJECT_TAB = "DB";
@@ -69,10 +71,11 @@ public class ClientPanel extends JPanel {
     private JTextArea consoleArea;
 
     static {
-        final File docDir = new File(DBFluteIntro.BASE_DIR_PATH, "/dbflute_${project}/output/doc/");
+        final File docDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_${project}/output/doc/");
 
         LABEL_SCHEMA_HTML = "<a href='" + new File(docDir, "schema-${project}.html").toURI()
                 + "'>テーブル定義を開く</a> (SchemaHTML)";
+        LABEL_LOAD_DATA_REVERSE_HTML = "<a href='" + new File(docDir, "data").toURI() + "'>抽出データを開く</a>";
         LABEL_HISTORY_HTML = "<a href='" + new File(docDir, "history-${project}.html").toURI()
                 + "'>DB変更履歴を開く</a> (HistoryHTML)";
         LABEL_SYNC_CHECK_HTML = "<a href='" + new File(docDir, "sync-check-result_${env}.html").toURI()
@@ -136,18 +139,24 @@ public class ClientPanel extends JPanel {
         button.setBounds(10, 105, 250, 20);
         this.add(button);
 
-        this.add(createHTMLLink(LABEL_SYNC_CHECK_HTML, 150));
+        this.add(createHTMLLink(LABEL_LOAD_DATA_REVERSE_HTML, 150));
 
-        button = new JButton(new TaskAction(LABEL_SYNC_CHECK, DBFluteIntro.getSchemaSyncCheckCommondList()));
+        button = new JButton(new TaskAction(LABEL_LOAD_DATA_REVERSE, DBFluteIntro.getLoadDataReverseCommondList()));
         button.setBounds(10, 175, 250, 20);
         this.add(button);
 
+        this.add(createHTMLLink(LABEL_SYNC_CHECK_HTML, 220));
+
+        button = new JButton(new TaskAction(LABEL_SYNC_CHECK, DBFluteIntro.getSchemaSyncCheckCommondList()));
+        button.setBounds(10, 245, 250, 20);
+        this.add(button);
+
         button = new JButton(new TaskAction(LABEL_REPLACE_SCHEMA, DBFluteIntro.getReplaceSchemaCommondList()));
-        button.setBounds(10, 230, 250, 20);
+        button.setBounds(10, 300, 250, 20);
         this.add(button);
 
         JButton consoleAreaClearButton = new JButton(LABEL_CLEAR);
-        consoleAreaClearButton.setBounds(390, 240, 70, 30);
+        consoleAreaClearButton.setBounds(390, 320, 70, 30);
         consoleAreaClearButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 consoleArea.setText("");
@@ -155,14 +164,14 @@ public class ClientPanel extends JPanel {
         });
         this.add(consoleAreaClearButton);
 
-        consoleArea = new JTextArea(3, 20);
-        consoleArea.setBounds(10, 260, 400, 150);
+        consoleArea = new JTextArea();
+        consoleArea.setBounds(10, 350, 450, 200);
         consoleArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(consoleArea);
-        scrollPane.setBounds(10, 270, 450, 140);
+        scrollPane.setBounds(10, 350, 450, 200);
         this.add(scrollPane);
 
-        fireProjectCombo(null);
+        projectCombo.actionPerformed(null);
     }
 
     private JEditorPane createHTMLLink(String message, int y) {

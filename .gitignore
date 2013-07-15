@@ -1,6 +1,5 @@
 /target
-/dbflute_exampledb
-/dbflute_yourdb
+/dbflute_*
 /mydbflute
 /build
 /.gradle

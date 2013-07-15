@@ -209,6 +209,20 @@ public class DBFluteIntro {
         return commondList;
     }
 
+    protected static List<ProcessBuilder> getLoadDataReverseCommondList() {
+        List<ProcessBuilder> commondList = new ArrayList<ProcessBuilder>();
+        String onName = System.getProperty("os.name");
+        if (onName != null && onName.startsWith("Windows")) {
+            commondList.add(new ProcessBuilder("cmd", "/c", "jdbc.bat"));
+            commondList.add(new ProcessBuilder("cmd", "/c", "manage.bat", "load-data-reverse"));
+        } else {
+            commondList.add(new ProcessBuilder("sh", "jdbc.sh"));
+            commondList.add(new ProcessBuilder("sh", "manage.sh", "load-data-reverse"));
+        }
+
+        return commondList;
+    }
+
     protected static List<ProcessBuilder> getSchemaSyncCheckCommondList() {
         List<ProcessBuilder> commondList = new ArrayList<ProcessBuilder>();
         String onName = System.getProperty("os.name");
@@ -321,83 +335,101 @@ public class DBFluteIntro {
         EmZipInputStreamUtil.extractAndClose(templateZipIn, templateExtractDirectoryBase);
     }
 
-    protected void createNewClient(DBFluteNewClientPageResult result) {
+    protected void createNewClient(DBFluteNewClientPageResult result,
+            Map<String, DBFluteNewClientPageResult> schemaSyncCheckMap) {
 
-        final String dbfluteVersionExpression = "dbflute-" + result.getVersionInfoDBFlute();
-
-        final File mydbflutePureFile = new File(BASE_DIR_PATH, "/mydbflute");
-        final String extractDirectoryBase = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression;
-
-        final String templateZipFileName = extractDirectoryBase + "/etc/client-template/dbflute_dfclient.zip";
-        final ZipInputStream templateZipIn = EmZipInputStreamUtil.createZipInputStream(templateZipFileName);
-        EmZipInputStreamUtil.extractAndClose(templateZipIn, BASE_DIR_PATH);
-        final File dbfluteClientDirTemp = new File(BASE_DIR_PATH, "dbflute_dfclient");
         final File dbfluteClientDir = new File(BASE_DIR_PATH, "dbflute_" + result.getProject());
 
-        dbfluteClientDirTemp.renameTo(dbfluteClientDir);
+        try {
+            final String dbfluteVersionExpression = "dbflute-" + result.getVersionInfoDBFlute();
 
-        Map<File, Map<String, String>> fileMap = new LinkedHashMap<File, Map<String, String>>();
+            final File mydbflutePureFile = new File(BASE_DIR_PATH, "/mydbflute");
+            final String extractDirectoryBase = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression;
 
-        Map<String, String> replaceMap = new LinkedHashMap<String, String>();
-        replaceMap.put("MY_PROJECT_NAME=dfclient", "MY_PROJECT_NAME=" + result.getProject());
-        fileMap.put(new File(dbfluteClientDir, "/_project.bat"), replaceMap);
+            final String templateZipFileName = extractDirectoryBase + "/etc/client-template/dbflute_dfclient.zip";
+            final ZipInputStream templateZipIn = EmZipInputStreamUtil.createZipInputStream(templateZipFileName);
+            EmZipInputStreamUtil.extractAndClose(templateZipIn, BASE_DIR_PATH);
+            final File dbfluteClientDirTemp = new File(BASE_DIR_PATH, "dbflute_dfclient");
+            dbfluteClientDirTemp.renameTo(dbfluteClientDir);
 
-        replaceMap = new LinkedHashMap<String, String>();
-        replaceMap.put("MY_PROJECT_NAME=dfclient", "MY_PROJECT_NAME=" + result.getProject());
-        fileMap.put(new File(dbfluteClientDir, "/_project.sh"), replaceMap);
-
-        replaceMap = new LinkedHashMap<String, String>();
-        replaceMap.put("torque.project = dfclient", "torque.project = " + result.getProject());
-        fileMap.put(new File(dbfluteClientDir, "/build.properties"), replaceMap);
-
-        replaceMap = new LinkedHashMap<String, String>();
-        replaceMap.put("; database = h2", "; database = " + result.getDatabase());
-        fileMap.put(new File(dbfluteClientDir, "/dfprop/basicInfoMap.dfprop"), replaceMap);
-
-        replaceMap = new LinkedHashMap<String, String>();
-        replaceMap.put("; driver   = {Please write your setting! at './dfprop/databaseInfoMap.dfprop'}",
-                "; driver   = " + result.getDatabaseInfoDriver());
-        replaceMap.put("; url      = ...", "; url      = " + result.getDatabaseInfoUrl());
-        replaceMap.put("; schema   = ...", "; schema   = " + result.getDatabaseInfoSchema());
-        replaceMap.put("; user     = ...", "; user     = " + result.getDatabaseInfoUser());
-        replaceMap.put("; password = ...", "; password = " + result.getDatabaseInfoPassword());
-        replaceMap.put("#; includeSynonyms=true", "; includeSynonyms=true");
-        fileMap.put(new File(dbfluteClientDir, "/dfprop/databaseInfoMap.dfprop"), replaceMap);
-
-        replaceMap = new LinkedHashMap<String, String>();
-        replaceMap.put("#; aliasDelimiterInDbComment = :", "; aliasDelimiterInDbComment = :");
-        replaceMap.put("#; isDbCommentOnAliasBasis = false", "; isDbCommentOnAliasBasis = true");
-        replaceMap.put("#; isCheckColumnDefOrderDiff = false", "; isCheckColumnDefOrderDiff = true");
-        replaceMap.put("#; isCheckDbCommentDiff = false", "; isCheckDbCommentDiff = true");
-        replaceMap.put("#; isCheckProcedureDiff = false", "; isCheckProcedureDiff = true");
-        fileMap.put(new File(dbfluteClientDir, "/dfprop/documentDefinitionMap.dfprop"), replaceMap);
-
-        replaceMap = new LinkedHashMap<String, String>();
-        replaceMap.put("; isGenerateProcedureParameterBean = false", "; isGenerateProcedureParameterBean = true");
-        replaceMap.put("#; procedureSynonymHandlingType = NONE", "; procedureSynonymHandlingType = INCLUDE");
-        fileMap.put(new File(dbfluteClientDir, "/dfprop/outsideSqlDefinitionMap.dfprop"), replaceMap);
-
-        replaceFile(fileMap);
-
-        if (result.getJdbcDriverJarPath() != null && !result.getJdbcDriverJarPath().equals("")) {
-
-            File extLibDir = new File(dbfluteClientDir, "extlib");
-
+            File propDir = new File(ClassLoader.getSystemResource("dfprop").getFile());
             try {
-                FileUtils.copyFileToDirectory(new File(result.getJdbcDriverJarPath()), extLibDir);
+                FileUtils.copyDirectory(propDir, new File(dbfluteClientDir, "dfprop"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
+            Map<File, Map<String, String>> fileMap = new LinkedHashMap<File, Map<String, String>>();
+
+            Map<String, String> replaceMap = new LinkedHashMap<String, String>();
+            replaceMap.put("MY_PROJECT_NAME=dfclient", "MY_PROJECT_NAME=" + result.getProject());
+            fileMap.put(new File(dbfluteClientDir, "/_project.bat"), replaceMap);
+            fileMap.put(new File(dbfluteClientDir, "/_project.sh"), replaceMap);
+
+            replaceMap = new LinkedHashMap<String, String>();
+            replaceMap.put("torque.project = dfclient", "torque.project = " + result.getProject());
+            fileMap.put(new File(dbfluteClientDir, "/build.properties"), replaceMap);
+
+            replaceMap = new LinkedHashMap<String, String>();
+            replaceMap.put("${database}", result.getDatabase());
+            fileMap.put(new File(dbfluteClientDir, "/dfprop/basicInfoMap+.dfprop"), replaceMap);
+
+            replaceMap = new LinkedHashMap<String, String>();
+            replaceMap.put(";${driver}", result.getDatabaseInfoDriver());
+            replaceMap.put("${url}", result.getDatabaseInfoUrl());
+            replaceMap.put("${schema}", result.getDatabaseInfoSchema());
+            replaceMap.put("${user}", result.getDatabaseInfoUser());
+            replaceMap.put("${password}", result.getDatabaseInfoPassword());
+            fileMap.put(new File(dbfluteClientDir, "/dfprop/databaseInfoMap+.dfprop"), replaceMap);
+
+            replaceMap = new LinkedHashMap<String, String>();
+            replaceMap.put("${aliasDelimiterInDbComment}", ":");
+            replaceMap.put("${isDbCommentOnAliasBasis}", "true");
+            replaceMap.put("${isCheckColumnDefOrderDiff}", "true");
+            replaceMap.put("${isCheckDbCommentDiff}", "true");
+            replaceMap.put("${isCheckProcedureDiff}", "true");
+            fileMap.put(new File(dbfluteClientDir, "/dfprop/documentDefinitionMap+.dfprop"), replaceMap);
+
+            replaceMap = new LinkedHashMap<String, String>();
+            replaceMap.put("${isGenerateProcedureParameterBean}", "; isGenerateProcedureParameterBean = true");
+            replaceMap.put("${procedureSynonymHandlingType}", "; procedureSynonymHandlingType = INCLUDE");
+            fileMap.put(new File(dbfluteClientDir, "/dfprop/outsideSqlDefinitionMap+.dfprop"), replaceMap);
+
+            replaceFile(fileMap);
+
+            if (result.getJdbcDriverJarPath() != null && !result.getJdbcDriverJarPath().equals("")) {
+
+                File extLibDir = new File(dbfluteClientDir, "extlib");
+
+                try {
+                    FileUtils.copyFileToDirectory(new File(result.getJdbcDriverJarPath()), extLibDir);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            for (Entry<String, DBFluteNewClientPageResult> entry : schemaSyncCheckMap.entrySet()) {
+                createSchemaSyncCheck(entry.getKey(), entry.getValue());
+            }
+
+        } catch (Exception e) {
+            try {
+                FileUtils.deleteDirectory(dbfluteClientDir);
+            } catch (IOException e2) {
+                // ignore
+            }
+
+            throw new RuntimeException(e);
         }
     }
 
-    protected void createSchemaSyncCheck(String env, DBFluteNewClientPageResult result) {
+    private void createSchemaSyncCheck(String env, DBFluteNewClientPageResult result) {
 
         final File dbfluteClientDir = new File(BASE_DIR_PATH, "dbflute_" + result.getProject());
         final File dfpropEnvDir = new File(dbfluteClientDir, "dfprop/schemaSyncCheck_" + env);
         dfpropEnvDir.mkdir();
 
-        URL documentDefinitionMapURL = ClassLoader.getSystemResource("documentDefinitionMap+.dfprop");
+        URL documentDefinitionMapURL = ClassLoader.getSystemResource("documentDefinitionMap+schemaSyncCheck.dfprop");
 
         File documentDefinitionMapFile = new File(dfpropEnvDir, "documentDefinitionMap+.dfprop");
         try {
@@ -409,10 +441,11 @@ public class DBFluteIntro {
         Map<File, Map<String, String>> fileMap = new LinkedHashMap<File, Map<String, String>>();
 
         Map<String, String> replaceMap = new LinkedHashMap<String, String>();
-        replaceMap.put("; url = jdbc:...", "; url = " + result.getDatabaseInfoUrl());
-        replaceMap.put("; schema = EXAMPLEDB", "; schema = " + result.getDatabaseInfoSchema());
-        replaceMap.put("; user = exampuser", "; user = " + result.getDatabaseInfoUser());
-        replaceMap.put("; password = exampword", "; password = " + result.getDatabaseInfoPassword());
+        replaceMap.put("${driver}", result.getDatabaseInfoDriver());
+        replaceMap.put("${url}", result.getDatabaseInfoUrl());
+        replaceMap.put("${schema}", result.getDatabaseInfoSchema());
+        replaceMap.put("${user}", result.getDatabaseInfoUser());
+        replaceMap.put("${password}", result.getDatabaseInfoPassword());
         replaceMap.put("${env}", env);
         fileMap.put(documentDefinitionMapFile, replaceMap);
 

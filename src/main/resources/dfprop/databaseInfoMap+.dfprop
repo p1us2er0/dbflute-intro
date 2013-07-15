@@ -1,0 +1,15 @@
+map:{
+    ; driver   = ${driver}
+    ; url      = ${url}
+    ; schema   = ${schema}
+    ; user     = ${user}
+    ; password = ${password}
+
+    ; propertiesMap = map:{
+        ; includeSynonyms=true
+    }
+
+    ; variousMap = map:{
+        ; objectTypeTargetList = list:{TABLE ; VIEW ; SYNONYM}
+    }
+}

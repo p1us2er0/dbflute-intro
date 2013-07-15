@@ -58,6 +58,7 @@ public class NewClientPanel extends JPanel {
     private static final String MSG_REQUIRED = "「%1$s」を入力してください。";
     private static final String MSG_INVALID = "「%1$s」が不正です。";
     private static final String MSG_EXIST_PROJECT = "DB名「%1$s」はすでに存在します。";
+    private static final String MSG_CLIENT_CREATE_ERROR = "作成に失敗しました。";
     private static final String MSG_CLIENT_CREATE_FINISHED = "作成しました。";
     private static final String MSG_DBFLUTE_VERSION = "DBFluteモジュールをダウンロードして下さい。(メニュー　→ ダウンロード(&アップグレード))";
 
@@ -288,9 +289,7 @@ public class NewClientPanel extends JPanel {
                 return;
             }
 
-            DBFluteIntro dbFluteNewClient = new DBFluteIntro();
-            dbFluteNewClient.createNewClient(result);
-
+            Map<String, DBFluteNewClientPageResult> schemaSyncCheckMap = new LinkedHashMap<String, DBFluteNewClientPageResult>();
             if (schemaSyncCheckTabPanel != null) {
                 for (int i = 0; i < schemaSyncCheckTabPanel.getTabCount(); i++) {
                     Component tabComponent = schemaSyncCheckTabPanel.getComponent(i);
@@ -303,26 +302,35 @@ public class NewClientPanel extends JPanel {
                     // TODO
                     dbFluteNewClientPageResult.setProject(projectText.getText());
 
-                    dbFluteNewClient.createSchemaSyncCheck(schemaSyncCheckTabPanel.getTitleAt(i),
-                            dbFluteNewClientPageResult);
+                    schemaSyncCheckMap.put(schemaSyncCheckTabPanel.getTitleAt(i), dbFluteNewClientPageResult);
                 }
+            }
+
+            DBFluteIntro dbFluteNewClient = new DBFluteIntro();
+            try {
+                dbFluteNewClient.createNewClient(result, schemaSyncCheckMap);
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(frame, MSG_CLIENT_CREATE_ERROR);
+                return;
             }
 
             // TODO
             JTabbedPane tabPanel = (JTabbedPane) getParent();
-            boolean flg = false;
+            ClientPanel clientPanel = null;
             for (Component component : tabPanel.getComponents()) {
                 if (component instanceof ClientPanel) {
-                    flg = true;
-                    ((ClientPanel) component).fireProjectCombo(projectText.getText());
+                    clientPanel = (ClientPanel) component;
+                    break;
                 }
             }
 
-            if (!flg) {
-                ClientPanel clientPanel = new ClientPanel(frame);
+            if (clientPanel == null) {
+                clientPanel = new ClientPanel(frame);
                 tabPanel.addTab(LABEL_PROJECT_TAB, clientPanel);
-                clientPanel.fireProjectCombo(projectText.getText());
             }
+
+            clientPanel.fireProjectCombo(projectText.getText());
 
             JOptionPane.showMessageDialog(frame, MSG_CLIENT_CREATE_FINISHED);
         }
