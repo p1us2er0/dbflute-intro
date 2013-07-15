@@ -29,8 +29,9 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
+import org.dbflute.intro.ClientDto;
 import org.dbflute.intro.DBFluteIntro;
-import org.dbflute.intro.DBFluteNewClientDto;
+import org.dbflute.intro.DatabaseDto;
 import org.dbflute.intro.definition.DatabaseInfoDef;
 import org.dbflute.intro.util.SwingUtil;
 
@@ -72,17 +73,17 @@ public class NewClientPanel extends JPanel {
 
     private JFrame frame;
 
-    private JLabel databaseInfoSchemaLabel;
+    private JLabel databaseSchemaLabel;
     private JLabel jdbcDriverJarPathLabel;
 
     private JTextField projectText;
-    private JComboBox databaseCombo;
-    private JTextField databaseInfoUrlText;
-    private JTextField databaseInfoSchemaText;
-    private JTextField databaseInfoUserText;
-    private JPasswordField databaseInfoPasswordText;
+    private JComboBox dbmsCombo;
+    private JTextField databaseUrlText;
+    private JTextField databaseSchemaText;
+    private JTextField databaseUserText;
+    private JPasswordField databasePasswordText;
     private JTextField jdbcDriverJarPathText;
-    private JComboBox versionInfoDBFluteCombo;
+    private JComboBox dbfluteVersionCombo;
     private Map<String, JCheckBox> optionMap = new LinkedHashMap<String, JCheckBox>();
 
     private JTabbedPane schemaSyncCheckTabPanel;
@@ -111,8 +112,8 @@ public class NewClientPanel extends JPanel {
         this.add(createLabal(LABEL_PROJECT + LABEL_REQUIRED, 10));
         this.add(createLabal(LABEL_DATABASE + LABEL_REQUIRED, 35));
         this.add(createLabal(LABEL_URL + LABEL_REQUIRED, 60));
-        databaseInfoSchemaLabel = createLabal(LABEL_SCHEMA, 85);
-        this.add(databaseInfoSchemaLabel);
+        databaseSchemaLabel = createLabal(LABEL_SCHEMA, 85);
+        this.add(databaseSchemaLabel);
         this.add(createLabal(LABEL_USER + LABEL_REQUIRED, 110));
         this.add(createLabal(LABEL_PASSWORD, 135));
         jdbcDriverJarPathLabel = createLabal(LABEL_JDBC_DRIVER_JAR_PATH, 160);
@@ -133,16 +134,16 @@ public class NewClientPanel extends JPanel {
         projectText.setColumns(10);
         this.add(projectText);
 
-        databaseCombo = new JComboBox(DatabaseInfoDef.values());
-        databaseCombo.setBounds(150, 35, 300, 20);
-        databaseCombo.setSelectedIndex(-1); // means no selection
-        this.add(databaseCombo);
+        dbmsCombo = new JComboBox(DatabaseInfoDef.values());
+        dbmsCombo.setBounds(150, 35, 300, 20);
+        dbmsCombo.setSelectedIndex(-1); // means no selection
+        this.add(dbmsCombo);
 
-        databaseCombo.addActionListener(new ActionListener() {
+        dbmsCombo.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                DatabaseInfoDef databaseInfoDef = (DatabaseInfoDef) databaseCombo.getSelectedItem();
+                DatabaseInfoDef databaseInfoDef = (DatabaseInfoDef) dbmsCombo.getSelectedItem();
                 fireDatabaseInfoUrlText(databaseInfoDef);
                 fireDatabaseInfoSchemaLabel(databaseInfoDef);
                 fireDatabaseInfoSchemaText(databaseInfoDef);
@@ -151,34 +152,34 @@ public class NewClientPanel extends JPanel {
             }
         });
 
-        databaseInfoUrlText = new JTextField();
-        databaseInfoUrlText.setBounds(150, 60, 300, 20);
-        databaseInfoUrlText.setColumns(10);
-        this.add(databaseInfoUrlText);
+        databaseUrlText = new JTextField();
+        databaseUrlText.setBounds(150, 60, 300, 20);
+        databaseUrlText.setColumns(10);
+        this.add(databaseUrlText);
 
-        databaseInfoSchemaText = new JTextField();
-        databaseInfoSchemaText.setBounds(150, 85, 300, 20);
-        databaseInfoSchemaText.setColumns(10);
-        this.add(databaseInfoSchemaText);
+        databaseSchemaText = new JTextField();
+        databaseSchemaText.setBounds(150, 85, 300, 20);
+        databaseSchemaText.setColumns(10);
+        this.add(databaseSchemaText);
 
-        databaseInfoUserText = new JTextField();
-        databaseInfoUserText.setBounds(150, 110, 300, 20);
-        databaseInfoUserText.setColumns(10);
-        this.add(databaseInfoUserText);
+        databaseUserText = new JTextField();
+        databaseUserText.setBounds(150, 110, 300, 20);
+        databaseUserText.setColumns(10);
+        this.add(databaseUserText);
 
-        databaseInfoPasswordText = new JPasswordField();
-        databaseInfoPasswordText.setBounds(150, 135, 300, 20);
-        databaseInfoPasswordText.setColumns(10);
-        this.add(databaseInfoPasswordText);
+        databasePasswordText = new JPasswordField();
+        databasePasswordText.setBounds(150, 135, 300, 20);
+        databasePasswordText.setColumns(10);
+        this.add(databasePasswordText);
 
         jdbcDriverJarPathText = new JTextField();
         jdbcDriverJarPathText.setBounds(150, 160, 300, 20);
         jdbcDriverJarPathText.setColumns(10);
         this.add(jdbcDriverJarPathText);
 
-        versionInfoDBFluteCombo = new JComboBox();
-        versionInfoDBFluteCombo.setBounds(150, 185, 300, 20);
-        this.add(versionInfoDBFluteCombo);
+        dbfluteVersionCombo = new JComboBox();
+        dbfluteVersionCombo.setBounds(150, 185, 300, 20);
+        this.add(dbfluteVersionCombo);
 
         JButton schemaSyncCheckAddButton = new JButton(schemaSyncCheckAddAction);
         schemaSyncCheckAddButton.setBounds(150, 340, 40, 20);
@@ -262,21 +263,21 @@ public class NewClientPanel extends JPanel {
 
         public void actionPerformed(ActionEvent event) {
 
-            DBFluteNewClientDto result = asResult();
+            ClientDto clientDto = asResult();
 
             Map<String, String> data = new LinkedHashMap<String, String>();
-            data.put(LABEL_PROJECT, result.getProject());
-            data.put(LABEL_DATABASE, result.getDatabase());
-            data.put(LABEL_URL, result.getDatabaseInfoUrl());
-            DatabaseInfoDef databaseInfoDef = DatabaseInfoDef.codeOf(result.getDatabase());
+            data.put(LABEL_PROJECT, clientDto.getProject());
+            data.put(LABEL_DATABASE, clientDto.getDbms());
+            data.put(LABEL_URL, clientDto.getDatabaseDto().getUrl());
+            DatabaseInfoDef databaseInfoDef = DatabaseInfoDef.codeOf(clientDto.getDbms());
             if (databaseInfoDef != null && databaseInfoDef.needSchema()) {
-                data.put(LABEL_SCHEMA, result.getDatabaseInfoSchema());
+                data.put(LABEL_SCHEMA, clientDto.getDatabaseDto().getSchema());
             }
-            data.put(LABEL_USER, result.getDatabaseInfoUser());
+            data.put(LABEL_USER, clientDto.getDatabaseDto().getUser());
             if (databaseInfoDef != null && databaseInfoDef.needJdbcDriverJar()) {
-                data.put(LABEL_JDBC_DRIVER_JAR_PATH, result.getJdbcDriverJarPath());
+                data.put(LABEL_JDBC_DRIVER_JAR_PATH, clientDto.getJdbcDriverJarPath());
             }
-            data.put(LABEL_DBFLUTE_VERSION, result.getVersionInfoDBFlute());
+            data.put(LABEL_DBFLUTE_VERSION, clientDto.getDbfluteVersion());
 
             if (schemaSyncCheckTabPanel != null) {
                 for (int i = 0; i < schemaSyncCheckTabPanel.getTabCount(); i++) {
@@ -286,10 +287,10 @@ public class NewClientPanel extends JPanel {
                     }
 
                     SchemaSyncCheckPanal schemaSyncCheckPage = (SchemaSyncCheckPanal) tabComponent;
-                    DBFluteNewClientDto dbFluteNewClientPageResult = schemaSyncCheckPage.asResult();
+                    DatabaseDto databaseDto = schemaSyncCheckPage.asResult();
 
                     String env = schemaSyncCheckTabPanel.getTitleAt(i);
-                    data.put(env + "." + LABEL_USER, dbFluteNewClientPageResult.getDatabaseInfoUser());
+                    data.put(env + "." + LABEL_USER, databaseDto.getUser());
                 }
             }
 
@@ -300,21 +301,21 @@ public class NewClientPanel extends JPanel {
                 }
             }
 
-            if (result.getJdbcDriverJarPath() != null && !result.getJdbcDriverJarPath().equals("")) {
-                final File jdbcDriverJarFile = new File(result.getJdbcDriverJarPath());
+            if (clientDto.getJdbcDriverJarPath() != null && !clientDto.getJdbcDriverJarPath().equals("")) {
+                final File jdbcDriverJarFile = new File(clientDto.getJdbcDriverJarPath());
                 if (!jdbcDriverJarFile.exists() || !jdbcDriverJarFile.isFile()) {
-                    JOptionPane.showMessageDialog(frame, String.format(MSG_INVALID, result.getJdbcDriverJarPath()));
+                    JOptionPane.showMessageDialog(frame, String.format(MSG_INVALID, clientDto.getJdbcDriverJarPath()));
                     return;
                 }
             }
 
-            final File dbfluteClientDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + result.getProject());
+            final File dbfluteClientDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + clientDto.getProject());
             if (dbfluteClientDir.exists()) {
-                JOptionPane.showMessageDialog(frame, String.format(MSG_EXIST_PROJECT, result.getProject()));
+                JOptionPane.showMessageDialog(frame, String.format(MSG_EXIST_PROJECT, clientDto.getProject()));
                 return;
             }
 
-            Map<String, DBFluteNewClientDto> schemaSyncCheckMap = new LinkedHashMap<String, DBFluteNewClientDto>();
+            Map<String, DatabaseDto> schemaSyncCheckMap = new LinkedHashMap<String, DatabaseDto>();
             if (schemaSyncCheckTabPanel != null) {
                 for (int i = 0; i < schemaSyncCheckTabPanel.getTabCount(); i++) {
                     Component tabComponent = schemaSyncCheckTabPanel.getComponent(i);
@@ -323,17 +324,15 @@ public class NewClientPanel extends JPanel {
                     }
 
                     SchemaSyncCheckPanal schemaSyncCheckPage = (SchemaSyncCheckPanal) tabComponent;
-                    DBFluteNewClientDto dbFluteNewClientPageResult = schemaSyncCheckPage.asResult();
-                    // TODO
-                    dbFluteNewClientPageResult.setProject(projectText.getText());
+                    DatabaseDto databaseDto = schemaSyncCheckPage.asResult();
 
-                    schemaSyncCheckMap.put(schemaSyncCheckTabPanel.getTitleAt(i), dbFluteNewClientPageResult);
+                    schemaSyncCheckMap.put(schemaSyncCheckTabPanel.getTitleAt(i), databaseDto);
                 }
             }
 
             DBFluteIntro dbFluteNewClient = new DBFluteIntro();
             try {
-                dbFluteNewClient.createNewClient(result, schemaSyncCheckMap);
+                dbFluteNewClient.createNewClient(clientDto, schemaSyncCheckMap);
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(frame, MSG_CLIENT_CREATE_ERROR);
@@ -361,61 +360,61 @@ public class NewClientPanel extends JPanel {
         }
     }
 
-    public DBFluteNewClientDto asResult() {
+    public ClientDto asResult() {
 
         final String projectName = projectText.getText();
-        DatabaseInfoDef databaseInfo = (DatabaseInfoDef) databaseCombo.getSelectedItem();
+        DatabaseInfoDef databaseInfo = (DatabaseInfoDef) dbmsCombo.getSelectedItem();
         final String database = databaseInfo != null ? databaseInfo.databaseName() : null;
         final String databaseInfoDriver = databaseInfo != null ? databaseInfo.driverName() : null;
-        final String databaseInfoUrl = databaseInfoUrlText.getText();
-        final String databaseInfoSchema = databaseInfoSchemaText.getText();
-        final String databaseInfoUser = databaseInfoUserText.getText();
-        final String databaseInfoPassword = new String(databaseInfoPasswordText.getPassword());
+        final String databaseInfoUrl = databaseUrlText.getText();
+        final String databaseInfoSchema = databaseSchemaText.getText();
+        final String databaseInfoUser = databaseUserText.getText();
+        final String databaseInfoPassword = new String(databasePasswordText.getPassword());
         final String jdbcDriverJarPath = jdbcDriverJarPathText.getText();
-        final String versionInfoDBFlute = versionInfoDBFluteCombo.getSelectedItem().toString();
+        final String versionInfoDBFlute = dbfluteVersionCombo.getSelectedItem().toString();
 
-        final DBFluteNewClientDto result = new DBFluteNewClientDto();
-        result.setProject(projectName);
-        result.setDatabase(database);
-        result.setDatabaseInfoDriver(databaseInfoDriver);
-        result.setDatabaseInfoUrl(databaseInfoUrl);
-        result.setDatabaseInfoSchema(databaseInfoSchema);
-        result.setDatabaseInfoUser(databaseInfoUser);
-        result.setDatabaseInfoPassword(databaseInfoPassword);
-        result.setJdbcDriverJarPath(jdbcDriverJarPath);
-        result.setVersionInfoDBFlute(versionInfoDBFlute);
+        final ClientDto clientDto = new ClientDto();
+        clientDto.setProject(projectName);
+        clientDto.setDbms(database);
+        clientDto.setJdbcDriver(databaseInfoDriver);
+        clientDto.getDatabaseDto().setUrl(databaseInfoUrl);
+        clientDto.getDatabaseDto().setSchema(databaseInfoSchema);
+        clientDto.getDatabaseDto().setUser(databaseInfoUser);
+        clientDto.getDatabaseDto().setPassword(databaseInfoPassword);
+        clientDto.setJdbcDriverJarPath(jdbcDriverJarPath);
+        clientDto.setDbfluteVersion(versionInfoDBFlute);
 
-        result.setDbCommentOnAliasBasis(optionMap.get(LABEL_IS_DB_COMMENT_ON_ALIAS_BASIS).isSelected());
-        result.setCheckColumnDefOrderDiff(optionMap.get(LABEL_IS_CHECK_COLUMN_DEF_ORDER_DIFF).isSelected());
-        result.setCheckDbCommentDiff(optionMap.get(LABEL_IS_CHECK_DB_COMMENT_DIFF).isSelected());
-        result.setCheckProcedureDiff(optionMap.get(LABEL_IS_CHECK_PROCEDURE_DIFF).isSelected());
-        result.setGenerateProcedureParameterBean(optionMap.get(LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN).isSelected());
+        clientDto.setDbCommentOnAliasBasis(optionMap.get(LABEL_IS_DB_COMMENT_ON_ALIAS_BASIS).isSelected());
+        clientDto.setCheckColumnDefOrderDiff(optionMap.get(LABEL_IS_CHECK_COLUMN_DEF_ORDER_DIFF).isSelected());
+        clientDto.setCheckDbCommentDiff(optionMap.get(LABEL_IS_CHECK_DB_COMMENT_DIFF).isSelected());
+        clientDto.setCheckProcedureDiff(optionMap.get(LABEL_IS_CHECK_PROCEDURE_DIFF).isSelected());
+        clientDto.setGenerateProcedureParameterBean(optionMap.get(LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN).isSelected());
 
-        return result;
+        return clientDto;
     }
 
     protected void fireVersionInfoDBFlute() {
 
-        versionInfoDBFluteCombo.removeAllItems();
+        dbfluteVersionCombo.removeAllItems();
         DBFluteIntro dbFluteIntro = new DBFluteIntro();
         List<String> existedDBFluteVersionList = dbFluteIntro.getExistedDBFluteVersionList();
         for (String version : existedDBFluteVersionList) {
-            versionInfoDBFluteCombo.addItem(version);
+            dbfluteVersionCombo.addItem(version);
         }
 
-        versionInfoDBFluteCombo.setSelectedIndex(versionInfoDBFluteCombo.getItemCount() - 1);
-        versionInfoDBFluteCombo.setToolTipText(MSG_DBFLUTE_VERSION);
+        dbfluteVersionCombo.setSelectedIndex(dbfluteVersionCombo.getItemCount() - 1);
+        dbfluteVersionCombo.setToolTipText(MSG_DBFLUTE_VERSION);
 
-        clientCreateButton.setEnabled(versionInfoDBFluteCombo.getItemCount() > 0);
+        clientCreateButton.setEnabled(dbfluteVersionCombo.getItemCount() > 0);
     }
 
     private void fireDatabaseInfoUrlText(DatabaseInfoDef databaseInfoDef) {
-        databaseInfoUrlText.setText(databaseInfoDef.getUrlTemplate());
+        databaseUrlText.setText(databaseInfoDef.getUrlTemplate());
     }
 
     private void fireDatabaseInfoSchemaLabel(DatabaseInfoDef databaseInfoDef) {
         boolean required = databaseInfoDef != null && databaseInfoDef.needSchema();
-        databaseInfoSchemaLabel.setText(LABEL_SCHEMA + (required ? LABEL_REQUIRED : ""));
+        databaseSchemaLabel.setText(LABEL_SCHEMA + (required ? LABEL_REQUIRED : ""));
     }
 
     private void fireDatabaseInfoSchemaText(DatabaseInfoDef databaseInfoDef) {
@@ -424,9 +423,9 @@ public class NewClientPanel extends JPanel {
         }
 
         if (EnumSet.of(DatabaseInfoDef.Oracle, DatabaseInfoDef.DB2).contains(databaseInfoDef)) {
-            ((AbstractDocument) databaseInfoSchemaText.getDocument()).setDocumentFilter(upperDocumentFilter);
+            ((AbstractDocument) databaseSchemaText.getDocument()).setDocumentFilter(upperDocumentFilter);
         } else {
-            ((AbstractDocument) databaseInfoSchemaText.getDocument()).setDocumentFilter(null);
+            ((AbstractDocument) databaseSchemaText.getDocument()).setDocumentFilter(null);
         }
 
         // TODO oracleは、ユーザとスキーマが一致することが多いため、入力補助するようにする。
@@ -438,7 +437,7 @@ public class NewClientPanel extends JPanel {
         //            databaseInfoSchemaText.addCaretListener(userReflectionCaretListener);
         //        }
 
-        databaseInfoSchemaText.setText(databaseInfoDef.getDefultSchema());
+        databaseSchemaText.setText(databaseInfoDef.getDefultSchema());
     }
 
     private void fireJdbcDriverJarPathLabel(DatabaseInfoDef databaseInfoDef) {

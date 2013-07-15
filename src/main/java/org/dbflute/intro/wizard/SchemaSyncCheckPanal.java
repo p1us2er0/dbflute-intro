@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import org.dbflute.intro.DBFluteNewClientDto;
+import org.dbflute.intro.DatabaseDto;
 
 /**
  * @author ecode
@@ -67,19 +67,19 @@ public class SchemaSyncCheckPanal extends JPanel {
         return jLabel;
     }
 
-    public DBFluteNewClientDto asResult() {
+    public DatabaseDto asResult() {
 
         final String databaseInfoUrl = databaseInfoUrlText.getText();
         final String databaseInfoSchema = databaseInfoSchemaText.getText();
         final String databaseInfoUser = databaseInfoUserText.getText();
         final String databaseInfoPassword = new String(databaseInfoPasswordText.getPassword());
 
-        final DBFluteNewClientDto result = new DBFluteNewClientDto();
-        result.setDatabaseInfoUrl(databaseInfoUrl);
-        result.setDatabaseInfoSchema(databaseInfoSchema);
-        result.setDatabaseInfoUser(databaseInfoUser);
-        result.setDatabaseInfoPassword(databaseInfoPassword);
+        final DatabaseDto databaseDto = new DatabaseDto();
+        databaseDto.setUrl(databaseInfoUrl);
+        databaseDto.setSchema(databaseInfoSchema);
+        databaseDto.setUser(databaseInfoUser);
+        databaseDto.setPassword(databaseInfoPassword);
 
-        return result;
+        return databaseDto;
     }
 }

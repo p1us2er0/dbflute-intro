@@ -5,23 +5,17 @@ package org.dbflute.intro;
  * @author ecode
  * @since 0.1.0 (2007/08/11 Saturday)
  */
-public class DBFluteNewClientDto {
+public class ClientDto {
 
     // ===================================================================================
     //                                                                           Attribute
     //                                                                           =========
-    private String outputDirectory;
     private String project;
-    private String database;
-    private String targetContainer;
-    private String packageBase;
-    private String databaseInfoDriver;
-    private String databaseInfoUrl;
-    private String databaseInfoSchema;
-    private String databaseInfoUser;
-    private String databaseInfoPassword;
+    private String dbms;
+    private String jdbcDriver;
+    private DatabaseDto databaseDto;
     private String jdbcDriverJarPath;
-    private String versionInfoDBFlute;
+    private String dbfluteVersion;
     private String aliasDelimiterInDbComment = ":";
     private boolean isDbCommentOnAliasBasis = true;
     private boolean isCheckColumnDefOrderDiff = true;
@@ -33,30 +27,6 @@ public class DBFluteNewClientDto {
     // ===================================================================================
     //                                                                            Accessor
     //                                                                            ========
-    public String getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(String targetDatabase) {
-        this.database = targetDatabase;
-    }
-
-    public String getTargetContainer() {
-        return targetContainer;
-    }
-
-    public void setTargetContainer(String targetContainer) {
-        this.targetContainer = targetContainer;
-    }
-
-    public String getOutputDirectory() {
-        return outputDirectory;
-    }
-
-    public void setOutputDirectory(String containerName) {
-        this.outputDirectory = containerName;
-    }
-
     public String getProject() {
         return project;
     }
@@ -65,52 +35,32 @@ public class DBFluteNewClientDto {
         this.project = projectName;
     }
 
-    public String getPackageBase() {
-        return packageBase;
+    public String getDbms() {
+        return dbms;
     }
 
-    public void setPackageBase(String packageBase) {
-        this.packageBase = packageBase;
+    public void setDbms(String dbms) {
+        this.dbms = dbms;
     }
 
-    public String getDatabaseInfoDriver() {
-        return databaseInfoDriver;
+    public String getJdbcDriver() {
+        return jdbcDriver;
     }
 
-    public void setDatabaseInfoDriver(String databaseInfoDriver) {
-        this.databaseInfoDriver = databaseInfoDriver;
+    public void setJdbcDriver(String jdbcDriver) {
+        this.jdbcDriver = jdbcDriver;
     }
 
-    public String getDatabaseInfoUrl() {
-        return databaseInfoUrl;
+    public DatabaseDto getDatabaseDto() {
+        if (databaseDto == null) {
+            databaseDto = new DatabaseDto();
+        }
+
+        return databaseDto;
     }
 
-    public void setDatabaseInfoUrl(String databaseInfoUrl) {
-        this.databaseInfoUrl = databaseInfoUrl;
-    }
-
-    public String getDatabaseInfoPassword() {
-        return databaseInfoPassword;
-    }
-
-    public void setDatabaseInfoPassword(String databaseInfoPassword) {
-        this.databaseInfoPassword = databaseInfoPassword;
-    }
-
-    public String getDatabaseInfoSchema() {
-        return databaseInfoSchema;
-    }
-
-    public void setDatabaseInfoSchema(String databaseInfoSchema) {
-        this.databaseInfoSchema = databaseInfoSchema;
-    }
-
-    public String getDatabaseInfoUser() {
-        return databaseInfoUser;
-    }
-
-    public void setDatabaseInfoUser(String databaseInfoUser) {
-        this.databaseInfoUser = databaseInfoUser;
+    public void setDatabaseDto(DatabaseDto databaseDto) {
+        this.databaseDto = databaseDto;
     }
 
     public String getJdbcDriverJarPath() {
@@ -121,12 +71,12 @@ public class DBFluteNewClientDto {
         this.jdbcDriverJarPath = jdbcDriverJarPath;
     }
 
-    public String getVersionInfoDBFlute() {
-        return versionInfoDBFlute;
+    public String getDbfluteVersion() {
+        return dbfluteVersion;
     }
 
-    public void setVersionInfoDBFlute(String versionInfoDBFlute) {
-        this.versionInfoDBFlute = versionInfoDBFlute;
+    public void setDbfluteVersion(String versionInfoDBFlute) {
+        this.dbfluteVersion = versionInfoDBFlute;
     }
 
     public String getAliasDelimiterInDbComment() {
