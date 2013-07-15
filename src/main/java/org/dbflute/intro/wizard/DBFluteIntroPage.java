@@ -54,7 +54,6 @@ public class DBFluteIntroPage {
 
     private JFrame frame;
     private NewClientPanel newClientPanel;
-    private JTabbedPane tabPanel;
 
     private JDialog dialog;
     private JTextField proxyHostText;
@@ -103,11 +102,12 @@ public class DBFluteIntroPage {
         frame.getContentPane().setLayout(new CardLayout(0, 0));
         frame.setLocationRelativeTo(null);
 
-        tabPanel = new JTabbedPane();
+        JTabbedPane tabPanel = new JTabbedPane();
         frame.getContentPane().add(tabPanel, "name_5009361789717");
 
         if (!dbFluteIntro.getProjectList().isEmpty()) {
-            tabPanel.addTab(NewClientPanel.LABEL_PROJECT_TAB, new ClientPanel(frame));
+            ClientPanel clientPanel = new ClientPanel(frame);
+            tabPanel.addTab(NewClientPanel.LABEL_PROJECT_TAB, clientPanel);
         }
 
         newClientPanel = new NewClientPanel(frame);

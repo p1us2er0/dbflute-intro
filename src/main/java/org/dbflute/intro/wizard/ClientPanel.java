@@ -58,6 +58,9 @@ public class ClientPanel extends JPanel {
     private static final String MSG_CANCELED = "キャンセルしました。";
     private static final String MSG_INVALID_URL = "URLが不正です。";
     private static final String MSG_NOT_FOUND_URL = "「%1$s」が見つかりません。";
+    private static final String MSG_REMOVE = "削除します。";
+    private static final String MSG_REMOVE_SUCCESS = "削除しました。";
+    private static final String MSG_REMOVE_ERROR = "削除できませんでした。";
     private static final String MSG_REPLACE_SCHEMA = "DBスキーマを(再)構築します。";
 
     private JFrame frame;
@@ -96,8 +99,7 @@ public class ClientPanel extends JPanel {
         this.add(projectLabel);
 
         projectCombo = new JComboBox();
-        projectCombo.setBounds(150, 10, 300, 20);
-        projectCombo.setBounds(150, 10, 300, 20);
+        projectCombo.setBounds(150, 10, 250, 20);
         this.add(projectCombo);
 
         projectCombo.addActionListener(new ActionListener() {
@@ -105,6 +107,25 @@ public class ClientPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 fireProjectCombo((String) projectCombo.getSelectedItem());
+            }
+        });
+
+        JButton removeButton = new JButton("-");
+        removeButton.setBounds(410, 10, 20, 20);
+        this.add(removeButton);
+
+        removeButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int result = JOptionPane.showConfirmDialog(frame, MSG_REMOVE, null, JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.CANCEL_OPTION) {
+                    return;
+                }
+
+                boolean delete = DBFluteIntro.deleteClient((String) projectCombo.getSelectedItem());
+                JOptionPane.showMessageDialog(frame, delete ? MSG_REMOVE_SUCCESS : MSG_REMOVE_ERROR);
+                projectCombo.actionPerformed(null);
             }
         });
 

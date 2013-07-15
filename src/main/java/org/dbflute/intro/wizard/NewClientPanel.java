@@ -56,6 +56,7 @@ public class NewClientPanel extends JPanel {
 
     private static final String MSG_SCHEMA_SYNC_CHECK_ENV = "DB環境を入力してください。";
     private static final String MSG_REQUIRED = "「%1$s」を入力してください。";
+    private static final String MSG_INVALID = "「%1$s」が不正です。";
     private static final String MSG_EXIST_PROJECT = "DB名「%1$s」はすでに存在します。";
     private static final String MSG_CLIENT_CREATE_FINISHED = "作成しました。";
     private static final String MSG_DBFLUTE_VERSION = "DBFluteモジュールをダウンロードして下さい。(メニュー　→ ダウンロード(&アップグレード))";
@@ -273,8 +274,15 @@ public class NewClientPanel extends JPanel {
                 }
             }
 
-            final File dbfluteClientDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + result.getProject());
+            if (result.getJdbcDriverJarPath() != null && !result.getJdbcDriverJarPath().equals("")) {
+                final File jdbcDriverJarFile = new File(result.getJdbcDriverJarPath());
+                if (!jdbcDriverJarFile.exists() || !jdbcDriverJarFile.isFile()) {
+                    JOptionPane.showMessageDialog(frame, String.format(MSG_INVALID, result.getJdbcDriverJarPath()));
+                    return;
+                }
+            }
 
+            final File dbfluteClientDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + result.getProject());
             if (dbfluteClientDir.exists()) {
                 JOptionPane.showMessageDialog(frame, String.format(MSG_EXIST_PROJECT, result.getProject()));
                 return;

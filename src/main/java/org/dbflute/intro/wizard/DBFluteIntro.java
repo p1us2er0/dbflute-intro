@@ -419,6 +419,22 @@ public class DBFluteIntro {
         replaceFile(fileMap);
     }
 
+    protected static boolean deleteClient(String project) {
+
+        if (project == null) {
+            return false;
+        }
+
+        final File dbfluteClientDir = new File(BASE_DIR_PATH, "dbflute_" + project);
+        try {
+            FileUtils.deleteDirectory(dbfluteClientDir);
+        } catch (IOException e) {
+            return false;
+        }
+
+        return true;
+    }
+
     private void replaceFile(Map<File, Map<String, String>> fileMap) {
         try {
             for (Entry<File, Map<String, String>> entry : fileMap.entrySet()) {
