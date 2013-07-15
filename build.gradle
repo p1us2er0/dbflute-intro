@@ -7,7 +7,7 @@ version = '0.0.1-SNAPSHOT'
 artifact = 'dbflute-intro'
 
 def encoding = "UTF-8"
-def compatibility = '1.6'
+def compatibility = '1.6.0'
 def utfluteVersion = '0.3.0'
 def junitVersion ='4.8.2'
 
@@ -87,4 +87,23 @@ jar {
         attributes 'Jenkins-Build-Number': 'TODO'
         attributes 'Main-Class' : 'org.dbflute.intro.wizard.DBFluteIntroPage'
     }
+}
+
+task runLaunch4j(type:Exec) {
+	def launch4jConfig = new XmlParser().parse('./gradle/launch4j/launch4j-config.xml')
+	launch4jConfig.jar[0].setValue(jar.archivePath.canonicalPath)
+	launch4jConfig.outfile[0].setValue(jar.archivePath.canonicalPath - '.jar' + '.exe')
+	launch4jConfig.jre[0].minVersion[0].setValue(compatibility)
+
+	def configFile = file('./build/launch4j/launch4j-config.xml')
+	configFile.parentFile.mkdirs()
+	configFile.createNewFile()
+	configFile.withPrintWriter("utf-8") { writer ->
+		def printer = new XmlNodePrinter(writer)
+		printer.preserveWhitespace = true
+		printer.print(launch4jConfig)
+	}
+
+    //on mac
+    commandLine 'sh', './gradle/launch4j/mac64/launch4j', configFile.canonicalPath
 }

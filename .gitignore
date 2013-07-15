@@ -5,3 +5,4 @@
 /.gradle
 /bin
 /gradle-app.setting
+/gradle/launch4j/mac64
