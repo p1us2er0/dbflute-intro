@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -355,6 +356,7 @@ public class DBFluteIntro {
             dfpropFileList.add("basicInfoMap+.dfprop");
             dfpropFileList.add("databaseInfoMap+.dfprop");
             dfpropFileList.add("documentDefinitionMap+.dfprop");
+            dfpropFileList.add("littleAdjustmentMap+.dfprop");
             dfpropFileList.add("outsideSqlDefinitionMap+.dfprop");
 
             try {
@@ -385,12 +387,20 @@ public class DBFluteIntro {
             replaceMap.put("{Please write your setting! at './dfprop/databaseInfoMap.dfprop'}", "");
             fileMap.put(new File(dbfluteClientDir, "/dfprop/databaseInfoMap.dfprop"), replaceMap);
 
+            String[] schema = clientDto.getDatabaseDto().getSchema().split(",");
             replaceMap = new LinkedHashMap<String, Object>();
             replaceMap.put("${driver}", clientDto.getJdbcDriver());
             replaceMap.put("${url}", clientDto.getDatabaseDto().getUrl());
-            replaceMap.put("${schema}", clientDto.getDatabaseDto().getSchema());
+            replaceMap.put("${schema}", schema[0].trim());
             replaceMap.put("${user}", clientDto.getDatabaseDto().getUser());
             replaceMap.put("${password}", clientDto.getDatabaseDto().getPassword());
+            StringBuilder builder = new StringBuilder();
+            for (int i = 1; i < schema.length; i++) {
+                builder.append("            ; " + schema[i].trim()
+                        + " = map:{objectTypeTargetList=list:{TABLE; VIEW; SYNONYM}}\r\n");
+            }
+
+            replaceMap.put("${additionalSchema}", builder.toString().replaceAll("\r\n$", ""));
             fileMap.put(new File(dbfluteClientDir, "/dfprop/databaseInfoMap+.dfprop"), replaceMap);
 
             replaceMap = new LinkedHashMap<String, Object>();
@@ -472,6 +482,7 @@ public class DBFluteIntro {
         try {
             FileUtils.deleteDirectory(dbfluteClientDir);
         } catch (IOException e) {
+            e.printStackTrace();
             return false;
         }
 
@@ -495,7 +506,20 @@ public class DBFluteIntro {
         }
     }
 
-    public void upgradeClient(ClientDto result) {
+    public boolean upgrade() {
 
+        try {
+            FileUtils.copyURLToFile(
+                    new URL("http://dbflute.seasar.org/download/helper/dbflute-intro/dbflute-intro.jar"), new File(
+                            "./dbflute-intro.jar"));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 }

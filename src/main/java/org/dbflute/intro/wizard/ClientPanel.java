@@ -2,6 +2,7 @@ package org.dbflute.intro.wizard;
 
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -61,9 +62,9 @@ public class ClientPanel extends JPanel {
     private static final String MSG_CANCELED = "キャンセルしました。";
     private static final String MSG_INVALID_URL = "URLが不正です。";
     private static final String MSG_NOT_FOUND_URL = "「%1$s」が見つかりません。";
-    private static final String MSG_REMOVE = "削除します。";
-    private static final String MSG_REMOVE_SUCCESS = "削除しました。";
-    private static final String MSG_REMOVE_ERROR = "削除できませんでした。";
+    private static final String MSG_REMOVE = "「%1$s」の設定を削除します。";
+    private static final String MSG_REMOVE_SUCCESS = "「%1$s」の設定を削除しました。";
+    private static final String MSG_REMOVE_ERROR = "「%1$s」の設定を削除できませんでした。";
     private static final String MSG_REPLACE_SCHEMA = "DBスキーマを(再)構築します。";
 
     private JFrame frame;
@@ -115,20 +116,25 @@ public class ClientPanel extends JPanel {
         });
 
         JButton removeButton = new JButton("-");
-        removeButton.setBounds(410, 10, 20, 20);
+        removeButton.setBounds(410, 10, 40, 20);
         this.add(removeButton);
 
         removeButton.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                int result = JOptionPane.showConfirmDialog(frame, MSG_REMOVE, null, JOptionPane.OK_CANCEL_OPTION);
+
+                String project = (String) projectCombo.getSelectedItem();
+
+                String msg = String.format(MSG_REMOVE, project);
+                int result = JOptionPane.showConfirmDialog(frame, msg, null, JOptionPane.OK_CANCEL_OPTION);
                 if (result == JOptionPane.CANCEL_OPTION) {
                     return;
                 }
 
                 boolean delete = DBFluteIntro.deleteClient((String) projectCombo.getSelectedItem());
-                JOptionPane.showMessageDialog(frame, delete ? MSG_REMOVE_SUCCESS : MSG_REMOVE_ERROR);
+                msg = String.format(delete ? MSG_REMOVE_SUCCESS : MSG_REMOVE_ERROR, project);
+                JOptionPane.showMessageDialog(frame, msg);
                 projectCombo.actionPerformed(null);
             }
         });
@@ -157,7 +163,7 @@ public class ClientPanel extends JPanel {
         this.add(button);
 
         JButton consoleAreaClearButton = new JButton(LABEL_CLEAR);
-        consoleAreaClearButton.setBounds(390, 320, 70, 30);
+        consoleAreaClearButton.setBounds(410, 330, 70, 20);
         consoleAreaClearButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 consoleArea.setText("");
@@ -166,10 +172,13 @@ public class ClientPanel extends JPanel {
         this.add(consoleAreaClearButton);
 
         consoleArea = new JTextArea();
-        consoleArea.setBounds(10, 350, 450, 200);
+        consoleArea.setBounds(2, 350, 480, 212);
         consoleArea.setEditable(false);
+
+        Font font = consoleArea.getFont();
+        consoleArea.setFont(new Font(font.getName(), font.getStyle(), font.getSize() - 3));
         JScrollPane scrollPane = new JScrollPane(consoleArea);
-        scrollPane.setBounds(10, 350, 450, 200);
+        scrollPane.setBounds(2, 350, 480, 212);
         this.add(scrollPane);
 
         projectCombo.actionPerformed(null);

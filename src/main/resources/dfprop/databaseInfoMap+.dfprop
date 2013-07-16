@@ -11,5 +11,8 @@ map:{
 
     ; variousMap = map:{
         ; objectTypeTargetList = list:{TABLE ; VIEW ; SYNONYM}
+        ; additionalSchemaMap = map:{
+${additionalSchema}
+        }
     }
 }

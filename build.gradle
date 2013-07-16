@@ -48,13 +48,13 @@ eclipse {
 }
 
 eclipse.jdt.file {
-	withProperties { properties ->
-		def formatter = new XmlSlurper().parse('./gradle/eclipse/formatter.xml')
+    withProperties { properties ->
+        def formatter = new XmlSlurper().parse('./gradle/eclipse/formatter.xml')
 
-		formatter.profile.setting.each {
-			properties.put(it.@id as String, it.@value as String)
-		}
-	}
+        formatter.profile.setting.each {
+            properties.put(it.@id as String, it.@value as String)
+        }
+    }
 }
 
 repositories {
@@ -89,21 +89,31 @@ jar {
     }
 }
 
+ant.condition(property: "os", value: "windows") { os(family: "windows") }
+ant.condition(property: "os", value: "unix" ) { os(family: "unix") }
+
 task runLaunch4j(type:Exec) {
-	def launch4jConfig = new XmlParser().parse('./gradle/launch4j/launch4j-config.xml')
-	launch4jConfig.jar[0].setValue(jar.archivePath.canonicalPath)
-	launch4jConfig.outfile[0].setValue(jar.archivePath.canonicalPath - '.jar' + '.exe')
-	launch4jConfig.jre[0].minVersion[0].setValue(compatibility)
+
+    def launch4jConfig = new XmlParser().parse('./gradle/launch4j/launch4j-config.xml')
+    launch4jConfig.jar[0].setValue(jar.archivePath.canonicalPath)
+    launch4jConfig.outfile[0].setValue(jar.archivePath.canonicalPath - '.jar' + '.exe')
+    launch4jConfig.jre[0].minVersion[0].setValue(compatibility)
 
 	def configFile = file('./build/launch4j/launch4j-config.xml')
-	configFile.parentFile.mkdirs()
-	configFile.createNewFile()
-	configFile.withPrintWriter("utf-8") { writer ->
-		def printer = new XmlNodePrinter(writer)
-		printer.preserveWhitespace = true
-		printer.print(launch4jConfig)
-	}
+    configFile.parentFile.mkdirs()
+    configFile.createNewFile()
+    configFile.withPrintWriter("utf-8") { writer ->
+        def printer = new XmlNodePrinter(writer)
+        printer.preserveWhitespace = true
+        printer.print(launch4jConfig)
+    }
 
-    //on mac
-    commandLine 'sh', './gradle/launch4j/mac64/launch4j', configFile.canonicalPath
+    switch(ant.properties.os){
+        case 'unix':
+            commandLine 'sh', './gradle/launch4j/mac/launch4j', configFile.canonicalPath
+            break
+        case 'windows':
+            commandLine 'cmd', '/c', './gradle/launch4j/win/launch4j.exe', '"' + configFile.canonicalPath + '"'
+            break
+    }
 }

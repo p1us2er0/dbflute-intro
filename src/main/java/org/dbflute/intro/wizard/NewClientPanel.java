@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,10 +12,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -22,18 +23,15 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
 
 import org.dbflute.intro.ClientDto;
 import org.dbflute.intro.DBFluteIntro;
 import org.dbflute.intro.DatabaseDto;
 import org.dbflute.intro.definition.DatabaseInfoDef;
 import org.dbflute.intro.util.SwingUtil;
+import org.dbflute.intro.util.SwingUtil.ReflectionCaretListener;
 
 /**
  * @author ecode
@@ -50,6 +48,7 @@ public class NewClientPanel extends JPanel {
     protected static final String LABEL_USER = "ユーザ";
     protected static final String LABEL_PASSWORD = "パスワード";
     private static final String LABEL_JDBC_DRIVER_JAR_PATH = "Jdbcドライバのパス";
+    private static final String LABEL_File_CHOOSE = "ファイル選択";
     private static final String LABEL_DBFLUTE_VERSION = "DBFluteバージョン";
     private static final String LABEL_OPTION = "オプション";
     private static final String LABEL_IS_DB_COMMENT_ON_ALIAS_BASIS = "DBコメントを別名基準で利用";
@@ -65,11 +64,12 @@ public class NewClientPanel extends JPanel {
 
     private static final String MSG_SCHEMA_SYNC_CHECK_ENV = "DB環境を入力してください。";
     private static final String MSG_REQUIRED = "「%1$s」を入力してください。";
-    private static final String MSG_INVALID = "「%1$s」が不正です。";
+    private static final String MSG_INVALID = "%1$s「%2$s」が不正です。";
     private static final String MSG_EXIST_PROJECT = "DB名「%1$s」はすでに存在します。";
     private static final String MSG_CLIENT_CREATE_ERROR = "作成に失敗しました。";
     private static final String MSG_CLIENT_CREATE_FINISHED = "作成しました。";
-    private static final String MSG_DBFLUTE_VERSION = "DBFluteモジュールをダウンロードして下さい。(メニュー　→ ダウンロード(&アップグレード))";
+    private static final String MSG_DBFLUTE_VERSION = "DBFluteモジュールをダウンロードして下さい。(" + DBFluteIntroPage.LABEL_SETTING
+            + " → " + DBFluteIntroPage.LABEL_DOWNLOAD;
 
     private JFrame frame;
 
@@ -90,9 +90,7 @@ public class NewClientPanel extends JPanel {
 
     private JButton clientCreateButton;
 
-    private final Action schemaSyncCheckAddAction = new SchemaSyncCheckAddAction();
-    private final Action schemaSyncCheckRemoveAction = new SchemaSyncCheckRemoveAction();
-    private final Action clientCreateAction = new ClientCreateAction();
+    private ReflectionCaretListener userReflectionCaretListener;
 
     /**
      * Create the application.
@@ -173,23 +171,27 @@ public class NewClientPanel extends JPanel {
         this.add(databasePasswordText);
 
         jdbcDriverJarPathText = new JTextField();
-        jdbcDriverJarPathText.setBounds(150, 160, 300, 20);
+        jdbcDriverJarPathText.setBounds(150, 160, 210, 20);
         jdbcDriverJarPathText.setColumns(10);
         this.add(jdbcDriverJarPathText);
+
+        JButton jdbcDriverJarPathButton = new JButton(new JdbcDriverJarPathAction());
+        jdbcDriverJarPathButton.setBounds(360, 160, 90, 20);
+        this.add(jdbcDriverJarPathButton);
 
         dbfluteVersionCombo = new JComboBox();
         dbfluteVersionCombo.setBounds(150, 185, 300, 20);
         this.add(dbfluteVersionCombo);
 
-        JButton schemaSyncCheckAddButton = new JButton(schemaSyncCheckAddAction);
+        JButton schemaSyncCheckAddButton = new JButton(new SchemaSyncCheckAddAction());
         schemaSyncCheckAddButton.setBounds(150, 340, 40, 20);
         this.add(schemaSyncCheckAddButton);
 
-        JButton schemaSyncCheckRemoveButton = new JButton(schemaSyncCheckRemoveAction);
+        JButton schemaSyncCheckRemoveButton = new JButton(new SchemaSyncCheckRemoveAction());
         schemaSyncCheckRemoveButton.setBounds(190, 340, 40, 20);
         this.add(schemaSyncCheckRemoveButton);
 
-        clientCreateButton = new JButton(clientCreateAction);
+        clientCreateButton = new JButton(new ClientCreateAction());
         clientCreateButton.setBounds(150, 520, 300, 20);
         this.add(clientCreateButton);
 
@@ -223,7 +225,7 @@ public class NewClientPanel extends JPanel {
 
             String env = JOptionPane.showInputDialog(frame, MSG_SCHEMA_SYNC_CHECK_ENV);
 
-            if (env != null) {
+            if (env != null && !env.equals("")) {
                 if (schemaSyncCheckTabPanel == null) {
                     schemaSyncCheckTabPanel = new JTabbedPane();
                     schemaSyncCheckTabPanel.setBounds(0, 360, 480, 160);
@@ -231,7 +233,33 @@ public class NewClientPanel extends JPanel {
                 }
 
                 schemaSyncCheckTabPanel.addTab(env, new SchemaSyncCheckPanal());
+                schemaSyncCheckTabPanel.setVisible(schemaSyncCheckTabPanel.getTabCount() != 0);
+
                 SwingUtil.updateLookAndFeel(frame);
+            }
+        }
+    }
+
+    private class JdbcDriverJarPathAction extends AbstractAction {
+
+        private static final long serialVersionUID = 1L;
+
+        public JdbcDriverJarPathAction() {
+            putValue(NAME, LABEL_File_CHOOSE);
+        }
+
+        public void actionPerformed(ActionEvent event) {
+
+            JFileChooser fileChooser = new JFileChooser();
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("*.jar", "jar");
+            fileChooser.setFileFilter(filter);
+            int result = fileChooser.showOpenDialog(frame);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                try {
+                    jdbcDriverJarPathText.setText(fileChooser.getSelectedFile().getCanonicalPath());
+                } catch (IOException e1) {
+                    // ignore
+                }
             }
         }
     }
@@ -250,6 +278,8 @@ public class NewClientPanel extends JPanel {
             if (selectedIndex != -1) {
                 schemaSyncCheckTabPanel.remove(schemaSyncCheckTabPanel.getSelectedIndex());
             }
+
+            schemaSyncCheckTabPanel.setVisible(schemaSyncCheckTabPanel.getTabCount() != 0);
         }
     }
 
@@ -304,7 +334,8 @@ public class NewClientPanel extends JPanel {
             if (clientDto.getJdbcDriverJarPath() != null && !clientDto.getJdbcDriverJarPath().equals("")) {
                 final File jdbcDriverJarFile = new File(clientDto.getJdbcDriverJarPath());
                 if (!jdbcDriverJarFile.exists() || !jdbcDriverJarFile.isFile()) {
-                    JOptionPane.showMessageDialog(frame, String.format(MSG_INVALID, clientDto.getJdbcDriverJarPath()));
+                    JOptionPane.showMessageDialog(frame,
+                            String.format(MSG_INVALID, LABEL_JDBC_DRIVER_JAR_PATH, clientDto.getJdbcDriverJarPath()));
                     return;
                 }
             }
@@ -388,7 +419,8 @@ public class NewClientPanel extends JPanel {
         clientDto.setCheckColumnDefOrderDiff(optionMap.get(LABEL_IS_CHECK_COLUMN_DEF_ORDER_DIFF).isSelected());
         clientDto.setCheckDbCommentDiff(optionMap.get(LABEL_IS_CHECK_DB_COMMENT_DIFF).isSelected());
         clientDto.setCheckProcedureDiff(optionMap.get(LABEL_IS_CHECK_PROCEDURE_DIFF).isSelected());
-        clientDto.setGenerateProcedureParameterBean(optionMap.get(LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN).isSelected());
+        clientDto.setGenerateProcedureParameterBean(optionMap.get(LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN)
+                .isSelected());
 
         return clientDto;
     }
@@ -423,19 +455,19 @@ public class NewClientPanel extends JPanel {
         }
 
         if (EnumSet.of(DatabaseInfoDef.Oracle, DatabaseInfoDef.DB2).contains(databaseInfoDef)) {
-            ((AbstractDocument) databaseSchemaText.getDocument()).setDocumentFilter(upperDocumentFilter);
+            ((AbstractDocument) databaseSchemaText.getDocument()).setDocumentFilter(SwingUtil.UPPER_DOCUMENT_FILTER);
         } else {
             ((AbstractDocument) databaseSchemaText.getDocument()).setDocumentFilter(null);
         }
 
-        // TODO oracleは、ユーザとスキーマが一致することが多いため、入力補助するようにする。
-        //        databaseInfoSchemaText.removeCaretListener(userReflectionCaretListener);
-        //        if (DatabaseInfoDef.Oracle == databaseInfoDef) {
-        //            if (userReflectionCaretListener == null) {
-        //                userReflectionCaretListener = new XxxCaretListener(databaseInfoUserText);
-        //            }
-        //            databaseInfoSchemaText.addCaretListener(userReflectionCaretListener);
-        //        }
+        // Oracleは、ユーザとスキーマが一致することが多いため、入力補助する
+        databaseSchemaText.removeCaretListener(userReflectionCaretListener);
+        if (DatabaseInfoDef.Oracle == databaseInfoDef) {
+            if (userReflectionCaretListener == null) {
+                userReflectionCaretListener = new ReflectionCaretListener(databaseUserText);
+            }
+            databaseSchemaText.addCaretListener(userReflectionCaretListener);
+        }
 
         databaseSchemaText.setText(databaseInfoDef.getDefultSchema());
     }
@@ -457,41 +489,4 @@ public class NewClientPanel extends JPanel {
             jdbcDriverJarPathText.setTransferHandler(null);
         }
     }
-
-    private static DocumentFilter upperDocumentFilter = new DocumentFilter() {
-        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
-                throws BadLocationException {
-            super.insertString(fb, offset, string.toUpperCase(), attr);
-        }
-
-        public void replace(FilterBypass fb, int offset, int length, String string, AttributeSet attr)
-                throws BadLocationException {
-            if (string != null) {
-                string = string.toUpperCase();
-            }
-            super.replace(fb, offset, length, string, attr);
-        }
-    };
-
-    private ReflectionCaretListener userReflectionCaretListener;
-
-    private static class ReflectionCaretListener implements CaretListener {
-
-        private JTextField textField;
-
-        public ReflectionCaretListener(JTextField textField) {
-            super();
-            this.textField = textField;
-        }
-
-        @Override
-        public void caretUpdate(CaretEvent event) {
-            String sourceText = ((JTextField) event.getSource()).getText();
-            String distText = this.textField.getText();
-
-            if (distText == null || distText.equals("") || distText.equals(sourceText)) {
-                this.textField.setText(sourceText);
-            }
-        }
-    };
 }

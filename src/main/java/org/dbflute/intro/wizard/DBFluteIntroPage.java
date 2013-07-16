@@ -38,14 +38,15 @@ import org.dbflute.intro.util.SwingUtil.ProgressBarDialog;
 public class DBFluteIntroPage {
 
     private static final String LABEL_TITLE = "DBFlute Intro";
-    private static final String LABEL_SETTING = "設定";
-    private static final String LABEL_HELP = "ヘルプ";
-    private static final String LABEL_VERSION = "バージョン";
+    protected static final String LABEL_SETTING = "設定";
     private static final String LABEL_PROXY_HOST = "ホスト";
     private static final String LABEL_PROXY_PORT = "ポート";
-    private static final String LABEL_DOWNLOAD = "ダウンロード";
+    protected static final String LABEL_DOWNLOAD = "ダウンロード";
     private static final String LABEL_PROXY_SETTING = "プロキシ設定";
     private static final String LABEL_SET = "設定";
+    private static final String LABEL_HELP = "ヘルプ";
+    private static final String LABEL_VERSION = "バージョン";
+    private static final String LABEL_UPGRADE = "バージョン更新";
 
     private static final String MSG_DOWNLOAD = "DBFluteのバージョンを入力してください。\n最新バージョン : %1$s\n最新スナップショットバージョン : %2$s";
     private static final String MSG_NETWORK_ERROR = "ネットワークエラー。 プロキシを設定してください。";
@@ -59,10 +60,6 @@ public class DBFluteIntroPage {
     private JDialog dialog;
     private JTextField proxyHostText;
     private JTextField proxyPortText;
-
-    private final Action downloadAction = new DownloadAction();
-    private final Action proxySettingsViewAction = new ProxySettingsViewAction();
-    private final Action proxySettingsAction = new ProxySettingsAction();
 
     private final DBFluteIntro dbFluteIntro = new DBFluteIntro();
 
@@ -112,7 +109,7 @@ public class DBFluteIntroPage {
         }
 
         newClientPanel = new NewClientPanel(frame);
-        tabPanel.addTab("+", newClientPanel);
+        tabPanel.addTab(" + ", newClientPanel);
 
         JMenuBar menuBar = new JMenuBar();
         frame.setJMenuBar(menuBar);
@@ -120,10 +117,11 @@ public class DBFluteIntroPage {
         JMenu setting = new JMenu(LABEL_SETTING);
         menuBar.add(setting);
 
+        Action downloadAction = new DownloadAction();
         JMenuItem downloadMenuItem = new JMenuItem(downloadAction);
         setting.add(downloadMenuItem);
 
-        JMenuItem proxySettingsMenuItem = new JMenuItem(proxySettingsViewAction);
+        JMenuItem proxySettingsMenuItem = new JMenuItem(new ProxySettingsViewAction());
         setting.add(proxySettingsMenuItem);
 
         JMenu help = new JMenu(LABEL_HELP);
@@ -131,6 +129,9 @@ public class DBFluteIntroPage {
 
         JMenuItem versionMenuItem = new JMenuItem(LABEL_VERSION + ": " + dbFluteIntro.getVersion());
         help.add(versionMenuItem);
+
+        JMenuItem upgradeMenuItem = new JMenuItem(new UpgradeAction());
+        help.add(upgradeMenuItem);
 
         SwingUtil.updateLookAndFeel(frame);
 
@@ -230,7 +231,7 @@ public class DBFluteIntroPage {
             proxyPortText.setText(proxyPort);
             panel.add(proxyPortText);
 
-            JButton proxySettingsButton = new JButton(proxySettingsAction);
+            JButton proxySettingsButton = new JButton(new ProxySettingsAction());
             proxySettingsButton.setBounds(80, 60, 70, 20);
             panel.add(proxySettingsButton);
 
@@ -265,6 +266,32 @@ public class DBFluteIntroPage {
             dbFluteIntro.loadProxy();
 
             dialog.setVisible(false);
+        }
+    }
+
+    private class UpgradeAction extends AbstractAction {
+
+        private static final long serialVersionUID = 1L;
+
+        public UpgradeAction() {
+            putValue(NAME, LABEL_UPGRADE);
+        }
+
+        public void actionPerformed(ActionEvent event) {
+
+            boolean result = dbFluteIntro.upgrade();
+            if (!result) {
+                JOptionPane.showMessageDialog(frame, MSG_DOWNLOAD_ERROR);
+                return;
+            }
+
+            JOptionPane.showMessageDialog(frame, "再起動してください。");
+            // int reboot = JOptionPane.showConfirmDialog(frame, "再起動しますか。", null, JOptionPane.OK_CANCEL_OPTION);
+            // if (reboot == JOptionPane.CANCEL_OPTION) {
+            //     return;
+            // }
+            //
+            // System.exit(0);
         }
     }
 }

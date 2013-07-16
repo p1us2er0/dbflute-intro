@@ -20,6 +20,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.JTextComponent;
 
 public class SwingUtil {
 
@@ -154,4 +160,43 @@ public class SwingUtil {
             // });
         }
     }
+
+    public static final DocumentFilter UPPER_DOCUMENT_FILTER = new DocumentFilter() {
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+                throws BadLocationException {
+            super.insertString(fb, offset, string.toUpperCase(), attr);
+        }
+
+        public void replace(FilterBypass fb, int offset, int length, String string, AttributeSet attr)
+                throws BadLocationException {
+            if (string != null) {
+                string = string.toUpperCase();
+            }
+            super.replace(fb, offset, length, string, attr);
+        }
+    };
+
+    public static class ReflectionCaretListener implements CaretListener {
+
+        private JTextComponent textComponent;
+        private String oldValue = "";
+
+        public ReflectionCaretListener(JTextComponent textComponent) {
+            super();
+            this.textComponent = textComponent;
+        }
+
+        @Override
+        public void caretUpdate(CaretEvent event) {
+
+            String sourceText = ((JTextField) event.getSource()).getText();
+            String distText = this.textComponent.getText();
+
+            if (oldValue.equals(distText)) {
+                this.textComponent.setText(sourceText);
+            }
+
+            oldValue = sourceText;
+        }
+    };
 }
