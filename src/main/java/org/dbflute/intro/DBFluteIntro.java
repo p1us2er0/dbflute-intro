@@ -24,7 +24,8 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.dbflute.emecha.eclipse.plugin.core.meta.website.EmMetaFromWebSite;
-import org.dbflute.emecha.eclipse.plugin.core.util.util.zip.EmZipInputStreamUtil;
+import org.dbflute.intro.runtime.DfPropFile;
+import org.dbflute.intro.util.EmZipInputStreamUtil;
 import org.dbflute.intro.wizard.DBFluteIntroPage;
 
 /**
@@ -521,5 +522,63 @@ public class DBFluteIntro {
         }
 
         return true;
+    }
+
+    public static ClientDto convclientDtoFromDfprop(String project) {
+
+        Map<String, Map<String, Object>> map = new LinkedHashMap<String, Map<String, Object>>();
+        File dfpropDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
+        for (File file : dfpropDir.listFiles()) {
+            if (!file.getName().endsWith(".dfprop")) {
+                continue;
+            }
+
+            InputStream inputStream = null;
+            try {
+                inputStream = FileUtils.openInputStream(file);
+
+                DfPropFile dfPropFile = new DfPropFile();
+                map.put(file.getName(), dfPropFile.readMap(inputStream));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                IOUtils.closeQuietly(inputStream);
+            }
+        }
+
+        for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
+            if (!entry.getKey().endsWith("+.dfprop")) {
+                continue;
+            }
+
+            String key = entry.getKey().replaceAll("\\+\\.dfprop", "\\.dfprop");
+            map.get(key).putAll(entry.getValue());
+        }
+
+        ClientDto clientDto = new ClientDto();
+        clientDto.setProject(project);
+        clientDto.setDbms((String) map.get("basicInfoMap.dfprop").get("database"));
+        clientDto.setJdbcDriver((String) map.get("databaseInfoMap.dfprop").get("driver"));
+        clientDto.getDatabaseDto().setUrl((String) map.get("databaseInfoMap.dfprop").get("url"));
+        clientDto.getDatabaseDto().setSchema((String) map.get("databaseInfoMap.dfprop").get("schema"));
+        clientDto.getDatabaseDto().setUser((String) map.get("databaseInfoMap.dfprop").get("user"));
+        clientDto.getDatabaseDto().setPassword((String) map.get("databaseInfoMap.dfprop").get("password"));
+        clientDto.setJdbcDriverJarPath("");
+        clientDto.setDbfluteVersion("");
+
+        clientDto.setAliasDelimiterInDbComment((String) map.get("documentDefinitionMap.dfprop").get(
+                "aliasDelimiterInDbComment"));
+        clientDto.setDbCommentOnAliasBasis(Boolean.toString(true).equals(
+                map.get("documentDefinitionMap.dfprop").get("isDbCommentOnAliasBasis")));
+        clientDto.setCheckColumnDefOrderDiff(Boolean.toString(true).equals(
+                map.get("documentDefinitionMap.dfprop").get("isCheckColumnDefOrderDiff")));
+        clientDto.setCheckDbCommentDiff(Boolean.toString(true).equals(
+                map.get("documentDefinitionMap.dfprop").get("isCheckDbCommentDiff")));
+        clientDto.setCheckProcedureDiff(Boolean.toString(true).equals(
+                map.get("documentDefinitionMap.dfprop").get("isCheckProcedureDiff")));
+        clientDto.setGenerateProcedureParameterBean(Boolean.toString(true).equals(
+                map.get("outsideSqlDefinitionMap.dfprop").get("isGenerateProcedureParameterBean")));
+
+        return clientDto;
     }
 }

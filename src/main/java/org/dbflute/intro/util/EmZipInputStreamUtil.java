@@ -1,4 +1,4 @@
-package org.dbflute.emecha.eclipse.plugin.core.util.util.zip;
+package org.dbflute.intro.util;
 
 import java.io.File;
 import java.io.FileInputStream;
