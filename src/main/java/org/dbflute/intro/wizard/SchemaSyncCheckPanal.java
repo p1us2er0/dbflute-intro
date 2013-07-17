@@ -82,4 +82,12 @@ public class SchemaSyncCheckPanal extends JPanel {
 
         return databaseDto;
     }
+
+    protected void reflect(DatabaseDto databaseDto) {
+
+        databaseInfoUrlText.setText(databaseDto.getUrl());
+        databaseInfoSchemaText.setText(databaseDto.getSchema());
+        databaseInfoUserText.setText(databaseDto.getUser());
+        databaseInfoPasswordText.setText(databaseDto.getPassword());
+    }
 }

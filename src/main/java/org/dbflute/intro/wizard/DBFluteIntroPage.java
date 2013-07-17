@@ -1,6 +1,7 @@
 package org.dbflute.intro.wizard;
 
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -55,7 +56,7 @@ public class DBFluteIntroPage {
     private static final String MSG_DOWNLOADING = "ダウンロード中。";
 
     private JFrame frame;
-    private NewClientPanel newClientPanel;
+    JTabbedPane tabPanel;
 
     private JDialog dialog;
     private JTextField proxyHostText;
@@ -72,6 +73,7 @@ public class DBFluteIntroPage {
             public void run() {
                 try {
                     DBFluteIntroPage window = new DBFluteIntroPage();
+                    SwingUtil.updateLookAndFeel(window.frame);
                     window.frame.setVisible(true);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -100,7 +102,7 @@ public class DBFluteIntroPage {
         frame.getContentPane().setLayout(new CardLayout(0, 0));
         frame.setLocationRelativeTo(null);
 
-        JTabbedPane tabPanel = new JTabbedPane();
+        tabPanel = new JTabbedPane();
         frame.getContentPane().add(tabPanel, "name_5009361789717");
 
         if (!DBFluteIntro.getProjectList().isEmpty()) {
@@ -108,7 +110,7 @@ public class DBFluteIntroPage {
             tabPanel.addTab(NewClientPanel.LABEL_PROJECT_TAB, clientPanel);
         }
 
-        newClientPanel = new NewClientPanel(frame);
+        NewClientPanel newClientPanel = new NewClientPanel(frame);
         tabPanel.addTab(" + ", newClientPanel);
 
         JMenuBar menuBar = new JMenuBar();
@@ -132,8 +134,6 @@ public class DBFluteIntroPage {
 
         JMenuItem upgradeMenuItem = new JMenuItem(new UpgradeAction());
         help.add(upgradeMenuItem);
-
-        SwingUtil.updateLookAndFeel(frame);
 
         if (dbFluteIntro.getExistedDBFluteVersionList().isEmpty()) {
             downloadAction.actionPerformed(null);
@@ -180,7 +180,12 @@ public class DBFluteIntroPage {
                         return;
                     }
 
-                    newClientPanel.fireVersionInfoDBFlute();
+                    for (Component component : tabPanel.getComponents()) {
+                        if (component instanceof NewClientPanel) {
+                            ((NewClientPanel) component).fireVersionInfoDBFlute();
+                            ;
+                        }
+                    }
                 }
             };
 

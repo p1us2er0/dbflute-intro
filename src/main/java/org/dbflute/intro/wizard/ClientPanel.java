@@ -31,8 +31,9 @@ import javax.swing.event.HyperlinkEvent.EventType;
 import javax.swing.event.HyperlinkListener;
 
 import org.apache.commons.io.IOUtils;
+import org.dbflute.intro.ClientDto;
 import org.dbflute.intro.DBFluteIntro;
-import org.dbflute.intro.util.SwingUtil;
+import org.dbflute.intro.DatabaseDto;
 import org.dbflute.intro.util.SwingUtil.JTextAreaStream;
 import org.dbflute.intro.util.SwingUtil.ProgressBarDialog;
 
@@ -47,6 +48,7 @@ public class ClientPanel extends JPanel {
     private static final String LABEL_LOAD_DATA_REVERSE_HTML;
     private static final String LABEL_HISTORY_HTML;
     private static final String LABEL_SYNC_CHECK_HTML;
+    private static final String LABEL_REMOVE = "削除";
     private static final String LABEL_DOC = "ドキュメント生成";
     private static final String LABEL_LOAD_DATA_REVERSE = "データ抽出";
     private static final String LABEL_SYNC_CHECK = "スキーマの差分チェック";
@@ -104,7 +106,7 @@ public class ClientPanel extends JPanel {
         this.add(projectLabel);
 
         projectCombo = new JComboBox();
-        projectCombo.setBounds(150, 10, 250, 20);
+        projectCombo.setBounds(150, 10, 190, 20);
         this.add(projectCombo);
 
         projectCombo.addActionListener(new ActionListener() {
@@ -115,8 +117,32 @@ public class ClientPanel extends JPanel {
             }
         });
 
-        JButton removeButton = new JButton("-");
-        removeButton.setBounds(410, 10, 40, 20);
+        JButton changeButton = new JButton(NewClientPanel.LABEL_CLIENT_CHANGE);
+        changeButton.setBounds(350, 10, 60, 20);
+        this.add(changeButton);
+
+        changeButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                String project = (String) projectCombo.getSelectedItem();
+
+                JTabbedPane tabPanel = (JTabbedPane) getParent();
+                tabPanel.removeAll();
+                NewClientPanel newClientPanel = new NewClientPanel(frame);
+                tabPanel.insertTab(LABEL_PROJECT_TAB, null, newClientPanel, null, 0);
+                tabPanel.setSelectedComponent(newClientPanel);
+
+                ClientDto clientDto = DBFluteIntro.convClientDtoFromDfprop(project);
+                Map<String, DatabaseDto> databaseDtoMap = DBFluteIntro.convDatabaseDtoMapFromDfprop(project);
+
+                newClientPanel.reflect(clientDto, databaseDtoMap);
+            }
+        });
+
+        JButton removeButton = new JButton(LABEL_REMOVE);
+        removeButton.setBounds(410, 10, 60, 20);
         this.add(removeButton);
 
         removeButton.addActionListener(new ActionListener() {
@@ -163,7 +189,7 @@ public class ClientPanel extends JPanel {
         this.add(button);
 
         JButton consoleAreaClearButton = new JButton(LABEL_CLEAR);
-        consoleAreaClearButton.setBounds(410, 330, 70, 20);
+        consoleAreaClearButton.setBounds(405, 330, 70, 20);
         consoleAreaClearButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 consoleArea.setText("");
@@ -172,13 +198,12 @@ public class ClientPanel extends JPanel {
         this.add(consoleAreaClearButton);
 
         consoleArea = new JTextArea();
-        consoleArea.setBounds(2, 350, 480, 212);
         consoleArea.setEditable(false);
 
         Font font = consoleArea.getFont();
         consoleArea.setFont(new Font(font.getName(), font.getStyle(), font.getSize() - 3));
         JScrollPane scrollPane = new JScrollPane(consoleArea);
-        scrollPane.setBounds(2, 350, 480, 212);
+        scrollPane.setBounds(2, 350, 475, 212);
         this.add(scrollPane);
 
         projectCombo.actionPerformed(null);
@@ -309,8 +334,6 @@ public class ClientPanel extends JPanel {
 
                 URL url = event.getURL();
 
-                String project = projectCombo.getSelectedItem().toString();
-
                 if (url == null) {
                     JOptionPane.showMessageDialog(frame, MSG_INVALID_URL);
                     return;
@@ -324,6 +347,7 @@ public class ClientPanel extends JPanel {
                     return;
                 }
 
+                String project = projectCombo.getSelectedItem().toString();
                 String env = null;
                 if (decodePath.contains("sync-check-result_${env}.html")) {
                     env = showSchemaSyncCheckEnvDialog(project);
@@ -391,7 +415,5 @@ public class ClientPanel extends JPanel {
                 }
             }
         }
-
-        SwingUtil.updateLookAndFeel(frame);
     }
 }

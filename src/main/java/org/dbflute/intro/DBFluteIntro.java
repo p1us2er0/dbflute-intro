@@ -17,7 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.jar.Manifest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.Charsets;
@@ -347,11 +350,14 @@ public class DBFluteIntro {
             final File mydbflutePureFile = new File(BASE_DIR_PATH, "/mydbflute");
             final String extractDirectoryBase = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression;
 
-            final String templateZipFileName = extractDirectoryBase + "/etc/client-template/dbflute_dfclient.zip";
-            final ZipInputStream templateZipIn = EmZipInputStreamUtil.createZipInputStream(templateZipFileName);
-            EmZipInputStreamUtil.extractAndClose(templateZipIn, BASE_DIR_PATH);
-            final File dbfluteClientDirTemp = new File(BASE_DIR_PATH, "dbflute_dfclient");
-            dbfluteClientDirTemp.renameTo(dbfluteClientDir);
+            if (!dbfluteClientDir.exists()) {
+                final String templateZipFileName = extractDirectoryBase + "/etc/client-template/dbflute_dfclient.zip";
+                final ZipInputStream templateZipIn = EmZipInputStreamUtil.createZipInputStream(templateZipFileName);
+                EmZipInputStreamUtil.extractAndClose(templateZipIn, BASE_DIR_PATH);
+                final File dbfluteClientDirTemp = new File(BASE_DIR_PATH, "dbflute_dfclient");
+
+                dbfluteClientDirTemp.renameTo(dbfluteClientDir);
+            }
 
             List<String> dfpropFileList = new ArrayList<String>();
             dfpropFileList.add("basicInfoMap+.dfprop");
@@ -423,10 +429,26 @@ public class DBFluteIntro {
 
                 File extLibDir = new File(dbfluteClientDir, "extlib");
 
-                try {
-                    FileUtils.copyFileToDirectory(new File(clientDto.getJdbcDriverJarPath()), extLibDir);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                File jarFile = new File(clientDto.getJdbcDriverJarPath());
+                File jarFileOld = new File(extLibDir, jarFile.getName());
+
+                boolean flg = true;
+                if (jarFileOld.exists()) {
+                    if (jarFile.equals(jarFileOld)) {
+                        flg = false;
+                    }
+                }
+
+                if (flg) {
+                    try {
+                        for (File file : FileUtils.listFiles(extLibDir, new String[] { ".jar" }, false)) {
+                            file.delete();
+                        }
+
+                        FileUtils.copyFileToDirectory(new File(clientDto.getJdbcDriverJarPath()), extLibDir);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
 
@@ -524,7 +546,7 @@ public class DBFluteIntro {
         return true;
     }
 
-    public static ClientDto convclientDtoFromDfprop(String project) {
+    public static ClientDto convClientDtoFromDfprop(String project) {
 
         Map<String, Map<String, Object>> map = new LinkedHashMap<String, Map<String, Object>>();
         File dfpropDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
@@ -555,16 +577,51 @@ public class DBFluteIntro {
             map.get(key).putAll(entry.getValue());
         }
 
+        String schema = (String) map.get("databaseInfoMap.dfprop").get("schema");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> variousMap = ((Map<String, Object>) map.get("databaseInfoMap.dfprop").get("variousMap"));
+        if (variousMap != null) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> additionalSchemaMap = ((Map<String, Object>) variousMap.get("additionalSchemaMap"));
+
+            if (additionalSchemaMap != null) {
+                Set<String> keySet = additionalSchemaMap.keySet();
+                for (String additionalSchema : keySet) {
+                    schema += "," + additionalSchema;
+                }
+            }
+        }
+
         ClientDto clientDto = new ClientDto();
         clientDto.setProject(project);
         clientDto.setDbms((String) map.get("basicInfoMap.dfprop").get("database"));
         clientDto.setJdbcDriver((String) map.get("databaseInfoMap.dfprop").get("driver"));
         clientDto.getDatabaseDto().setUrl((String) map.get("databaseInfoMap.dfprop").get("url"));
-        clientDto.getDatabaseDto().setSchema((String) map.get("databaseInfoMap.dfprop").get("schema"));
+        clientDto.getDatabaseDto().setSchema(schema);
         clientDto.getDatabaseDto().setUser((String) map.get("databaseInfoMap.dfprop").get("user"));
         clientDto.getDatabaseDto().setPassword((String) map.get("databaseInfoMap.dfprop").get("password"));
-        clientDto.setJdbcDriverJarPath("");
-        clientDto.setDbfluteVersion("");
+        File extlibDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + project + "/extlib");
+        for (File file : extlibDir.listFiles()) {
+            if (file.getName().endsWith(".jar")) {
+                clientDto.setJdbcDriverJarPath(file.getPath());
+            }
+        }
+
+        File projectFile = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + project + "/_project.bat");
+        String data = null;
+        try {
+            data = FileUtils.readFileToString(projectFile);
+        } catch (IOException e) {
+            new RuntimeException(e);
+        }
+
+        Pattern pattern = Pattern.compile(".*mydbflute\\dbflute-(.*)");
+        Matcher matcher = pattern.matcher(data);
+
+        if (matcher.matches()) {
+            clientDto.setDbfluteVersion(matcher.group(1));
+        }
 
         clientDto.setAliasDelimiterInDbComment((String) map.get("documentDefinitionMap.dfprop").get(
                 "aliasDelimiterInDbComment"));
@@ -580,5 +637,45 @@ public class DBFluteIntro {
                 map.get("outsideSqlDefinitionMap.dfprop").get("isGenerateProcedureParameterBean")));
 
         return clientDto;
+    }
+
+    public static Map<String, DatabaseDto> convDatabaseDtoMapFromDfprop(String project) {
+
+        Map<String, DatabaseDto> databaseDtoMap = new LinkedHashMap<String, DatabaseDto>();
+        File dfpropDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
+        for (File file : dfpropDir.listFiles()) {
+            if (!file.isDirectory() || !file.getName().startsWith("schemaSyncCheck_")) {
+                continue;
+            }
+
+            File documentDefinitionMapFile = new File(file, "documentDefinitionMap+.dfprop");
+            if (!documentDefinitionMapFile.exists() || !documentDefinitionMapFile.isFile()) {
+                continue;
+            }
+
+            InputStream inputStream = null;
+            try {
+                inputStream = FileUtils.openInputStream(documentDefinitionMapFile);
+
+                DfPropFile dfPropFile = new DfPropFile();
+                Map<String, Object> readMap = dfPropFile.readMap(inputStream);
+                @SuppressWarnings("unchecked")
+                Map<String, Object> schemaSyncCheckMap = (Map<String, Object>) readMap.get("schemaSyncCheckMap");
+
+                DatabaseDto databaseDto = new DatabaseDto();
+                databaseDto.setUrl((String) schemaSyncCheckMap.get("url"));
+                databaseDto.setSchema((String) schemaSyncCheckMap.get("schema"));
+                databaseDto.setUser((String) schemaSyncCheckMap.get("user"));
+                databaseDto.setPassword((String) schemaSyncCheckMap.get("password"));
+                databaseDtoMap.put(file.getName().replace("schemaSyncCheck_", ""), databaseDto);
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                IOUtils.closeQuietly(inputStream);
+            }
+        }
+
+        return databaseDtoMap;
     }
 }

@@ -58,6 +58,8 @@ public class NewClientPanel extends JPanel {
     private static final String LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN = "isGenerateProcedureParameterBean";
     protected static final String LABEL_SCHEMA_SYNC_CHECK = "他のDB環境";
     private static final String LABEL_CLIENT_CREATE = "作成";
+    protected static final String LABEL_CLIENT_CHANGE = "変更";
+    protected static final String LABEL_CLIENT_CANCEL = "キャンセル";
     protected static final String LABEL_PROJECT_TAB = "DB";
 
     private static final String DEF_PROJECT = "yourdb";
@@ -65,9 +67,10 @@ public class NewClientPanel extends JPanel {
     private static final String MSG_SCHEMA_SYNC_CHECK_ENV = "DB環境を入力してください。";
     private static final String MSG_REQUIRED = "「%1$s」を入力してください。";
     private static final String MSG_INVALID = "%1$s「%2$s」が不正です。";
-    private static final String MSG_EXIST_PROJECT = "DB名「%1$s」はすでに存在します。";
-    private static final String MSG_CLIENT_CREATE_ERROR = "作成に失敗しました。";
-    private static final String MSG_CLIENT_CREATE_FINISHED = "作成しました。";
+    private static final String MSG_EXIST_PROJECT = LABEL_PROJECT + "「%1$s」がすでに存在します。";
+    private static final String MSG_DUPLICATE_CHEMA_SYNC_CHECK = LABEL_SCHEMA_SYNC_CHECK + "の名前が重複しています。";
+    private static final String MSG_CLIENT_CREATE_ERROR = "%1$sに失敗しました。";
+    private static final String MSG_CLIENT_CREATE_FINISHED = "%1$sしました。";
     private static final String MSG_DBFLUTE_VERSION = "DBFluteモジュールをダウンロードして下さい。(" + DBFluteIntroPage.LABEL_SETTING
             + " → " + DBFluteIntroPage.LABEL_DOWNLOAD;
 
@@ -142,9 +145,9 @@ public class NewClientPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 DatabaseInfoDef databaseInfoDef = (DatabaseInfoDef) dbmsCombo.getSelectedItem();
-                fireDatabaseInfoUrlText(databaseInfoDef);
-                fireDatabaseInfoSchemaLabel(databaseInfoDef);
-                fireDatabaseInfoSchemaText(databaseInfoDef);
+                fireDatabaseUrlText(databaseInfoDef);
+                fireDatabaseSchemaLabel(databaseInfoDef);
+                fireDatabaseSchemaText(databaseInfoDef);
                 fireJdbcDriverJarPathLabel(databaseInfoDef);
                 fireJdbcDriverJarPathText(databaseInfoDef);
             }
@@ -191,7 +194,7 @@ public class NewClientPanel extends JPanel {
         schemaSyncCheckRemoveButton.setBounds(190, 340, 40, 20);
         this.add(schemaSyncCheckRemoveButton);
 
-        clientCreateButton = new JButton(new ClientCreateAction());
+        clientCreateButton = new JButton(new ClientCreateAction(LABEL_CLIENT_CREATE));
         clientCreateButton.setBounds(150, 520, 300, 20);
         this.add(clientCreateButton);
 
@@ -211,33 +214,6 @@ public class NewClientPanel extends JPanel {
         optionMap.put(label, checkBox);
 
         return checkBox;
-    }
-
-    private class SchemaSyncCheckAddAction extends AbstractAction {
-
-        private static final long serialVersionUID = 1L;
-
-        public SchemaSyncCheckAddAction() {
-            putValue(NAME, "+");
-        }
-
-        public void actionPerformed(ActionEvent event) {
-
-            String env = JOptionPane.showInputDialog(frame, MSG_SCHEMA_SYNC_CHECK_ENV);
-
-            if (env != null && !env.equals("")) {
-                if (schemaSyncCheckTabPanel == null) {
-                    schemaSyncCheckTabPanel = new JTabbedPane();
-                    schemaSyncCheckTabPanel.setBounds(0, 360, 480, 160);
-                    add(schemaSyncCheckTabPanel);
-                }
-
-                schemaSyncCheckTabPanel.addTab(env, new SchemaSyncCheckPanal());
-                schemaSyncCheckTabPanel.setVisible(schemaSyncCheckTabPanel.getTabCount() != 0);
-
-                SwingUtil.updateLookAndFeel(frame);
-            }
-        }
     }
 
     private class JdbcDriverJarPathAction extends AbstractAction {
@@ -260,6 +236,33 @@ public class NewClientPanel extends JPanel {
                 } catch (IOException e1) {
                     // ignore
                 }
+            }
+        }
+    }
+
+    private class SchemaSyncCheckAddAction extends AbstractAction {
+
+        private static final long serialVersionUID = 1L;
+
+        public SchemaSyncCheckAddAction() {
+            putValue(NAME, "+");
+        }
+
+        public void actionPerformed(ActionEvent event) {
+
+            String env = JOptionPane.showInputDialog(frame, MSG_SCHEMA_SYNC_CHECK_ENV);
+
+            if (env != null && !env.equals("")) {
+                if (schemaSyncCheckTabPanel == null) {
+                    schemaSyncCheckTabPanel = new JTabbedPane();
+                    schemaSyncCheckTabPanel.setBounds(0, 360, 480, 160);
+                    add(schemaSyncCheckTabPanel);
+                }
+
+                SchemaSyncCheckPanal schemaSyncCheckPanal = new SchemaSyncCheckPanal();
+                schemaSyncCheckTabPanel.addTab(env, schemaSyncCheckPanal);
+                schemaSyncCheckTabPanel.setSelectedComponent(schemaSyncCheckPanal);
+                schemaSyncCheckTabPanel.setVisible(schemaSyncCheckTabPanel.getTabCount() != 0);
             }
         }
     }
@@ -287,8 +290,8 @@ public class NewClientPanel extends JPanel {
 
         private static final long serialVersionUID = 1L;
 
-        public ClientCreateAction() {
-            putValue(NAME, LABEL_CLIENT_CREATE);
+        public ClientCreateAction(String name) {
+            putValue(NAME, name);
         }
 
         public void actionPerformed(ActionEvent event) {
@@ -309,19 +312,19 @@ public class NewClientPanel extends JPanel {
             }
             data.put(LABEL_DBFLUTE_VERSION, clientDto.getDbfluteVersion());
 
-            if (schemaSyncCheckTabPanel != null) {
-                for (int i = 0; i < schemaSyncCheckTabPanel.getTabCount(); i++) {
-                    Component tabComponent = schemaSyncCheckTabPanel.getComponent(i);
-                    if (!(tabComponent instanceof SchemaSyncCheckPanal)) {
-                        continue;
-                    }
-
-                    SchemaSyncCheckPanal schemaSyncCheckPage = (SchemaSyncCheckPanal) tabComponent;
-                    DatabaseDto databaseDto = schemaSyncCheckPage.asResult();
-
-                    String env = schemaSyncCheckTabPanel.getTitleAt(i);
-                    data.put(env + "." + LABEL_USER, databaseDto.getUser());
+            Map<String, DatabaseDto> schemaSyncCheckMap = new LinkedHashMap<String, DatabaseDto>();
+            int schemaSyncCheckCount = schemaSyncCheckTabPanel == null ? 0 : schemaSyncCheckTabPanel.getTabCount();
+            for (int i = 0; i < schemaSyncCheckCount; i++) {
+                Component tabComponent = schemaSyncCheckTabPanel.getComponent(i);
+                if (!(tabComponent instanceof SchemaSyncCheckPanal)) {
+                    continue;
                 }
+
+                SchemaSyncCheckPanal schemaSyncCheckPage = (SchemaSyncCheckPanal) tabComponent;
+                DatabaseDto databaseDto = schemaSyncCheckPage.asResult();
+
+                schemaSyncCheckMap.put(schemaSyncCheckTabPanel.getTitleAt(i), databaseDto);
+                data.put(schemaSyncCheckTabPanel.getTitleAt(i) + "." + LABEL_USER, databaseDto.getUser());
             }
 
             for (Entry<String, String> entry : data.entrySet()) {
@@ -329,6 +332,12 @@ public class NewClientPanel extends JPanel {
                     JOptionPane.showMessageDialog(frame, String.format(MSG_REQUIRED, entry.getKey()));
                     return;
                 }
+            }
+
+            final File dbfluteClientDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + clientDto.getProject());
+            if (projectText.isEnabled() && dbfluteClientDir.exists()) {
+                JOptionPane.showMessageDialog(frame, String.format(MSG_EXIST_PROJECT, clientDto.getProject()));
+                return;
             }
 
             if (clientDto.getJdbcDriverJarPath() != null && !clientDto.getJdbcDriverJarPath().equals("")) {
@@ -340,33 +349,17 @@ public class NewClientPanel extends JPanel {
                 }
             }
 
-            final File dbfluteClientDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + clientDto.getProject());
-            if (dbfluteClientDir.exists()) {
-                JOptionPane.showMessageDialog(frame, String.format(MSG_EXIST_PROJECT, clientDto.getProject()));
+            if (schemaSyncCheckCount != schemaSyncCheckMap.size()) {
+                JOptionPane.showMessageDialog(frame, MSG_DUPLICATE_CHEMA_SYNC_CHECK);
                 return;
             }
 
-            Map<String, DatabaseDto> schemaSyncCheckMap = new LinkedHashMap<String, DatabaseDto>();
-            if (schemaSyncCheckTabPanel != null) {
-                for (int i = 0; i < schemaSyncCheckTabPanel.getTabCount(); i++) {
-                    Component tabComponent = schemaSyncCheckTabPanel.getComponent(i);
-                    if (!(tabComponent instanceof SchemaSyncCheckPanal)) {
-                        continue;
-                    }
-
-                    SchemaSyncCheckPanal schemaSyncCheckPage = (SchemaSyncCheckPanal) tabComponent;
-                    DatabaseDto databaseDto = schemaSyncCheckPage.asResult();
-
-                    schemaSyncCheckMap.put(schemaSyncCheckTabPanel.getTitleAt(i), databaseDto);
-                }
-            }
-
-            DBFluteIntro dbFluteNewClient = new DBFluteIntro();
+            DBFluteIntro dbFluteIntro = new DBFluteIntro();
             try {
-                dbFluteNewClient.createNewClient(clientDto, schemaSyncCheckMap);
+                dbFluteIntro.createNewClient(clientDto, schemaSyncCheckMap);
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(frame, MSG_CLIENT_CREATE_ERROR);
+                JOptionPane.showMessageDialog(frame, String.format(MSG_CLIENT_CREATE_ERROR, getValue(NAME)));
                 return;
             }
 
@@ -385,9 +378,15 @@ public class NewClientPanel extends JPanel {
                 tabPanel.addTab(LABEL_PROJECT_TAB, clientPanel);
             }
 
+            // TODO 更新の場合の後処理
+            if (!projectText.isEnabled()) {
+                tabPanel.remove(NewClientPanel.this);
+                tabPanel.addTab("+", new NewClientPanel(frame));
+            }
+
             clientPanel.fireProjectCombo(projectText.getText());
 
-            JOptionPane.showMessageDialog(frame, MSG_CLIENT_CREATE_FINISHED);
+            JOptionPane.showMessageDialog(frame, String.format(MSG_CLIENT_CREATE_FINISHED, getValue(NAME)));
         }
     }
 
@@ -440,16 +439,16 @@ public class NewClientPanel extends JPanel {
         clientCreateButton.setEnabled(dbfluteVersionCombo.getItemCount() > 0);
     }
 
-    private void fireDatabaseInfoUrlText(DatabaseInfoDef databaseInfoDef) {
+    private void fireDatabaseUrlText(DatabaseInfoDef databaseInfoDef) {
         databaseUrlText.setText(databaseInfoDef.getUrlTemplate());
     }
 
-    private void fireDatabaseInfoSchemaLabel(DatabaseInfoDef databaseInfoDef) {
+    private void fireDatabaseSchemaLabel(DatabaseInfoDef databaseInfoDef) {
         boolean required = databaseInfoDef != null && databaseInfoDef.needSchema();
         databaseSchemaLabel.setText(LABEL_SCHEMA + (required ? LABEL_REQUIRED : ""));
     }
 
-    private void fireDatabaseInfoSchemaText(DatabaseInfoDef databaseInfoDef) {
+    private void fireDatabaseSchemaText(DatabaseInfoDef databaseInfoDef) {
         if (databaseInfoDef == null) {
             return;
         }
@@ -488,5 +487,61 @@ public class NewClientPanel extends JPanel {
             jdbcDriverJarPathText.setEnabled(false);
             jdbcDriverJarPathText.setTransferHandler(null);
         }
+    }
+
+    protected void reflect(ClientDto clientDto, Map<String, DatabaseDto> envDatabaseDtoMap) {
+
+        projectText.setText(clientDto.getProject());
+        dbmsCombo.setSelectedItem(DatabaseInfoDef.codeOf(clientDto.getDbms()));
+        jdbcDriverJarPathText.setText(clientDto.getJdbcDriverJarPath());
+        databaseUrlText.setText(clientDto.getDatabaseDto().getUrl());
+        databaseSchemaText.setText(clientDto.getDatabaseDto().getSchema());
+        databaseUserText.setText(clientDto.getDatabaseDto().getUser());
+        databasePasswordText.setText(clientDto.getDatabaseDto().getPassword());
+        clientDto.setDbfluteVersion(clientDto.getDbfluteVersion());
+
+        optionMap.get(LABEL_IS_DB_COMMENT_ON_ALIAS_BASIS).setSelected(clientDto.isDbCommentOnAliasBasis());
+        optionMap.get(LABEL_IS_CHECK_COLUMN_DEF_ORDER_DIFF).setSelected(clientDto.isCheckColumnDefOrderDiff());
+        optionMap.get(LABEL_IS_CHECK_DB_COMMENT_DIFF).setSelected(clientDto.isCheckDbCommentDiff());
+        optionMap.get(LABEL_IS_CHECK_PROCEDURE_DIFF).setSelected(clientDto.isCheckProcedureDiff());
+        optionMap.get(LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN).setSelected(
+                clientDto.isGenerateProcedureParameterBean());
+
+        if (schemaSyncCheckTabPanel == null && !envDatabaseDtoMap.isEmpty()) {
+            schemaSyncCheckTabPanel = new JTabbedPane();
+            schemaSyncCheckTabPanel.setBounds(0, 360, 480, 160);
+            add(schemaSyncCheckTabPanel);
+        }
+
+        for (Entry<String, DatabaseDto> entry : envDatabaseDtoMap.entrySet()) {
+
+            SchemaSyncCheckPanal schemaSyncCheckPanal = new SchemaSyncCheckPanal();
+            schemaSyncCheckPanal.reflect(entry.getValue());
+            schemaSyncCheckTabPanel.addTab(entry.getKey(), schemaSyncCheckPanal);
+            schemaSyncCheckTabPanel.setVisible(schemaSyncCheckTabPanel.getTabCount() != 0);
+        }
+
+        projectText.setEnabled(false);
+        clientCreateButton.setVisible(false);
+
+        JButton changeButton = new JButton(new ClientCreateAction(LABEL_CLIENT_CHANGE));
+        changeButton.setBounds(150, 520, 130, 20);
+        this.add(changeButton);
+
+        JButton cancelButton = new JButton(new AbstractAction(LABEL_CLIENT_CANCEL) {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JTabbedPane tabPanel = (JTabbedPane) getParent();
+                tabPanel.remove(NewClientPanel.this);
+                tabPanel.addTab("+", new NewClientPanel(frame));
+                ClientPanel clientPanel = new ClientPanel(frame);
+                tabPanel.addTab(LABEL_PROJECT_TAB, clientPanel);
+                clientPanel.fireProjectCombo(projectText.getText());
+            }
+
+        });
+        cancelButton.setBounds(300, 520, 130, 20);
+        this.add(cancelButton);
     }
 }
