@@ -4,7 +4,7 @@ def launch4jVersion = '3.1.0-beta1'
 ant.condition(property: 'os', value: 'mac') { os(family: 'windows') }
 ant.condition(property: 'os', value: 'mac') { os(family: 'unix') }
 
-task runLaunch4j(type:Exec) {
+task runLaunch4j << {
 
     def launch4jDir = file('./gradle/launch4j/' + ant.properties.os + '/')
     def launch4jSrc
@@ -54,10 +54,10 @@ task runLaunch4j(type:Exec) {
 
     switch(ant.properties.os) {
         case 'win':
-            commandLine 'cmd', '/c', launch4jDir.path + 'launch4j/launch4j.exe', '"' + configFile.canonicalPath + '"'
+            ['cmd', '/c', launch4jDir.path + 'launch4j/launch4j.exe', '"' + configFile.canonicalPath + '"'].execute()
             break
         case 'mac':
-            commandLine 'sh', launch4jDir.path + '/launch4j/launch4j', configFile.canonicalPath
+            ['sh', launch4jDir.path + '/launch4j/launch4j', configFile.canonicalPath].execute()
             break
     }
 }
