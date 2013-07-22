@@ -1,0 +1,16 @@
+eclipse {
+    pathVariables 'GRADLE_USER_HOME': gradle.gradleUserHomeDir
+    classpath {
+        downloadSources=true
+    }
+}
+
+eclipse.jdt.file {
+    withProperties { properties ->
+        def formatter = new XmlSlurper().parse('./gradle/eclipse/formatter.xml')
+
+        formatter.profile.setting.each {
+            properties.put(it.@id as String, it.@value as String)
+        }
+    }
+}

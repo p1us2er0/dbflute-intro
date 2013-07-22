@@ -63,7 +63,7 @@ public class ClientPanel extends JPanel {
     private static final String MSG_NOT_FOUND_ENV = NewClientPanel.LABEL_SCHEMA_SYNC_CHECK + "が見つかりません。";
     private static final String MSG_CANCELED = "キャンセルしました。";
     private static final String MSG_INVALID_URL = "URLが不正です。";
-    private static final String MSG_NOT_FOUND_URL = "「%1$s」が見つかりません。";
+    private static final String MSG_NOT_FOUND_URL = "「%1$s」\r\nが見つかりません。";
     private static final String MSG_REMOVE = "「%1$s」の設定を削除します。";
     private static final String MSG_REMOVE_SUCCESS = "「%1$s」の設定を削除しました。";
     private static final String MSG_REMOVE_ERROR = "「%1$s」の設定を削除できませんでした。";

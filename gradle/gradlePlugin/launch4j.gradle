@@ -1,0 +1,63 @@
+def launch4jSite = 'http://sourceforge.net/projects/launch4j/files/launch4j-3'
+def launch4jVersion = '3.1.0-beta1'
+
+ant.condition(property: 'os', value: 'mac') { os(family: 'windows') }
+ant.condition(property: 'os', value: 'mac') { os(family: 'unix') }
+
+task runLaunch4j(type:Exec) {
+
+    def launch4jDir = file('./gradle/launch4j/' + ant.properties.os + '/')
+    def launch4jSrc
+
+    switch(ant.properties.os){
+        case 'win':
+            launch4jSrc = "${launch4jSite}/${launch4jVersion}/launch4j-${launch4jVersion}-win32.zip"
+            break
+        case 'mac':
+            launch4jSrc = "${launch4jSite}/${launch4jVersion}/launch4j-${launch4jVersion}-macosx-x86-10.8.tgz"
+            break
+    }
+
+    if (!launch4jDir.exists()) {
+        launch4jDir.mkdirs()
+        println launch4jSrc + ' download...'
+        ant.get(src: launch4jSrc, dest: launch4jDir)
+
+        def srcFile = launch4jDir.path + launch4jSrc.substring(launch4jSrc.lastIndexOf('/'))
+        if (srcFile.endsWith('.zip')) {
+            ant.unzip(src: srcFile, dest: launch4jDir.path)
+        } else {
+            ant.untar(src: srcFile, dest: launch4jDir.path, compression: 'gzip')
+
+            // TODO
+            def file = new File(launch4jDir.path, 'launch4j/bin/ld')
+            ant.chmod(file: file, perm: '755')
+            file = new File(launch4jDir.path, 'launch4j/bin/windres')
+            ant.chmod(file: file, perm: '755')
+        }
+    }
+
+    def jarPath = jar.archivePath.canonicalPath - "-${version}"
+    def launch4jConfig = new XmlParser().parse('./gradle/launch4j/launch4j-config.xml')
+    launch4jConfig.jar[0].setValue(jarPath)
+    launch4jConfig.outfile[0].setValue(jarPath - '.jar' + '.exe')
+    launch4jConfig.jre[0].minVersion[0].setValue(project.targetCompatibility.toString() + '.0')
+
+    def configFile = file('./build/launch4j/launch4j-config.xml')
+    configFile.parentFile.mkdirs()
+    configFile.createNewFile()
+    configFile.withPrintWriter('utf-8') { writer ->
+        def printer = new XmlNodePrinter(writer)
+        printer.preserveWhitespace = true
+        printer.print(launch4jConfig)
+    }
+
+    switch(ant.properties.os) {
+        case 'win':
+            commandLine 'cmd', '/c', launch4jDir.path + 'launch4j/launch4j.exe', '"' + configFile.canonicalPath + '"'
+            break
+        case 'mac':
+            commandLine 'sh', launch4jDir.path + '/launch4j/launch4j', configFile.canonicalPath
+            break
+    }
+}

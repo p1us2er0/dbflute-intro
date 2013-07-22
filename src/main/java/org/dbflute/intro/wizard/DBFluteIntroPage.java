@@ -4,14 +4,15 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -40,6 +41,7 @@ public class DBFluteIntroPage {
 
     private static final String LABEL_TITLE = "DBFlute Intro";
     protected static final String LABEL_SETTING = "設定";
+    private static final String LABEL_USE_SYSTEM_PROXIES = "システムのプロキシ設定利用";
     private static final String LABEL_PROXY_HOST = "ホスト";
     private static final String LABEL_PROXY_PORT = "ポート";
     protected static final String LABEL_DOWNLOAD = "ダウンロード";
@@ -51,6 +53,7 @@ public class DBFluteIntroPage {
 
     private static final String MSG_DOWNLOAD = "DBFluteのバージョンを入力してください。\n最新バージョン : %1$s\n最新スナップショットバージョン : %2$s";
     private static final String MSG_NETWORK_ERROR = "ネットワークエラー。 プロキシを設定してください。";
+    private static final String MSG_USE_SYSTEM_PROXIES_ATTENTION = "※チェックした場合は、アプリの再起動が必要";
     private static final String MSG_CANCELED_DOWNLOAD = "ダウンロードをキャンセルしました。";
     private static final String MSG_DOWNLOAD_ERROR = "ダウンロードエラー";
     private static final String MSG_DOWNLOADING = "ダウンロード中。";
@@ -59,6 +62,7 @@ public class DBFluteIntroPage {
     JTabbedPane tabPanel;
 
     private JDialog dialog;
+    private JCheckBox useSystemProxiesCheckBox;
     private JTextField proxyHostText;
     private JTextField proxyPortText;
 
@@ -73,7 +77,6 @@ public class DBFluteIntroPage {
             public void run() {
                 try {
                     DBFluteIntroPage window = new DBFluteIntroPage();
-                    SwingUtil.updateLookAndFeel(window.frame);
                     window.frame.setVisible(true);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -101,6 +104,7 @@ public class DBFluteIntroPage {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new CardLayout(0, 0));
         frame.setLocationRelativeTo(null);
+        SwingUtil.updateLookAndFeel(frame);
 
         tabPanel = new JTabbedPane();
         frame.getContentPane().add(tabPanel, "name_5009361789717");
@@ -119,8 +123,7 @@ public class DBFluteIntroPage {
         JMenu setting = new JMenu(LABEL_SETTING);
         menuBar.add(setting);
 
-        Action downloadAction = new DownloadAction();
-        JMenuItem downloadMenuItem = new JMenuItem(downloadAction);
+        JMenuItem downloadMenuItem = new JMenuItem(new DownloadAction());
         setting.add(downloadMenuItem);
 
         JMenuItem proxySettingsMenuItem = new JMenuItem(new ProxySettingsViewAction());
@@ -136,7 +139,7 @@ public class DBFluteIntroPage {
         help.add(upgradeMenuItem);
 
         if (dbFluteIntro.getExistedDBFluteVersionList().isEmpty()) {
-            downloadAction.actionPerformed(null);
+            downloadDBFlute();
         }
     }
 
@@ -149,47 +152,7 @@ public class DBFluteIntroPage {
         }
 
         public void actionPerformed(ActionEvent event) {
-
-            EmMetaFromWebSite site = null;
-
-            try {
-                site = dbFluteIntro.getEmMetaFromWebSite();
-            } catch (IllegalStateException e) {
-                JOptionPane.showMessageDialog(frame, MSG_NETWORK_ERROR);
-                return;
-            }
-
-            String message = String.format(MSG_DOWNLOAD, site.getLatestVersionDBFlute(),
-                    site.getLatestSnapshotVersionDBFlute());
-            final String dbfluteVersion = JOptionPane.showInputDialog(frame, message, site.getLatestVersionDBFlute());
-
-            if (dbfluteVersion == null) {
-                JOptionPane.showMessageDialog(frame, MSG_CANCELED_DOWNLOAD);
-                return;
-            }
-
-            ProgressBarDialog progressBarDialog = new ProgressBarDialog(frame) {
-
-                @Override
-                public void execute() {
-                    try {
-                        dbFluteIntro.downloadDBFlute(dbfluteVersion);
-
-                    } catch (EmPluginException e) {
-                        JOptionPane.showMessageDialog(frame, MSG_DOWNLOAD_ERROR);
-                        return;
-                    }
-
-                    for (Component component : tabPanel.getComponents()) {
-                        if (component instanceof NewClientPanel) {
-                            ((NewClientPanel) component).fireVersionInfoDBFlute();
-                            ;
-                        }
-                    }
-                }
-            };
-
-            progressBarDialog.start("Download", MSG_DOWNLOADING);
+            downloadDBFlute();
         }
     }
 
@@ -202,45 +165,7 @@ public class DBFluteIntroPage {
         }
 
         public void actionPerformed(ActionEvent event) {
-
-            Properties properties = dbFluteIntro.getProperties();
-            String proxyHost = properties.getProperty("proxyHost");
-            String proxyPort = properties.getProperty("proxyPort");
-
-            dialog = new JDialog(frame, LABEL_PROXY_SETTING, true);
-            dialog.setBounds(100, 100, 200, 150);
-            dialog.getContentPane().setLayout(new CardLayout(0, 0));
-            dialog.setLocationRelativeTo(null);
-
-            JPanel panel = new JPanel();
-            dialog.getContentPane().add(panel, "name_5009361789718");
-            panel.setLayout(null);
-
-            JLabel proxyHostLabel = new JLabel(LABEL_PROXY_HOST);
-            proxyHostLabel.setBounds(10, 10, 80, 20);
-            panel.add(proxyHostLabel);
-
-            proxyHostText = new JTextField();
-            proxyHostText.setBounds(80, 10, 100, 20);
-            proxyHostText.setColumns(10);
-            proxyHostText.setText(proxyHost);
-            panel.add(proxyHostText);
-
-            JLabel proxyPortLabel = new JLabel(LABEL_PROXY_PORT);
-            proxyPortLabel.setBounds(10, 35, 80, 20);
-            panel.add(proxyPortLabel);
-
-            proxyPortText = new JTextField();
-            proxyPortText.setBounds(80, 35, 100, 20);
-            proxyPortText.setColumns(10);
-            proxyPortText.setText(proxyPort);
-            panel.add(proxyPortText);
-
-            JButton proxySettingsButton = new JButton(new ProxySettingsAction());
-            proxySettingsButton.setBounds(80, 60, 70, 20);
-            panel.add(proxySettingsButton);
-
-            dialog.setVisible(true);
+            viewProxySettings();
         }
     }
 
@@ -257,6 +182,7 @@ public class DBFluteIntroPage {
             Properties properties = dbFluteIntro.getProperties();
             properties.put("proxyHost", proxyHostText.getText());
             properties.put("proxyPort", proxyPortText.getText());
+            properties.put("java.net.useSystemProxies", String.valueOf(useSystemProxiesCheckBox.isSelected()));
 
             FileOutputStream stream = null;
             try {
@@ -271,6 +197,10 @@ public class DBFluteIntroPage {
             dbFluteIntro.loadProxy();
 
             dialog.setVisible(false);
+
+            if (dbFluteIntro.getExistedDBFluteVersionList().isEmpty()) {
+                downloadDBFlute();
+            }
         }
     }
 
@@ -298,5 +228,117 @@ public class DBFluteIntroPage {
             //
             // System.exit(0);
         }
+    }
+
+    private void downloadDBFlute() {
+
+        EmMetaFromWebSite site = null;
+
+        try {
+            site = dbFluteIntro.getEmMetaFromWebSite();
+        } catch (IllegalStateException e) {
+            JOptionPane.showMessageDialog(frame, MSG_NETWORK_ERROR);
+            viewProxySettings();
+            return;
+        }
+
+        String message = String.format(MSG_DOWNLOAD, site.getLatestVersionDBFlute(),
+                site.getLatestSnapshotVersionDBFlute());
+        final String dbfluteVersion = JOptionPane.showInputDialog(frame, message, site.getLatestVersionDBFlute());
+
+        if (dbfluteVersion == null) {
+            JOptionPane.showMessageDialog(frame, MSG_CANCELED_DOWNLOAD);
+            return;
+        }
+
+        ProgressBarDialog progressBarDialog = new ProgressBarDialog(frame) {
+
+            @Override
+            public void execute() {
+                try {
+                    dbFluteIntro.downloadDBFlute(dbfluteVersion);
+
+                } catch (EmPluginException e) {
+                    JOptionPane.showMessageDialog(frame, MSG_DOWNLOAD_ERROR);
+                    return;
+                }
+
+                for (Component component : tabPanel.getComponents()) {
+                    if (component instanceof NewClientPanel) {
+                        ((NewClientPanel) component).fireVersionInfoDBFlute();
+                        ;
+                    }
+                }
+            }
+        };
+
+        progressBarDialog.start("Download", MSG_DOWNLOADING);
+    }
+
+    private void viewProxySettings() {
+
+        Properties properties = dbFluteIntro.getProperties();
+        boolean javaNetUseSystemProxies = Boolean.parseBoolean(properties.getProperty("java.net.useSystemProxies"));
+        String proxyHost = properties.getProperty("proxyHost");
+        String proxyPort = properties.getProperty("proxyPort");
+
+        dialog = new JDialog(frame, LABEL_PROXY_SETTING, true);
+        dialog.setBounds(100, 100, 250, 180);
+        dialog.getContentPane().setLayout(new CardLayout(0, 0));
+        dialog.setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel();
+        dialog.getContentPane().add(panel, "name_5009361789718");
+        panel.setLayout(null);
+
+        useSystemProxiesCheckBox = new JCheckBox(LABEL_USE_SYSTEM_PROXIES + "(※)", javaNetUseSystemProxies);
+        useSystemProxiesCheckBox.setBounds(10, 10, 180, 20);
+        panel.add(useSystemProxiesCheckBox);
+
+        useSystemProxiesCheckBox.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fireUseSystemProxiesCheckBox();
+            }
+        });
+
+        JLabel useSystemProxiesAttentionLabel = new JLabel(MSG_USE_SYSTEM_PROXIES_ATTENTION);
+        useSystemProxiesAttentionLabel.setBounds(10, 35, 230, 20);
+        panel.add(useSystemProxiesAttentionLabel);
+
+        JLabel proxyHostLabel = new JLabel(LABEL_PROXY_HOST);
+        proxyHostLabel.setBounds(10, 60, 80, 20);
+        panel.add(proxyHostLabel);
+
+        proxyHostText = new JTextField();
+        proxyHostText.setBounds(80, 60, 100, 20);
+        proxyHostText.setColumns(10);
+        proxyHostText.setText(proxyHost);
+        panel.add(proxyHostText);
+
+        JLabel proxyPortLabel = new JLabel(LABEL_PROXY_PORT);
+        proxyPortLabel.setBounds(10, 85, 80, 20);
+        panel.add(proxyPortLabel);
+
+        proxyPortText = new JTextField();
+        proxyPortText.setBounds(80, 85, 100, 20);
+        proxyPortText.setColumns(10);
+        proxyPortText.setText(proxyPort);
+        panel.add(proxyPortText);
+
+        JButton proxySettingsButton = new JButton(new ProxySettingsAction());
+        proxySettingsButton.setBounds(80, 110, 70, 20);
+        panel.add(proxySettingsButton);
+
+        fireUseSystemProxiesCheckBox();
+
+        dialog.setVisible(true);
+    }
+
+    private void fireUseSystemProxiesCheckBox() {
+        boolean selected = useSystemProxiesCheckBox.isSelected();
+        proxyHostText.setEditable(!selected);
+        proxyPortText.setEditable(!selected);
     }
 }

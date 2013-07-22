@@ -3,59 +3,13 @@ apply plugin: 'eclipse'
 apply plugin: 'project-report'
 
 group = 'org.dbflute'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2'
 artifact = 'dbflute-intro'
 
-def encoding = "UTF-8"
-def compatibility = '1.6.0'
 def utfluteVersion = '0.3.0'
 def junitVersion ='4.8.2'
 
-fileTree(dir: 'gradle', includes: ['*.gradle']).each { apply from: it }
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.6'
-}
-
-tasks.withType(AbstractCompile) each { it.options.encoding = encoding }
-tasks.withType(GroovyCompile) each { it.groovyOptions.encoding = encoding }
-javadoc { options.encoding = "UTF-8" }
-tasks.withType(Compile) {
-    sourceCompatibility = compatibility
-    targetCompatibility = compatibility
-}
-
-task sourcesJar(type: Jar, dependsOn:classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn:javadoc) {
-   classifier = 'javadoc'
-   from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
-eclipse {
-    pathVariables 'GRADLE_USER_HOME': gradle.gradleUserHomeDir
-    classpath {
-        downloadSources=true
-    }
-}
-
-eclipse.jdt.file {
-    withProperties { properties ->
-        def formatter = new XmlSlurper().parse('./gradle/eclipse/formatter.xml')
-
-        formatter.profile.setting.each {
-            properties.put(it.@id as String, it.@value as String)
-        }
-    }
-}
+fileTree(dir: 'gradle/gradlePlugin', includes: ['*.gradle']).each { apply from: it }
 
 repositories {
     mavenCentral()
@@ -89,31 +43,8 @@ jar {
     }
 }
 
-ant.condition(property: "os", value: "windows") { os(family: "windows") }
-ant.condition(property: "os", value: "unix" ) { os(family: "unix") }
-
-task runLaunch4j(type:Exec) {
-
-    def launch4jConfig = new XmlParser().parse('./gradle/launch4j/launch4j-config.xml')
-    launch4jConfig.jar[0].setValue(jar.archivePath.canonicalPath)
-    launch4jConfig.outfile[0].setValue(jar.archivePath.canonicalPath - '.jar' + '.exe')
-    launch4jConfig.jre[0].minVersion[0].setValue(compatibility)
-
-	def configFile = file('./build/launch4j/launch4j-config.xml')
-    configFile.parentFile.mkdirs()
-    configFile.createNewFile()
-    configFile.withPrintWriter("utf-8") { writer ->
-        def printer = new XmlNodePrinter(writer)
-        printer.preserveWhitespace = true
-        printer.print(launch4jConfig)
-    }
-
-    switch(ant.properties.os){
-        case 'unix':
-            commandLine 'sh', './gradle/launch4j/mac/launch4j', configFile.canonicalPath
-            break
-        case 'windows':
-            commandLine 'cmd', '/c', './gradle/launch4j/win/launch4j.exe', '"' + configFile.canonicalPath + '"'
-            break
+build {
+    doLast {
+        tasks.runLaunch4j.execute()
     }
 }

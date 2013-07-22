@@ -47,7 +47,7 @@ public class NewClientPanel extends JPanel {
     protected static final String LABEL_SCHEMA = "スキーマ";
     protected static final String LABEL_USER = "ユーザ";
     protected static final String LABEL_PASSWORD = "パスワード";
-    private static final String LABEL_JDBC_DRIVER_JAR_PATH = "Jdbcドライバのパス";
+    private static final String LABEL_JDBC_DRIVER_JAR_PATH = "JDBCドライバのパス";
     private static final String LABEL_File_CHOOSE = "ファイル選択";
     private static final String LABEL_DBFLUTE_VERSION = "DBFluteバージョン";
     private static final String LABEL_OPTION = "オプション";
@@ -69,6 +69,7 @@ public class NewClientPanel extends JPanel {
     private static final String MSG_INVALID = "%1$s「%2$s」が不正です。";
     private static final String MSG_EXIST_PROJECT = LABEL_PROJECT + "「%1$s」がすでに存在します。";
     private static final String MSG_DUPLICATE_CHEMA_SYNC_CHECK = LABEL_SCHEMA_SYNC_CHECK + "の名前が重複しています。";
+    private static final String MSG_TEST_CONNECTION_ERROR = "DBに接続できませんでした。作成を続けますか。\r\n%1$s";
     private static final String MSG_CLIENT_CREATE_ERROR = "%1$sに失敗しました。";
     private static final String MSG_CLIENT_CREATE_FINISHED = "%1$sしました。";
     private static final String MSG_DBFLUTE_VERSION = "DBFluteモジュールをダウンロードして下さい。(" + DBFluteIntroPage.LABEL_SETTING
@@ -226,7 +227,9 @@ public class NewClientPanel extends JPanel {
 
         public void actionPerformed(ActionEvent event) {
 
-            JFileChooser fileChooser = new JFileChooser();
+            String jdbcDriverJarPath = jdbcDriverJarPathText.getText();
+
+            JFileChooser fileChooser = new JFileChooser(new File(jdbcDriverJarPath).getParent());
             FileNameExtensionFilter filter = new FileNameExtensionFilter("*.jar", "jar");
             fileChooser.setFileFilter(filter);
             int result = fileChooser.showOpenDialog(frame);
@@ -355,6 +358,16 @@ public class NewClientPanel extends JPanel {
             }
 
             DBFluteIntro dbFluteIntro = new DBFluteIntro();
+            try {
+                dbFluteIntro.testConnection(clientDto, schemaSyncCheckMap);
+            } catch (RuntimeException e) {
+                int result = JOptionPane.showConfirmDialog(frame,
+                        String.format(MSG_TEST_CONNECTION_ERROR, e.getMessage()), null, JOptionPane.YES_NO_OPTION);
+                if (result == JOptionPane.NO_OPTION) {
+                    return;
+                }
+            }
+
             try {
                 dbFluteIntro.createNewClient(clientDto, schemaSyncCheckMap);
             } catch (Exception e) {
@@ -498,7 +511,7 @@ public class NewClientPanel extends JPanel {
         databaseSchemaText.setText(clientDto.getDatabaseDto().getSchema());
         databaseUserText.setText(clientDto.getDatabaseDto().getUser());
         databasePasswordText.setText(clientDto.getDatabaseDto().getPassword());
-        clientDto.setDbfluteVersion(clientDto.getDbfluteVersion());
+        dbfluteVersionCombo.setSelectedItem(clientDto.getDbfluteVersion());
 
         optionMap.get(LABEL_IS_DB_COMMENT_ON_ALIAS_BASIS).setSelected(clientDto.isDbCommentOnAliasBasis());
         optionMap.get(LABEL_IS_CHECK_COLUMN_DEF_ORDER_DIFF).setSelected(clientDto.isCheckColumnDefOrderDiff());

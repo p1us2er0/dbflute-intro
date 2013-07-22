@@ -8,8 +8,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.ProxySelector;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLDecoder;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -88,20 +95,27 @@ public class DBFluteIntro {
 
     public void loadProxy() {
 
-        Properties properties = getProperties();
+        System.clearProperty("proxySet");
+        System.clearProperty("proxyHost");
+        System.clearProperty("proxyPort");
 
+        Properties properties = getProperties();
         String proxyHost = properties.getProperty("proxyHost");
         String proxyPort = properties.getProperty("proxyPort");
+        boolean useSystemProxies = Boolean.parseBoolean(properties.getProperty("java.net.useSystemProxies"));
 
-        if (proxyHost != null && !proxyHost.equals("")) {
-            System.setProperty("proxySet", "true");
-            System.setProperty("proxyHost", properties.getProperty("proxyHost"));
+        if (useSystemProxies) {
+            System.setProperty("java.net.useSystemProxies", String.valueOf(useSystemProxies));
+        } else {
+            if (proxyHost != null && !proxyHost.equals("")) {
+                System.setProperty("proxySet", "true");
+                System.setProperty("proxyHost", proxyHost);
+            }
+
+            if (proxyPort != null && !proxyPort.equals("")) {
+                System.setProperty("proxyPort", proxyPort);
+            }
         }
-
-        if (proxyPort != null && !proxyPort.equals("")) {
-            System.setProperty("proxyPort", properties.getProperty("proxyPort"));
-        }
-
     }
 
     public Map<String, Object> getManifestMap() {
@@ -174,7 +188,6 @@ public class DBFluteIntro {
                 try {
                     if (FileUtils.readFileToString(file, Charsets.UTF_8).trim().length() > 0) {
                         exist = true;
-                        ;
                     }
                 } catch (IOException e) {
                     continue;
@@ -340,6 +353,41 @@ public class DBFluteIntro {
         EmZipInputStreamUtil.extractAndClose(templateZipIn, templateExtractDirectoryBase);
     }
 
+    public void testConnection(ClientDto clientDto, Map<String, DatabaseDto> schemaSyncCheckMap) {
+
+        ProxySelector proxySelector = ProxySelector.getDefault();
+        ProxySelector.setDefault(null);
+        Connection connection = null;
+
+        try {
+            Properties info = new Properties();
+            info.put("user", clientDto.getDatabaseDto().getUser());
+            info.put("password", clientDto.getDatabaseDto().getPassword());
+
+            URL fileUrl = new File(clientDto.getJdbcDriverJarPath()).toURI().toURL();
+            URL[] urls = { fileUrl };
+            URLClassLoader loader = URLClassLoader.newInstance(urls);
+
+            @SuppressWarnings("unchecked")
+            Class<Driver> driverClass = (Class<Driver>) loader.loadClass(clientDto.getJdbcDriver());
+            Driver driver = driverClass.newInstance();
+
+            connection = driver.connect(clientDto.getDatabaseDto().getUrl(), info);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            ProxySelector.setDefault(proxySelector);
+
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                }
+            }
+        }
+    }
+
     public void createNewClient(ClientDto clientDto, Map<String, DatabaseDto> schemaSyncCheckMap) {
 
         final File dbfluteClientDir = new File(BASE_DIR_PATH, "dbflute_" + clientDto.getProject());
@@ -423,7 +471,16 @@ public class DBFluteIntro {
             replaceMap.put("${procedureSynonymHandlingType}", "INCLUDE");
             fileMap.put(new File(dbfluteClientDir, "/dfprop/outsideSqlDefinitionMap+.dfprop"), replaceMap);
 
-            replaceFile(fileMap);
+            replaceFile(fileMap, false);
+
+            fileMap = new LinkedHashMap<File, Map<String, Object>>();
+
+            replaceMap = new LinkedHashMap<String, Object>();
+            replaceMap.put("((?:set|export) DBFLUTE_HOME=[^-]*-)(.*)", "$1" + clientDto.getDbfluteVersion());
+            fileMap.put(new File(dbfluteClientDir, "/_project.bat"), replaceMap);
+            fileMap.put(new File(dbfluteClientDir, "/_project.sh"), replaceMap);
+
+            replaceFile(fileMap, true);
 
             if (clientDto.getJdbcDriverJarPath() != null && !clientDto.getJdbcDriverJarPath().equals("")) {
 
@@ -434,7 +491,7 @@ public class DBFluteIntro {
 
                 boolean flg = true;
                 if (jarFileOld.exists()) {
-                    if (jarFile.equals(jarFileOld)) {
+                    if (jarFile.getCanonicalPath().equals(jarFileOld.getCanonicalPath())) {
                         flg = false;
                     }
                 }
@@ -491,7 +548,7 @@ public class DBFluteIntro {
             replaceMap.put("${env}", entry.getKey());
             fileMap.put(documentDefinitionMapFile, replaceMap);
 
-            replaceFile(fileMap);
+            replaceFile(fileMap, false);
         }
     }
 
@@ -512,14 +569,18 @@ public class DBFluteIntro {
         return true;
     }
 
-    private void replaceFile(Map<File, Map<String, Object>> fileMap) {
+    private void replaceFile(Map<File, Map<String, Object>> fileMap, boolean regularExpression) {
         try {
             for (Entry<File, Map<String, Object>> entry : fileMap.entrySet()) {
 
                 String text = FileUtils.readFileToString(entry.getKey(), Charsets.UTF_8);
 
                 for (Entry<String, Object> replaceEntry : entry.getValue().entrySet()) {
-                    text = text.replace(replaceEntry.getKey(), String.valueOf(replaceEntry.getValue()));
+                    if (regularExpression) {
+                        text = text.replaceAll(replaceEntry.getKey(), String.valueOf(replaceEntry.getValue()));
+                    } else {
+                        text = text.replace(replaceEntry.getKey(), String.valueOf(replaceEntry.getValue()));
+                    }
                 }
 
                 FileUtils.write(entry.getKey(), text, Charsets.UTF_8);
@@ -531,10 +592,26 @@ public class DBFluteIntro {
 
     public boolean upgrade() {
 
+        File jarPathFile = new File("./dbflute-intro.jar");
+
+        Class<?> clazz = this.getClass();
+        URL location = clazz.getResource("/" + clazz.getName().replaceAll("\\.", "/") + ".class");
+        String path = location.getPath();
+
+        if (path.lastIndexOf("!") != -1) {
+            try {
+                jarPathFile = new File(URLDecoder.decode(path.substring("file:/".length(), path.lastIndexOf("!")),
+                        Charsets.UTF_8.name()));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
         try {
             FileUtils.copyURLToFile(
-                    new URL("http://dbflute.seasar.org/download/helper/dbflute-intro/dbflute-intro.jar"), new File(
-                            "./dbflute-intro.jar"));
+                    new URL("http://dbflute.seasar.org/download/helper/dbflute-intro/" + jarPathFile.getName()),
+                    jarPathFile);
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return false;
@@ -616,11 +693,10 @@ public class DBFluteIntro {
             new RuntimeException(e);
         }
 
-        Pattern pattern = Pattern.compile(".*mydbflute\\dbflute-(.*)");
+        Pattern pattern = Pattern.compile("((?:set|export) DBFLUTE_HOME=[^-]*-)(.*)");
         Matcher matcher = pattern.matcher(data);
-
-        if (matcher.matches()) {
-            clientDto.setDbfluteVersion(matcher.group(1));
+        if (matcher.find()) {
+            clientDto.setDbfluteVersion(matcher.group(2));
         }
 
         clientDto.setAliasDelimiterInDbComment((String) map.get("documentDefinitionMap.dfprop").get(
