@@ -1,18 +1,27 @@
-#dbflute-intro
+#DBFlute Intro
 
-##dbflute-introとは
+##DBFlute Introとは
 
-dbfluteの導入(セットアップ)ツールです。
+DBFluteの導入(セットアップ)ツールです。
 
-<http://dbflute.seasar.org/ja/manual/function/helper/intro/index.html>
+[DBFlute公式サイトのDBFlute Introページ](http://dbflute.seasar.org/ja/manual/function/helper/intro/index.html)
 
-dbflute-introのコンセプト
+####DBFlute Introダウンロード
 
-java開発者以外にも使いやすいように。
+* [dbflute-intro.jar](http://ecode.github.io/dbflute-intro/download/dbflute-intro.jar) クロスプラットフォーム版(Windows, Mac, Linux)
 
-→javaが実行できる環境は必要ですが、eclipseやmavenの知識は不要です。
+* [dbflute-intro.zip](http://ecode.github.io/dbflute-intro/download/dbflute-intro.zip) Windows実行ファイル版
+
+ ※zip形式になっているので要解凍
+
+##DBFlute Introのコンセプト
+
+Java開発者以外にも使いやすいように。
+
+→Javaが実行できる環境は必要ですが、EclipseやMavenの知識は不要です。
 
 DBFluteのO/Rマッパー以外の機能を手軽に利用できるように。
+
 (O/Rマッパーとして使わなくても(使えなくても)便利な機能がたくさんあります。)
 
     SchemaHTML ○
@@ -20,20 +29,20 @@ DBFluteのO/Rマッパー以外の機能を手軽に利用できるように。
     SchemaSyncCheck ○
     CraftDiff △
     LoadDataReverse○
+    ReplaceSchema △
     PropertiesHTML
-    ReplaceSchema
     AlterCheck
     FreeGen
 
-※◯がついている機能がdbflute-introで簡単に利用できます。
+※◯がついている機能がDBFlute Introで簡単に利用できます。
 
 ##デモ
 
 ###1 . ダウンロード
 
-1-1. dbflute-intro本体
+1-1. DBFlute Intro本体
 
-<http://dbflute.seasar.org/download/helper/dbflute-intro/dbflute-intro.jar>
+<http://ecode.github.io/dbflute-intro/download/dbflute-intro.jar>
 
 1-2. デモに使用するDB
 
@@ -42,7 +51,7 @@ DBFluteのO/Rマッパー以外の機能を手軽に利用できるように。
 ※参考 ER図 <http://dbflute.seasar.org/ja/view/exampledb/index.html?goto=1>
 
 1-3. フォルダ配置
-demoフォルダを作って、1-1、1-2のファイルを配置。
+デモフォルダを作って、1-1、1-2のファイルを配置。
 
      dbflute-intro-demo
      ├dbflute-intro.jar
@@ -51,9 +60,9 @@ demoフォルダを作って、1-1、1-2のファイルを配置。
        ├exampledb_st.h2.db ・・・ 1-2のファイルをコピー
        └exampledb_it.h2.db ・・・ 1-2のファイルをコピー
 
-###2 . dbflute-introのセットアップ
+###2 . DBFlute Introのセットアップ
 
-2-1. dbflute-introの実行
+2-1. DBFlute Introの実行
 
     java -jar dbflute-intro.jar
 
@@ -61,7 +70,7 @@ demoフォルダを作って、1-1、1-2のファイルを配置。
 
 (新しいOSでセキュリティ警告が出るため、初回は右クリックから選択して実行。)
 
-2-2. dbfluteクライアントのダウンロード
+2-2. DBFluteクライアントのダウンロード
 
 バージョンを入力して、「OK」を押下。
 
@@ -165,7 +174,7 @@ exampledb_it.h2.dbに任意の方法で接続して、4-2のDDLを発行。
 
 以下のフォルダに、「craftdiff」フォルダを作成。
 
-demo/dbflute-intro/dbflute_exampledb/schema
+dbflute-intro-demo/dbflute-intro/dbflute_exampledb/schema
 
 「craftdiff」フォルダに「craft-schema.sql」を作成。
 

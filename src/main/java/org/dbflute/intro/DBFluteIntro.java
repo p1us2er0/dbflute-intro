@@ -609,8 +609,7 @@ public class DBFluteIntro {
         }
 
         try {
-            FileUtils.copyURLToFile(
-                    new URL("http://dbflute.seasar.org/download/helper/dbflute-intro/" + jarPathFile.getName()),
+            FileUtils.copyURLToFile(new URL("http://ecode.github.io/dbflute-intro/download/" + jarPathFile.getName()),
                     jarPathFile);
         } catch (MalformedURLException e) {
             e.printStackTrace();
