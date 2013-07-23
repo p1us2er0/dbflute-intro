@@ -1,7 +1,7 @@
 def launch4jSite = 'http://sourceforge.net/projects/launch4j/files/launch4j-3'
 def launch4jVersion = '3.1.0-beta1'
 
-ant.condition(property: 'os', value: 'win') { os(family: 'windows') }
+ant.condition(property: 'os', value: 'mac') { os(family: 'windows') }
 ant.condition(property: 'os', value: 'mac') { os(family: 'unix') }
 
 task runLaunch4j << {
