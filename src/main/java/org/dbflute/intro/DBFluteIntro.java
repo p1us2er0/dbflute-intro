@@ -33,8 +33,10 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.dbflute.emecha.eclipse.plugin.core.meta.website.EmMetaFromWebSite;
 import org.dbflute.intro.runtime.DfPropFile;
+import org.dbflute.intro.runtime.MapListString;
 import org.dbflute.intro.util.EmZipInputStreamUtil;
 import org.dbflute.intro.wizard.DBFluteIntroPage;
 
@@ -46,16 +48,16 @@ public class DBFluteIntro {
 
     /**
      * <pre>
-     * e.g. "./"
+     * e.g. "."
      *  dbflute-intro
      *   |-dbflute_exampledb // DBFlute client
      *   |-mydbflute         // DBFlute module
      *   |-dbflute-intro.jar
      * </pre>
      */
-    public static final String BASE_DIR_PATH = "./";
-
+    public static final String BASE_DIR_PATH = ".";
     public static final String INI_FILE_PATH = BASE_DIR_PATH + "/dbflute-intro.ini";
+    private static final String MY_DBFLUTE_PATH = BASE_DIR_PATH + "/mydbflute/dbflute-%1$s";
 
     private EmMetaFromWebSite site;
 
@@ -201,7 +203,7 @@ public class DBFluteIntro {
     public List<String> getExistedDBFluteVersionList() {
 
         List<String> list = new ArrayList<String>();
-        final File mydbfluteDir = new File(DBFluteIntro.BASE_DIR_PATH + "/mydbflute");
+        final File mydbfluteDir = new File(DBFluteIntro.BASE_DIR_PATH, "mydbflute");
         if (mydbfluteDir.exists()) {
             for (File file : mydbfluteDir.listFiles()) {
                 if (file.isDirectory() && file.getName().startsWith("dbflute-")) {
@@ -317,23 +319,19 @@ public class DBFluteIntro {
             return;
         }
 
-        final File mydbflutePureFile;
-        {
-            mydbflutePureFile = new File(BASE_DIR_PATH, "/mydbflute");
-            mydbflutePureFile.mkdirs();
-        }
-
         final String downloadUrl;
         {
             final EmMetaFromWebSite meta = new EmMetaFromWebSite();
             meta.loadMeta();
             downloadUrl = meta.buildDownloadUrlDBFlute(downloadVersion);
         }
-        final String dbfluteVersionExpression = "dbflute-" + downloadVersion;
+
+        final File mydbfluteDir = new File(String.format(MY_DBFLUTE_PATH, downloadVersion));
+        mydbfluteDir.mkdirs();
 
         final String zipFilename;
         {
-            zipFilename = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression + ".zip";
+            zipFilename = mydbfluteDir.getAbsolutePath() + ".zip";
             try {
                 FileUtils.copyURLToFile(new URL(downloadUrl), new File(zipFilename));
             } catch (IOException e) {
@@ -342,14 +340,14 @@ public class DBFluteIntro {
         }
 
         final ZipInputStream zipIn = EmZipInputStreamUtil.createZipInputStream(zipFilename);
-        final String extractDirectoryBase = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression;
-        EmZipInputStreamUtil.extractAndClose(zipIn, extractDirectoryBase);
+        EmZipInputStreamUtil.extractAndClose(zipIn, mydbfluteDir.getAbsolutePath());
 
         FileUtils.deleteQuietly(new File(zipFilename));
 
-        final String templateZipFilename = extractDirectoryBase + "/etc/client-template/dbflute_dfclient.zip";
-        final ZipInputStream templateZipIn = EmZipInputStreamUtil.createZipInputStream(templateZipFilename);
-        final String templateExtractDirectoryBase = extractDirectoryBase + "/client-template/dbflute_dfclient.zip";
+        final String templateZipFileName = mydbfluteDir.getAbsolutePath() + "/etc/client-template/dbflute_dfclient.zip";
+        final ZipInputStream templateZipIn = EmZipInputStreamUtil.createZipInputStream(templateZipFileName);
+        final String templateExtractDirectoryBase = mydbfluteDir.getAbsolutePath()
+                + "/client-template/dbflute_dfclient.zip";
         EmZipInputStreamUtil.extractAndClose(templateZipIn, templateExtractDirectoryBase);
     }
 
@@ -364,9 +362,18 @@ public class DBFluteIntro {
             info.put("user", clientDto.getDatabaseDto().getUser());
             info.put("password", clientDto.getDatabaseDto().getPassword());
 
-            URL fileUrl = new File(clientDto.getJdbcDriverJarPath()).toURI().toURL();
-            URL[] urls = { fileUrl };
-            URLClassLoader loader = URLClassLoader.newInstance(urls);
+            List<URL> urls = new ArrayList<URL>();
+            if (clientDto.getJdbcDriverJarPath() == null || clientDto.getJdbcDriverJarPath().equals("")) {
+                File mydbfluteDir = new File(String.format(MY_DBFLUTE_PATH, clientDto.getDbfluteVersion()), "lib");
+                for (File file : FileUtils.listFiles(mydbfluteDir, FileFilterUtils.suffixFileFilter(".jar"), null)) {
+                    urls.add(file.toURI().toURL());
+                }
+            } else {
+                URL fileUrl = new File(clientDto.getJdbcDriverJarPath()).toURI().toURL();
+                urls.add(fileUrl);
+            }
+
+            URLClassLoader loader = URLClassLoader.newInstance(urls.toArray(new URL[urls.size()]));
 
             @SuppressWarnings("unchecked")
             Class<Driver> driverClass = (Class<Driver>) loader.loadClass(clientDto.getJdbcDriver());
@@ -423,6 +430,7 @@ public class DBFluteIntro {
                 throw new RuntimeException(e);
             }
 
+            MapListString mapListString = new MapListString();
             Map<File, Map<String, Object>> fileMap = new LinkedHashMap<File, Map<String, Object>>();
 
             Map<String, Object> replaceMap = new LinkedHashMap<String, Object>();
@@ -444,14 +452,14 @@ public class DBFluteIntro {
 
             String[] schema = clientDto.getDatabaseDto().getSchema().split(",");
             replaceMap = new LinkedHashMap<String, Object>();
-            replaceMap.put("${driver}", clientDto.getJdbcDriver());
-            replaceMap.put("${url}", clientDto.getDatabaseDto().getUrl());
-            replaceMap.put("${schema}", schema[0].trim());
-            replaceMap.put("${user}", clientDto.getDatabaseDto().getUser());
-            replaceMap.put("${password}", clientDto.getDatabaseDto().getPassword());
+            replaceMap.put("${driver}", mapListString.escapeControlMark(clientDto.getJdbcDriver()));
+            replaceMap.put("${url}", mapListString.escapeControlMark(clientDto.getDatabaseDto().getUrl()));
+            replaceMap.put("${schema}", mapListString.escapeControlMark(schema[0].trim()));
+            replaceMap.put("${user}", mapListString.escapeControlMark(clientDto.getDatabaseDto().getUser()));
+            replaceMap.put("${password}", mapListString.escapeControlMark(clientDto.getDatabaseDto().getPassword()));
             StringBuilder builder = new StringBuilder();
             for (int i = 1; i < schema.length; i++) {
-                builder.append("            ; " + schema[i].trim()
+                builder.append("            ; " + mapListString.escapeControlMark(schema[i].trim())
                         + " = map:{objectTypeTargetList=list:{TABLE; VIEW; SYNONYM}}\r\n");
             }
 
@@ -460,10 +468,10 @@ public class DBFluteIntro {
 
             replaceMap = new LinkedHashMap<String, Object>();
             replaceMap.put("${aliasDelimiterInDbComment}", ":");
-            replaceMap.put("${isDbCommentOnAliasBasis}", String.valueOf(clientDto.isDbCommentOnAliasBasis()));
-            replaceMap.put("${isCheckColumnDefOrderDiff}", String.valueOf(clientDto.isCheckColumnDefOrderDiff()));
-            replaceMap.put("${isCheckDbCommentDiff}", String.valueOf(clientDto.isCheckDbCommentDiff()));
-            replaceMap.put("${isCheckProcedureDiff}", String.valueOf(clientDto.isCheckProcedureDiff()));
+            replaceMap.put("${isDbCommentOnAliasBasis}", clientDto.isDbCommentOnAliasBasis());
+            replaceMap.put("${isCheckColumnDefOrderDiff}", clientDto.isCheckColumnDefOrderDiff());
+            replaceMap.put("${isCheckDbCommentDiff}", clientDto.isCheckDbCommentDiff());
+            replaceMap.put("${isCheckProcedureDiff}", clientDto.isCheckProcedureDiff());
             fileMap.put(new File(dbfluteClientDir, "/dfprop/documentDefinitionMap+.dfprop"), replaceMap);
 
             replaceMap = new LinkedHashMap<String, Object>();
@@ -538,14 +546,15 @@ public class DBFluteIntro {
                 throw new RuntimeException(e);
             }
 
+            MapListString mapListString = new MapListString();
             Map<File, Map<String, Object>> fileMap = new LinkedHashMap<File, Map<String, Object>>();
 
             Map<String, Object> replaceMap = new LinkedHashMap<String, Object>();
-            replaceMap.put("${url}", entry.getValue().getUrl());
-            replaceMap.put("${schema}", entry.getValue().getSchema());
-            replaceMap.put("${user}", entry.getValue().getUser());
-            replaceMap.put("${password}", entry.getValue().getPassword());
-            replaceMap.put("${env}", entry.getKey());
+            replaceMap.put("${url}", mapListString.escapeControlMark(entry.getValue().getUrl()));
+            replaceMap.put("${schema}", mapListString.escapeControlMark(entry.getValue().getSchema()));
+            replaceMap.put("${user}", mapListString.escapeControlMark(entry.getValue().getUser()));
+            replaceMap.put("${password}", mapListString.escapeControlMark(entry.getValue().getPassword()));
+            replaceMap.put("${env}", mapListString.escapeControlMark(entry.getKey()));
             fileMap.put(documentDefinitionMapFile, replaceMap);
 
             replaceFile(fileMap, false);
@@ -631,17 +640,8 @@ public class DBFluteIntro {
                 continue;
             }
 
-            InputStream inputStream = null;
-            try {
-                inputStream = FileUtils.openInputStream(file);
-
-                DfPropFile dfPropFile = new DfPropFile();
-                map.put(file.getName(), dfPropFile.readMap(inputStream));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                IOUtils.closeQuietly(inputStream);
-            }
+            DfPropFile dfPropFile = new DfPropFile();
+            map.put(file.getName(), dfPropFile.readMap(file.getAbsolutePath(), null));
         }
 
         for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
@@ -728,27 +728,17 @@ public class DBFluteIntro {
                 continue;
             }
 
-            InputStream inputStream = null;
-            try {
-                inputStream = FileUtils.openInputStream(documentDefinitionMapFile);
+            DfPropFile dfPropFile = new DfPropFile();
+            Map<String, Object> readMap = dfPropFile.readMap(documentDefinitionMapFile.getAbsolutePath(), null);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> schemaSyncCheckMap = (Map<String, Object>) readMap.get("schemaSyncCheckMap");
 
-                DfPropFile dfPropFile = new DfPropFile();
-                Map<String, Object> readMap = dfPropFile.readMap(inputStream);
-                @SuppressWarnings("unchecked")
-                Map<String, Object> schemaSyncCheckMap = (Map<String, Object>) readMap.get("schemaSyncCheckMap");
-
-                DatabaseDto databaseDto = new DatabaseDto();
-                databaseDto.setUrl((String) schemaSyncCheckMap.get("url"));
-                databaseDto.setSchema((String) schemaSyncCheckMap.get("schema"));
-                databaseDto.setUser((String) schemaSyncCheckMap.get("user"));
-                databaseDto.setPassword((String) schemaSyncCheckMap.get("password"));
-                databaseDtoMap.put(file.getName().replace("schemaSyncCheck_", ""), databaseDto);
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                IOUtils.closeQuietly(inputStream);
-            }
+            DatabaseDto databaseDto = new DatabaseDto();
+            databaseDto.setUrl((String) schemaSyncCheckMap.get("url"));
+            databaseDto.setSchema((String) schemaSyncCheckMap.get("schema"));
+            databaseDto.setUser((String) schemaSyncCheckMap.get("user"));
+            databaseDto.setPassword((String) schemaSyncCheckMap.get("password"));
+            databaseDtoMap.put(file.getName().replace("schemaSyncCheck_", ""), databaseDto);
         }
 
         return databaseDtoMap;

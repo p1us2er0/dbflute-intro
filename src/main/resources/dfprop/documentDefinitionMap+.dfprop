@@ -1,9 +1,9 @@
 map:{
-      ; aliasDelimiterInDbComment = ${aliasDelimiterInDbComment}
-      ; isDbCommentOnAliasBasis = ${isDbCommentOnAliasBasis}
-      ; isCheckColumnDefOrderDiff = ${isCheckColumnDefOrderDiff}
-      ; isCheckDbCommentDiff = ${isCheckDbCommentDiff}
-      ; isCheckProcedureDiff = ${isCheckProcedureDiff}
+    ; aliasDelimiterInDbComment = ${aliasDelimiterInDbComment}
+    ; isDbCommentOnAliasBasis = ${isDbCommentOnAliasBasis}
+    ; isCheckColumnDefOrderDiff = ${isCheckColumnDefOrderDiff}
+    ; isCheckDbCommentDiff = ${isCheckDbCommentDiff}
+    ; isCheckProcedureDiff = ${isCheckProcedureDiff}
 
     ; loadDataReverseMap = map:{
         ; recordLimit = -1

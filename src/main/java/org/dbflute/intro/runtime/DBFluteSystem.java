@@ -24,6 +24,10 @@ import java.util.Date;
 public class DBFluteSystem {
 
     // ===================================================================================
+    //                                                                          Definition
+    //                                                                          ==========
+
+    // ===================================================================================
     //                                                                    Option Attribute
     //                                                                    ================
     protected static DBFluteCurrentProvider _currentProvider;
@@ -91,6 +95,7 @@ public class DBFluteSystem {
 
     public static void xsetDBFluteCurrentProvider(DBFluteCurrentProvider currentProvider) {
         assertUnlocked();
+
         _currentProvider = currentProvider;
         xlock();
     }
