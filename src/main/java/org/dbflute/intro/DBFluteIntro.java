@@ -33,6 +33,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.dbflute.emecha.eclipse.plugin.core.meta.website.EmMetaFromWebSite;
 import org.dbflute.intro.runtime.DfPropFile;
 import org.dbflute.intro.util.EmZipInputStreamUtil;
@@ -46,16 +47,16 @@ public class DBFluteIntro {
 
     /**
      * <pre>
-     * e.g. "./"
+     * e.g. "."
      *  dbflute-intro
      *   |-dbflute_exampledb // DBFlute client
      *   |-mydbflute         // DBFlute module
      *   |-dbflute-intro.jar
      * </pre>
      */
-    public static final String BASE_DIR_PATH = "./";
-
+    public static final String BASE_DIR_PATH = ".";
     public static final String INI_FILE_PATH = BASE_DIR_PATH + "/dbflute-intro.ini";
+    private static final String MY_DBFLUTE_PATH = BASE_DIR_PATH + "/mydbflute/dbflute-%1$s";
 
     private EmMetaFromWebSite site;
 
@@ -201,7 +202,7 @@ public class DBFluteIntro {
     public List<String> getExistedDBFluteVersionList() {
 
         List<String> list = new ArrayList<String>();
-        final File mydbfluteDir = new File(DBFluteIntro.BASE_DIR_PATH + "/mydbflute");
+        final File mydbfluteDir = new File(DBFluteIntro.BASE_DIR_PATH, "mydbflute");
         if (mydbfluteDir.exists()) {
             for (File file : mydbfluteDir.listFiles()) {
                 if (file.isDirectory() && file.getName().startsWith("dbflute-")) {
@@ -317,23 +318,19 @@ public class DBFluteIntro {
             return;
         }
 
-        final File mydbflutePureFile;
-        {
-            mydbflutePureFile = new File(BASE_DIR_PATH, "/mydbflute");
-            mydbflutePureFile.mkdirs();
-        }
-
         final String downloadUrl;
         {
             final EmMetaFromWebSite meta = new EmMetaFromWebSite();
             meta.loadMeta();
             downloadUrl = meta.buildDownloadUrlDBFlute(downloadVersion);
         }
-        final String dbfluteVersionExpression = "dbflute-" + downloadVersion;
+
+        final File mydbfluteDir = new File(String.format(MY_DBFLUTE_PATH, downloadVersion));
+        mydbfluteDir.mkdirs();
 
         final String zipFilename;
         {
-            zipFilename = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression + ".zip";
+            zipFilename = mydbfluteDir.getAbsolutePath() + ".zip";
             try {
                 FileUtils.copyURLToFile(new URL(downloadUrl), new File(zipFilename));
             } catch (IOException e) {
@@ -342,14 +339,14 @@ public class DBFluteIntro {
         }
 
         final ZipInputStream zipIn = EmZipInputStreamUtil.createZipInputStream(zipFilename);
-        final String extractDirectoryBase = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression;
-        EmZipInputStreamUtil.extractAndClose(zipIn, extractDirectoryBase);
+        EmZipInputStreamUtil.extractAndClose(zipIn, mydbfluteDir.getAbsolutePath());
 
         FileUtils.deleteQuietly(new File(zipFilename));
 
-        final String templateZipFilename = extractDirectoryBase + "/etc/client-template/dbflute_dfclient.zip";
-        final ZipInputStream templateZipIn = EmZipInputStreamUtil.createZipInputStream(templateZipFilename);
-        final String templateExtractDirectoryBase = extractDirectoryBase + "/client-template/dbflute_dfclient.zip";
+        final String templateZipFileName = mydbfluteDir.getAbsolutePath() + "/etc/client-template/dbflute_dfclient.zip";
+        final ZipInputStream templateZipIn = EmZipInputStreamUtil.createZipInputStream(templateZipFileName);
+        final String templateExtractDirectoryBase = mydbfluteDir.getAbsolutePath()
+                + "/client-template/dbflute_dfclient.zip";
         EmZipInputStreamUtil.extractAndClose(templateZipIn, templateExtractDirectoryBase);
     }
 
@@ -364,9 +361,18 @@ public class DBFluteIntro {
             info.put("user", clientDto.getDatabaseDto().getUser());
             info.put("password", clientDto.getDatabaseDto().getPassword());
 
-            URL fileUrl = new File(clientDto.getJdbcDriverJarPath()).toURI().toURL();
-            URL[] urls = { fileUrl };
-            URLClassLoader loader = URLClassLoader.newInstance(urls);
+            List<URL> urls = new ArrayList<URL>();
+            if (clientDto.getJdbcDriverJarPath() == null || clientDto.getJdbcDriverJarPath().equals("")) {
+                File mydbfluteDir = new File(String.format(MY_DBFLUTE_PATH, clientDto.getDbfluteVersion()), "lib");
+                for (File file : FileUtils.listFiles(mydbfluteDir, FileFilterUtils.suffixFileFilter(".jar"), null)) {
+                    urls.add(file.toURI().toURL());
+                }
+            } else {
+                URL fileUrl = new File(clientDto.getJdbcDriverJarPath()).toURI().toURL();
+                urls.add(fileUrl);
+            }
+
+            URLClassLoader loader = URLClassLoader.newInstance(urls.toArray(new URL[urls.size()]));
 
             @SuppressWarnings("unchecked")
             Class<Driver> driverClass = (Class<Driver>) loader.loadClass(clientDto.getJdbcDriver());
