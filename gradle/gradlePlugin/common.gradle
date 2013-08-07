@@ -1,3 +1,8 @@
+ext.gradleWrapperVersion = '1.7'
+ext.encoding = 'UTF-8'
+
 task wrapper(type: Wrapper) {
-	gradleVersion = '1.6'
+	gradleVersion = gradleWrapperVersion
 }
+
+tasks.withType(SourceTask) each { it.options.encoding = encoding }

@@ -1,10 +1,8 @@
-def encoding = 'UTF-8'
-def compatibility = '1.6'
+apply plugin: 'java'
 
-tasks.withType(AbstractCompile) each { it.options.encoding = encoding }
-tasks.withType(GroovyCompile) each { it.groovyOptions.encoding = encoding }
-javadoc { options.encoding = encoding }
-tasks.withType(Compile) {
+ext.compatibility = '1.6'
+
+tasks.withType(AbstractCompile) {
     sourceCompatibility = compatibility
     targetCompatibility = compatibility
 }
