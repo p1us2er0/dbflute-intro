@@ -8,9 +8,9 @@ DBFluteの導入(セットアップ)ツールです。
 
 ####DBFlute Introダウンロード
 
-* [dbflute-intro.jar](http://ecode.github.io/dbflute-intro/download/dbflute-intro.jar) クロスプラットフォーム版(Windows, Mac, Linux)
+* [dbflute-intro.jar](http://p1us2er0.github.io/dbflute-intro/download/dbflute-intro.jar) クロスプラットフォーム版(Windows, Mac, Linux)
 
-* [dbflute-intro.zip](http://ecode.github.io/dbflute-intro/download/dbflute-intro.zip) Windows実行ファイル版
+* [dbflute-intro.zip](http://p1us2er0.github.io/dbflute-intro/download/dbflute-intro.zip) Windows実行ファイル版
 
  ※zip形式になっているので要解凍
 
@@ -42,7 +42,7 @@ DBFluteのO/Rマッパー以外の機能を手軽に利用できるように。
 
 1-1. DBFlute Intro本体
 
-<http://ecode.github.io/dbflute-intro/download/dbflute-intro.jar>
+<http://p1us2er0.github.io/dbflute-intro/download/dbflute-intro.jar>
 
 1-2. デモに使用するDB
 
