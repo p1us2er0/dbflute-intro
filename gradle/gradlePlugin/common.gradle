@@ -1,4 +1,4 @@
-ext.gradleWrapperVersion = '1.7'
+ext.gradleWrapperVersion = '2.0'
 ext.encoding = 'UTF-8'
 
 task wrapper(type: Wrapper) {

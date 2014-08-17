@@ -5,7 +5,7 @@ group = 'org.dbflute'
 version = '0.0.3-SNAPSHOT'
 
 def utfluteVersion = '0.3.0'
-def junitVersion ='4.8.2'
+def junitVersion ='4.11'
 
 fileTree(dir: 'gradle/gradlePlugin', includes: ['*.gradle']).each { apply from: it }
 

@@ -636,7 +636,7 @@ public class DBFluteIntro {
         Map<String, Map<String, Object>> map = new LinkedHashMap<String, Map<String, Object>>();
         File dfpropDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
         for (File file : dfpropDir.listFiles()) {
-            if (!file.getName().endsWith(".dfprop")) {
+            if (!file.getName().endsWith(".dfprop") || file.getName().startsWith("allClassCopyright")) {
                 continue;
             }
 
