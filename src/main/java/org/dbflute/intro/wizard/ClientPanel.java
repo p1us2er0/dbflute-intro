@@ -107,6 +107,7 @@ public class ClientPanel extends JPanel {
 
         projectCombo = new JComboBox();
         projectCombo.setBounds(150, 10, 190, 20);
+        fireProjectCombo(null);
         this.add(projectCombo);
 
         projectCombo.addActionListener(new ActionListener() {
@@ -205,8 +206,6 @@ public class ClientPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(consoleArea);
         scrollPane.setBounds(2, 350, 475, 212);
         this.add(scrollPane);
-
-        projectCombo.actionPerformed(null);
     }
 
     private JEditorPane createHTMLLink(String message, int y) {
