@@ -1,7 +1,7 @@
 apply plugin: 'eclipse'
 
 eclipse {
-//  pathVariables 'GRADLE_USER_HOME': gradle.gradleUserHomeDir
+    pathVariables 'GRADLE_USER_HOME': gradle.gradleUserHomeDir
     classpath {
         downloadSources=true
     }
