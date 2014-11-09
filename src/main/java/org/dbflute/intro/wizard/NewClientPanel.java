@@ -43,6 +43,9 @@ public class NewClientPanel extends JPanel {
     protected static final String LABEL_REQUIRED = "(*)";
     protected static final String LABEL_PROJECT = "DB名";
     private static final String LABEL_DATABASE = "DBMS";
+    private static final String LABEL_TARGET_LANGUAGE = "言語";
+    private static final String LABEL_TARGET_CONTAINER = "コンテナ";
+    private static final String LABEL_PACKAGE_BASE = "パッケージベース";
     protected static final String LABEL_URL = "URL";
     protected static final String LABEL_SCHEMA = "スキーマ";
     protected static final String LABEL_USER = "ユーザ";
@@ -55,7 +58,7 @@ public class NewClientPanel extends JPanel {
     private static final String LABEL_IS_CHECK_COLUMN_DEF_ORDER_DIFF = "差分判定でカラム定義順をチェック";
     private static final String LABEL_IS_CHECK_DB_COMMENT_DIFF = "差分判定でDBコメントをチェック";
     private static final String LABEL_IS_CHECK_PROCEDURE_DIFF = "差分判定でプロシージャをチェック";
-    private static final String LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN = "isGenerateProcedureParameterBean";
+    private static final String LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN = "プロシージャ自動生成";
     protected static final String LABEL_SCHEMA_SYNC_CHECK = "他のDB環境";
     private static final String LABEL_CLIENT_CREATE = "作成";
     protected static final String LABEL_CLIENT_CHANGE = "変更";
@@ -81,7 +84,10 @@ public class NewClientPanel extends JPanel {
     private JLabel jdbcDriverJarPathLabel;
 
     private JTextField projectText;
-    private JComboBox dbmsCombo;
+    private JComboBox databaseCombo;
+    private JComboBox targetLanguageCombo;
+    private JComboBox targetContainerCombo;
+    private JTextField packageBaseText;
     private JTextField databaseUrlText;
     private JTextField databaseSchemaText;
     private JTextField databaseUserText;
@@ -113,39 +119,41 @@ public class NewClientPanel extends JPanel {
 
         this.add(createLabal(LABEL_PROJECT + LABEL_REQUIRED, 10));
         this.add(createLabal(LABEL_DATABASE + LABEL_REQUIRED, 35));
-        this.add(createLabal(LABEL_URL + LABEL_REQUIRED, 60));
-        databaseSchemaLabel = createLabal(LABEL_SCHEMA, 85);
+        this.add(createLabal(LABEL_TARGET_LANGUAGE + LABEL_REQUIRED, 60));
+        this.add(createLabal(LABEL_TARGET_CONTAINER + LABEL_REQUIRED, 85));
+        this.add(createLabal(LABEL_PACKAGE_BASE + LABEL_REQUIRED, 110));
+        this.add(createLabal(LABEL_URL + LABEL_REQUIRED, 135));
+        databaseSchemaLabel = createLabal(LABEL_SCHEMA, 160);
         this.add(databaseSchemaLabel);
-        this.add(createLabal(LABEL_USER + LABEL_REQUIRED, 110));
-        this.add(createLabal(LABEL_PASSWORD, 135));
-        jdbcDriverJarPathLabel = createLabal(LABEL_JDBC_DRIVER_JAR_PATH, 160);
+        this.add(createLabal(LABEL_USER + LABEL_REQUIRED, 185));
+        this.add(createLabal(LABEL_PASSWORD, 210));
+        jdbcDriverJarPathLabel = createLabal(LABEL_JDBC_DRIVER_JAR_PATH, 235);
         this.add(jdbcDriverJarPathLabel);
-        this.add(createLabal(LABEL_DBFLUTE_VERSION + LABEL_REQUIRED, 185));
-        this.add(createLabal(LABEL_OPTION, 210));
-        this.add(createOption(LABEL_IS_DB_COMMENT_ON_ALIAS_BASIS, 210));
-        this.add(createOption(LABEL_IS_CHECK_COLUMN_DEF_ORDER_DIFF, 235));
-        this.add(createOption(LABEL_IS_CHECK_DB_COMMENT_DIFF, 260));
-        this.add(createOption(LABEL_IS_CHECK_PROCEDURE_DIFF, 285));
-        this.add(createOption(LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN, 310));
-        // TODO ドキュメント生成や差分チェックに影響がないことがわかれば、処理自体削除する。
-        optionMap.get(LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN).setVisible(false);
-        this.add(createLabal(LABEL_SCHEMA_SYNC_CHECK, 340));
+        this.add(createLabal(LABEL_DBFLUTE_VERSION + LABEL_REQUIRED, 260));
+
+        this.add(createLabal(LABEL_OPTION, 285));
+        this.add(createOption(LABEL_IS_DB_COMMENT_ON_ALIAS_BASIS, 285));
+        this.add(createOption(LABEL_IS_CHECK_COLUMN_DEF_ORDER_DIFF, 310));
+        this.add(createOption(LABEL_IS_CHECK_DB_COMMENT_DIFF, 335));
+        this.add(createOption(LABEL_IS_CHECK_PROCEDURE_DIFF, 360));
+        this.add(createOption(LABEL_IS_GENERATE_PROCEDURE_PARAMETER_BEAN, 385));
+        this.add(createLabal(LABEL_SCHEMA_SYNC_CHECK, 415));
 
         projectText = new JTextField(DEF_PROJECT);
         projectText.setBounds(150, 10, 300, 20);
         projectText.setColumns(10);
         this.add(projectText);
 
-        dbmsCombo = new JComboBox(DatabaseInfoDef.values());
-        dbmsCombo.setBounds(150, 35, 300, 20);
-        dbmsCombo.setSelectedIndex(-1); // means no selection
-        this.add(dbmsCombo);
+        databaseCombo = new JComboBox(DatabaseInfoDef.values());
+        databaseCombo.setBounds(150, 35, 300, 20);
+        databaseCombo.setSelectedIndex(-1); // means no selection
+        this.add(databaseCombo);
 
-        dbmsCombo.addActionListener(new ActionListener() {
+        databaseCombo.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                DatabaseInfoDef databaseInfoDef = (DatabaseInfoDef) dbmsCombo.getSelectedItem();
+                DatabaseInfoDef databaseInfoDef = (DatabaseInfoDef) databaseCombo.getSelectedItem();
                 fireDatabaseUrlText(databaseInfoDef);
                 fireDatabaseSchemaLabel(databaseInfoDef);
                 fireDatabaseSchemaText(databaseInfoDef);
@@ -154,49 +162,64 @@ public class NewClientPanel extends JPanel {
             }
         });
 
+        targetLanguageCombo = new JComboBox(new String[] {"java", "csharp", "scala"});
+        targetLanguageCombo.setBounds(150, 60, 300, 20);
+        targetLanguageCombo.setSelectedIndex(-1); // means no selection
+        this.add(targetLanguageCombo);
+
+        targetContainerCombo = new JComboBox(new String[] {"seasar", "spring", "guice", "cdi"});
+        targetContainerCombo.setBounds(150, 85, 300, 20);
+        targetContainerCombo.setSelectedIndex(-1); // means no selection
+        this.add(targetContainerCombo);
+
+        packageBaseText = new JTextField();
+        packageBaseText.setBounds(150, 110, 300, 20);
+        packageBaseText.setColumns(10);
+        this.add(packageBaseText);
+
         databaseUrlText = new JTextField();
-        databaseUrlText.setBounds(150, 60, 300, 20);
+        databaseUrlText.setBounds(150, 135, 300, 20);
         databaseUrlText.setColumns(10);
         this.add(databaseUrlText);
 
         databaseSchemaText = new JTextField();
-        databaseSchemaText.setBounds(150, 85, 300, 20);
+        databaseSchemaText.setBounds(150, 160, 300, 20);
         databaseSchemaText.setColumns(10);
         this.add(databaseSchemaText);
 
         databaseUserText = new JTextField();
-        databaseUserText.setBounds(150, 110, 300, 20);
+        databaseUserText.setBounds(150, 185, 300, 20);
         databaseUserText.setColumns(10);
         this.add(databaseUserText);
 
         databasePasswordText = new JPasswordField();
-        databasePasswordText.setBounds(150, 135, 300, 20);
+        databasePasswordText.setBounds(150, 210, 300, 20);
         databasePasswordText.setColumns(10);
         this.add(databasePasswordText);
 
         jdbcDriverJarPathText = new JTextField();
-        jdbcDriverJarPathText.setBounds(150, 160, 210, 20);
+        jdbcDriverJarPathText.setBounds(150, 235, 210, 20);
         jdbcDriverJarPathText.setColumns(10);
         this.add(jdbcDriverJarPathText);
 
         JButton jdbcDriverJarPathButton = new JButton(new JdbcDriverJarPathAction());
-        jdbcDriverJarPathButton.setBounds(360, 160, 90, 20);
+        jdbcDriverJarPathButton.setBounds(360, 235, 90, 20);
         this.add(jdbcDriverJarPathButton);
 
         dbfluteVersionCombo = new JComboBox();
-        dbfluteVersionCombo.setBounds(150, 185, 300, 20);
+        dbfluteVersionCombo.setBounds(150, 260, 300, 20);
         this.add(dbfluteVersionCombo);
 
         JButton schemaSyncCheckAddButton = new JButton(new SchemaSyncCheckAddAction());
-        schemaSyncCheckAddButton.setBounds(150, 340, 40, 20);
+        schemaSyncCheckAddButton.setBounds(150, 415, 40, 20);
         this.add(schemaSyncCheckAddButton);
 
         JButton schemaSyncCheckRemoveButton = new JButton(new SchemaSyncCheckRemoveAction());
-        schemaSyncCheckRemoveButton.setBounds(190, 340, 40, 20);
+        schemaSyncCheckRemoveButton.setBounds(190, 415, 40, 20);
         this.add(schemaSyncCheckRemoveButton);
 
         clientCreateButton = new JButton(new ClientCreateAction(LABEL_CLIENT_CREATE));
-        clientCreateButton.setBounds(150, 520, 300, 20);
+        clientCreateButton.setBounds(150, 595, 300, 20);
         this.add(clientCreateButton);
 
         fireVersionInfoDBFlute();
@@ -258,7 +281,7 @@ public class NewClientPanel extends JPanel {
             if (env != null && !env.equals("")) {
                 if (schemaSyncCheckTabPanel == null) {
                     schemaSyncCheckTabPanel = new JTabbedPane();
-                    schemaSyncCheckTabPanel.setBounds(0, 360, 480, 160);
+                    schemaSyncCheckTabPanel.setBounds(0, 435, 480, 160);
                     add(schemaSyncCheckTabPanel);
                 }
 
@@ -303,9 +326,12 @@ public class NewClientPanel extends JPanel {
 
             Map<String, String> data = new LinkedHashMap<String, String>();
             data.put(LABEL_PROJECT, clientDto.getProject());
-            data.put(LABEL_DATABASE, clientDto.getDbms());
+            data.put(LABEL_DATABASE, clientDto.getDatabase());
+            data.put(LABEL_TARGET_LANGUAGE, clientDto.getTargetLanguage());
+            data.put(LABEL_TARGET_CONTAINER, clientDto.getTargetContainer());
+            data.put(LABEL_PACKAGE_BASE, clientDto.getPackageBase());
             data.put(LABEL_URL, clientDto.getDatabaseDto().getUrl());
-            DatabaseInfoDef databaseInfoDef = DatabaseInfoDef.codeOf(clientDto.getDbms());
+            DatabaseInfoDef databaseInfoDef = DatabaseInfoDef.codeOf(clientDto.getDatabase());
             if (databaseInfoDef != null && databaseInfoDef.needSchema()) {
                 data.put(LABEL_SCHEMA, clientDto.getDatabaseDto().getSchema());
             }
@@ -406,8 +432,11 @@ public class NewClientPanel extends JPanel {
     public ClientDto asResult() {
 
         final String projectName = projectText.getText();
-        DatabaseInfoDef databaseInfo = (DatabaseInfoDef) dbmsCombo.getSelectedItem();
+        DatabaseInfoDef databaseInfo = (DatabaseInfoDef) databaseCombo.getSelectedItem();
         final String database = databaseInfo != null ? databaseInfo.databaseName() : null;
+        final String targetLanguage = (String) targetLanguageCombo.getSelectedItem();
+        final String targetContainer = (String) targetContainerCombo.getSelectedItem();
+        final String packageBase = packageBaseText.getText();
         final String databaseInfoDriver = databaseInfo != null ? databaseInfo.driverName() : null;
         final String databaseInfoUrl = databaseUrlText.getText();
         final String databaseInfoSchema = databaseSchemaText.getText();
@@ -418,7 +447,10 @@ public class NewClientPanel extends JPanel {
 
         final ClientDto clientDto = new ClientDto();
         clientDto.setProject(projectName);
-        clientDto.setDbms(database);
+        clientDto.setDatabase(database);
+        clientDto.setTargetLanguage(targetLanguage);
+        clientDto.setTargetContainer(targetContainer);
+        clientDto.setPackageBase(packageBase);
         clientDto.setJdbcDriver(databaseInfoDriver);
         clientDto.getDatabaseDto().setUrl(databaseInfoUrl);
         clientDto.getDatabaseDto().setSchema(databaseInfoSchema);
@@ -505,7 +537,10 @@ public class NewClientPanel extends JPanel {
     protected void reflect(ClientDto clientDto, Map<String, DatabaseDto> envDatabaseDtoMap) {
 
         projectText.setText(clientDto.getProject());
-        dbmsCombo.setSelectedItem(DatabaseInfoDef.codeOf(clientDto.getDbms()));
+        databaseCombo.setSelectedItem(DatabaseInfoDef.codeOf(clientDto.getDatabase()));
+        targetLanguageCombo.setSelectedItem(clientDto.getTargetLanguage());
+        targetContainerCombo.setSelectedItem(clientDto.getTargetContainer());
+        packageBaseText.setText(clientDto.getPackageBase());
         jdbcDriverJarPathText.setText(clientDto.getJdbcDriverJarPath());
         databaseUrlText.setText(clientDto.getDatabaseDto().getUrl());
         databaseSchemaText.setText(clientDto.getDatabaseDto().getSchema());
@@ -538,7 +573,7 @@ public class NewClientPanel extends JPanel {
         clientCreateButton.setVisible(false);
 
         JButton changeButton = new JButton(new ClientCreateAction(LABEL_CLIENT_CHANGE));
-        changeButton.setBounds(150, 520, 130, 20);
+        changeButton.setBounds(150, 595, 130, 20);
         this.add(changeButton);
 
         JButton cancelButton = new JButton(new AbstractAction(LABEL_CLIENT_CANCEL) {
@@ -554,7 +589,7 @@ public class NewClientPanel extends JPanel {
             }
 
         });
-        cancelButton.setBounds(300, 520, 130, 20);
+        cancelButton.setBounds(300, 595, 130, 20);
         this.add(cancelButton);
     }
 }

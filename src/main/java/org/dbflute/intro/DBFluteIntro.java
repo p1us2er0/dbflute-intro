@@ -437,6 +437,7 @@ public class DBFluteIntro {
             dfpropFileList.add("documentDefinitionMap+.dfprop");
             dfpropFileList.add("littleAdjustmentMap+.dfprop");
             dfpropFileList.add("outsideSqlDefinitionMap+.dfprop");
+            dfpropFileList.add("replaceSchemaDefinitionMap+.dfprop");
 
             try {
                 for (String dfpropFile : dfpropFileList) {
@@ -459,7 +460,10 @@ public class DBFluteIntro {
             fileMap.put(new File(dbfluteClientDir, "/build.properties"), replaceMap);
 
             replaceMap = new LinkedHashMap<String, Object>();
-            replaceMap.put("@database@", clientDto.getDbms());
+            replaceMap.put("@database@", clientDto.getDatabase());
+            replaceMap.put("@targetLanguage@", clientDto.getTargetLanguage());
+            replaceMap.put("@targetContainer@", clientDto.getTargetContainer());
+            replaceMap.put("@packageBase@", clientDto.getPackageBase());
             fileMap.put(new File(dbfluteClientDir, "/dfprop/basicInfoMap+.dfprop"), replaceMap);
 
             replaceMap = new LinkedHashMap<String, Object>();
@@ -492,8 +496,16 @@ public class DBFluteIntro {
 
             replaceMap = new LinkedHashMap<String, Object>();
             replaceMap.put("@isGenerateProcedureParameterBean@", clientDto.isGenerateProcedureParameterBean());
-            replaceMap.put("@procedureSynonymHandlingType@", "INCLUDE");
+            replaceMap.put("@procedureSynonymHandlingType@", clientDto.getProcedureSynonymHandlingType());
             fileMap.put(new File(dbfluteClientDir, "/dfprop/outsideSqlDefinitionMap+.dfprop"), replaceMap);
+
+            replaceMap = new LinkedHashMap<String, Object>();
+            replaceMap.put("@driver@", escapeControlMark(clientDto.getJdbcDriver()));
+            replaceMap.put("@url@", escapeControlMark(clientDto.getDatabaseDto().getUrl()));
+            replaceMap.put("@schema@", escapeControlMark(schema[0].trim()));
+            replaceMap.put("@user@", escapeControlMark(clientDto.getDatabaseDto().getUser()));
+            replaceMap.put("@password@", escapeControlMark(clientDto.getDatabaseDto().getPassword()));
+            fileMap.put(new File(dbfluteClientDir, "/dfprop/replaceSchemaDefinitionMap+.dfprop"), replaceMap);
 
             replaceFile(fileMap, false);
 
@@ -686,7 +698,10 @@ public class DBFluteIntro {
 
         ClientDto clientDto = new ClientDto();
         clientDto.setProject(project);
-        clientDto.setDbms((String) map.get("basicInfoMap.dfprop").get("database"));
+        clientDto.setTargetLanguage((String) map.get("basicInfoMap.dfprop").get("targetLanguage"));
+        clientDto.setTargetContainer((String) map.get("basicInfoMap.dfprop").get("targetContainer"));
+        clientDto.setPackageBase((String) map.get("basicInfoMap.dfprop").get("packageBase"));
+        clientDto.setDatabase((String) map.get("basicInfoMap.dfprop").get("database"));
         clientDto.setJdbcDriver((String) map.get("databaseInfoMap.dfprop").get("driver"));
         clientDto.getDatabaseDto().setUrl((String) map.get("databaseInfoMap.dfprop").get("url"));
         clientDto.getDatabaseDto().setSchema(schema);

@@ -11,7 +11,10 @@ public class ClientDto {
     //                                                                           Attribute
     //                                                                           =========
     private String project;
-    private String dbms;
+    private String database;
+    private String targetLanguage;
+    private String targetContainer;
+    private String packageBase;
     private String jdbcDriver;
     private DatabaseDto databaseDto;
     private String jdbcDriverJarPath;
@@ -35,12 +38,36 @@ public class ClientDto {
         this.project = projectName;
     }
 
-    public String getDbms() {
-        return dbms;
+    public String getDatabase() {
+        return database;
     }
 
-    public void setDbms(String dbms) {
-        this.dbms = dbms;
+    public void setDatabase(String database) {
+        this.database = database;
+    }
+
+    public String getTargetLanguage() {
+        return targetLanguage;
+    }
+
+    public void setTargetLanguage(String targetLanguage) {
+        this.targetLanguage = targetLanguage;
+    }
+
+    public String getTargetContainer() {
+        return targetContainer;
+    }
+
+    public void setTargetContainer(String targetContainer) {
+        this.targetContainer = targetContainer;
+    }
+
+    public String getPackageBase() {
+        return packageBase;
+    }
+
+    public void setPackageBase(String packageBase) {
+        this.packageBase = packageBase;
     }
 
     public String getJdbcDriver() {
