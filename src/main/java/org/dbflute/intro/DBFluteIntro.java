@@ -35,7 +35,6 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.dbflute.emecha.eclipse.plugin.core.meta.website.EmMetaFromWebSite;
 import org.dbflute.intro.util.EmZipInputStreamUtil;
 import org.dbflute.intro.wizard.DBFluteIntroPage;
 import org.seasar.dbflute.helper.mapstring.MapListString;
@@ -61,19 +60,24 @@ public class DBFluteIntro {
     public static final String INI_FILE_PATH = BASE_DIR_PATH + "/dbflute-intro.ini";
     private static final String MY_DBFLUTE_PATH = BASE_DIR_PATH + "/mydbflute/dbflute-%1$s";
 
-    private EmMetaFromWebSite site;
+    private Properties publicProperties;
 
-    public EmMetaFromWebSite getEmMetaFromWebSite() {
+    public Properties getPublicProperties() {
 
-        if (this.site == null) {
-            EmMetaFromWebSite site = new EmMetaFromWebSite();
-
-            site.loadMeta();
-
-            this.site = site;
+        if (publicProperties != null) {
+            return publicProperties;
         }
 
-        return this.site;
+        publicProperties = new Properties();
+        try {
+            // TODO
+            URL url = new URL("http://dbflute.org/meta/public.properties");
+            publicProperties.load(url.openStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return publicProperties;
     }
 
     public Properties getProperties() {
@@ -323,9 +327,7 @@ public class DBFluteIntro {
 
         final String downloadUrl;
         {
-            final EmMetaFromWebSite meta = new EmMetaFromWebSite();
-            meta.loadMeta();
-            downloadUrl = meta.buildDownloadUrlDBFlute(downloadVersion);
+            downloadUrl = getPublicProperties().getProperty("dbflute.engine.download.url").replace("$$version$$", downloadVersion);
         }
 
         final File mydbfluteDir = new File(String.format(MY_DBFLUTE_PATH, downloadVersion));

@@ -8,10 +8,8 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.dbflute.emecha.eclipse.plugin.core.exception.EmExceptionHandler;
-
 /**
- * 
+ *
  * @author jflute
  * @since 0.1.0 (2007/09/19 Wednesday)
  */
@@ -23,8 +21,7 @@ public class EmZipInputStreamUtil {
         } catch (FileNotFoundException e) {
             String msg = "new FileInputStream(zipFilename) threw the " + e.getClass().getSimpleName() + ":";
             msg = msg + " zipFilename=" + zipFilename;
-            EmExceptionHandler.throwAsPluginException(msg, e);
-            return null;
+            throw new RuntimeException(msg, e);
         }
     }
 
@@ -61,8 +58,7 @@ public class EmZipInputStreamUtil {
             String msg = EmZipInputStreamUtil.class.getSimpleName() + "#extractAndClose() threw the "
                     + e.getClass().getSimpleName() + ":";
             msg = msg + " outputDirectory=" + outputDirectory;
-            EmExceptionHandler.throwAsPluginException(msg, e);
-            return;
+            throw new RuntimeException(msg, e);
         }
     }
 

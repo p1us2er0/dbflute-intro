@@ -26,8 +26,6 @@ import javax.swing.JTextField;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.dbflute.emecha.eclipse.plugin.core.exception.EmPluginException;
-import org.dbflute.emecha.eclipse.plugin.core.meta.website.EmMetaFromWebSite;
 import org.dbflute.intro.DBFluteIntro;
 import org.dbflute.intro.util.SwingUtil;
 import org.dbflute.intro.util.SwingUtil.ProgressBarDialog;
@@ -232,19 +230,19 @@ public class DBFluteIntroPage {
 
     private void downloadDBFlute() {
 
-        EmMetaFromWebSite site = null;
+        Properties publicProperties = null;
 
         try {
-            site = dbFluteIntro.getEmMetaFromWebSite();
+            publicProperties = dbFluteIntro.getPublicProperties();
         } catch (IllegalStateException e) {
             JOptionPane.showMessageDialog(frame, MSG_NETWORK_ERROR);
             viewProxySettings();
             return;
         }
 
-        String message = String.format(MSG_DOWNLOAD, site.getLatestVersionDBFlute(),
-                site.getLatestSnapshotVersionDBFlute());
-        final String dbfluteVersion = JOptionPane.showInputDialog(frame, message, site.getLatestVersionDBFlute());
+        String message = String.format(MSG_DOWNLOAD, publicProperties.getProperty("dbflute.latest.release.version"),
+                publicProperties.getProperty("dbflute.latest.snapshot.version"));
+        final String dbfluteVersion = JOptionPane.showInputDialog(frame, message, publicProperties.getProperty("dbflute.latest.release.version"));
 
         if (dbfluteVersion == null) {
             JOptionPane.showMessageDialog(frame, MSG_CANCELED_DOWNLOAD);
@@ -257,8 +255,7 @@ public class DBFluteIntroPage {
             public void execute() {
                 try {
                     dbFluteIntro.downloadDBFlute(dbfluteVersion);
-
-                } catch (EmPluginException e) {
+                } catch (RuntimeException e) {
                     JOptionPane.showMessageDialog(frame, MSG_DOWNLOAD_ERROR);
                     return;
                 }
