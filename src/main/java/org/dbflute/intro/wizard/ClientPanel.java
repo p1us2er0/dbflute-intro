@@ -169,23 +169,23 @@ public class ClientPanel extends JPanel {
         this.add(createHTMLLink(LABEL_SCHEMA_HTML, 55));
         this.add(createHTMLLink(LABEL_HISTORY_HTML, 80));
 
-        JButton button = new JButton(new TaskAction(LABEL_DOC, DBFluteIntro.getJdbcDocCommondList()));
+        JButton button = new JButton(new TaskAction(LABEL_DOC, DBFluteIntro.getJdbcDocCommandList()));
         button.setBounds(10, 105, 250, 20);
         this.add(button);
 
         this.add(createHTMLLink(LABEL_LOAD_DATA_REVERSE_HTML, 150));
 
-        button = new JButton(new TaskAction(LABEL_LOAD_DATA_REVERSE, DBFluteIntro.getLoadDataReverseCommondList()));
+        button = new JButton(new TaskAction(LABEL_LOAD_DATA_REVERSE, DBFluteIntro.getLoadDataReverseCommandList()));
         button.setBounds(10, 175, 250, 20);
         this.add(button);
 
         this.add(createHTMLLink(LABEL_SYNC_CHECK_HTML, 220));
 
-        button = new JButton(new TaskAction(LABEL_SYNC_CHECK, DBFluteIntro.getSchemaSyncCheckCommondList()));
+        button = new JButton(new TaskAction(LABEL_SYNC_CHECK, DBFluteIntro.getSchemaSyncCheckCommandList()));
         button.setBounds(10, 245, 250, 20);
         this.add(button);
 
-        button = new JButton(new TaskAction(LABEL_REPLACE_SCHEMA, DBFluteIntro.getReplaceSchemaCommondList()));
+        button = new JButton(new TaskAction(LABEL_REPLACE_SCHEMA, DBFluteIntro.getReplaceSchemaCommandList()));
         button.setBounds(10, 300, 250, 20);
         this.add(button);
 
@@ -276,7 +276,7 @@ public class ClientPanel extends JPanel {
 
                         try {
                             textAreaStream = new JTextAreaStream(consoleArea);
-                            int result = DBFluteIntro.executeCommond(processBuilder, textAreaStream);
+                            int result = DBFluteIntro.executeCommand(processBuilder, textAreaStream);
                             resultMap.put(processBuilder.command().toString(), result);
                         } finally {
                             IOUtils.closeQuietly(textAreaStream);

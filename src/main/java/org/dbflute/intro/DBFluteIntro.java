@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -221,59 +222,71 @@ public class DBFluteIntro {
         return list;
     }
 
-    public static List<ProcessBuilder> getJdbcDocCommondList() {
-        List<ProcessBuilder> commondList = new ArrayList<ProcessBuilder>();
-        String onName = System.getProperty("os.name");
-        if (onName != null && onName.startsWith("Windows")) {
-            commondList.add(new ProcessBuilder("cmd", "/c", "jdbc.bat"));
-            commondList.add(new ProcessBuilder("cmd", "/c", "doc.bat"));
-        } else {
-            commondList.add(new ProcessBuilder("sh", "jdbc.sh"));
-            commondList.add(new ProcessBuilder("sh", "doc.sh"));
+    protected static List<ProcessBuilder> getCommandList(List<List<String>> commandList) {
+
+        List<ProcessBuilder> processBuilderList = new ArrayList<ProcessBuilder>();
+        for (List<String> command : commandList) {
+
+            if (command.isEmpty()) {
+                continue;
+            }
+
+            String onName = System.getProperty("os.name").toLowerCase();
+            List<String> list = new ArrayList<String>();
+            if (onName.startsWith("windows")) {
+                list.add("cmd");
+                list.add("/c");
+                list.add(command.get(0) + ".bat");
+            } else {
+                list.add("sh");
+                list.add(command.get(0) + ".sh");
+            }
+
+            if (command.size() > 1) {
+                list.addAll(command.subList(1, command.size()));
+            }
+
+            processBuilderList.add(new ProcessBuilder(list));
         }
 
-        return commondList;
+        return processBuilderList;
     }
 
-    public static List<ProcessBuilder> getLoadDataReverseCommondList() {
-        List<ProcessBuilder> commondList = new ArrayList<ProcessBuilder>();
-        String onName = System.getProperty("os.name");
-        if (onName != null && onName.startsWith("Windows")) {
-            commondList.add(new ProcessBuilder("cmd", "/c", "jdbc.bat"));
-            commondList.add(new ProcessBuilder("cmd", "/c", "manage.bat", "load-data-reverse"));
-        } else {
-            commondList.add(new ProcessBuilder("sh", "jdbc.sh"));
-            commondList.add(new ProcessBuilder("sh", "manage.sh", "load-data-reverse"));
-        }
+    public static List<ProcessBuilder> getJdbcDocCommandList() {
 
-        return commondList;
+        List<List<String>> commandList = new ArrayList<List<String>>();
+        commandList.add(Arrays.asList("manage", "jdbc"));
+        commandList.add(Arrays.asList("manage", "doc"));
+
+        return getCommandList(commandList);
     }
 
-    public static List<ProcessBuilder> getSchemaSyncCheckCommondList() {
-        List<ProcessBuilder> commondList = new ArrayList<ProcessBuilder>();
-        String onName = System.getProperty("os.name");
-        if (onName != null && onName.startsWith("Windows")) {
-            commondList.add(new ProcessBuilder("cmd", "/c", "manage.bat", "schema-sync-check"));
-        } else {
-            commondList.add(new ProcessBuilder("sh", "manage.sh", "schema-sync-check"));
-        }
+    public static List<ProcessBuilder> getLoadDataReverseCommandList() {
 
-        return commondList;
+        List<List<String>> commandList = new ArrayList<List<String>>();
+        commandList.add(Arrays.asList("manage", "jdbc"));
+        commandList.add(Arrays.asList("manage", "load-data-reverse"));
+
+        return getCommandList(commandList);
     }
 
-    public static List<ProcessBuilder> getReplaceSchemaCommondList() {
-        List<ProcessBuilder> commondList = new ArrayList<ProcessBuilder>();
-        String onName = System.getProperty("os.name");
-        if (onName != null && onName.startsWith("Windows")) {
-            commondList.add(new ProcessBuilder("cmd", "/c", "replace-schema.bat"));
-        } else {
-            commondList.add(new ProcessBuilder("sh", "replace-schema.sh"));
-        }
+    public static List<ProcessBuilder> getSchemaSyncCheckCommandList() {
 
-        return commondList;
+        List<List<String>> commandList = new ArrayList<List<String>>();
+        commandList.add(Arrays.asList("manage", "schema-sync-check"));
+
+        return getCommandList(commandList);
     }
 
-    public static int executeCommond(ProcessBuilder processBuilder, OutputStream outputStream) {
+    public static List<ProcessBuilder> getReplaceSchemaCommandList() {
+
+        List<List<String>> commandList = new ArrayList<List<String>>();
+        commandList.add(Arrays.asList("manage", "replace-schema"));
+
+        return getCommandList(commandList);
+    }
+
+    public static int executeCommand(ProcessBuilder processBuilder, OutputStream outputStream) {
 
         processBuilder.redirectErrorStream(true);
 
