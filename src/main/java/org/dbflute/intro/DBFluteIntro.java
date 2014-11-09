@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.ProxySelector;
 import java.net.URL;
@@ -35,10 +36,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.dbflute.emecha.eclipse.plugin.core.meta.website.EmMetaFromWebSite;
-import org.dbflute.intro.runtime.DfPropFile;
-import org.dbflute.intro.runtime.MapListString;
 import org.dbflute.intro.util.EmZipInputStreamUtil;
 import org.dbflute.intro.wizard.DBFluteIntroPage;
+import org.seasar.dbflute.helper.mapstring.MapListString;
+import org.seasar.dbflute.infra.dfprop.DfPropFile;
+import org.seasar.dbflute.util.DfReflectionUtil;
 
 /**
  * @author ecode
@@ -430,7 +432,6 @@ public class DBFluteIntro {
                 throw new RuntimeException(e);
             }
 
-            MapListString mapListString = new MapListString();
             Map<File, Map<String, Object>> fileMap = new LinkedHashMap<File, Map<String, Object>>();
 
             Map<String, Object> replaceMap = new LinkedHashMap<String, Object>();
@@ -443,7 +444,7 @@ public class DBFluteIntro {
             fileMap.put(new File(dbfluteClientDir, "/build.properties"), replaceMap);
 
             replaceMap = new LinkedHashMap<String, Object>();
-            replaceMap.put("${database}", clientDto.getDbms());
+            replaceMap.put("@database@", clientDto.getDbms());
             fileMap.put(new File(dbfluteClientDir, "/dfprop/basicInfoMap+.dfprop"), replaceMap);
 
             replaceMap = new LinkedHashMap<String, Object>();
@@ -452,31 +453,31 @@ public class DBFluteIntro {
 
             String[] schema = clientDto.getDatabaseDto().getSchema().split(",");
             replaceMap = new LinkedHashMap<String, Object>();
-            replaceMap.put("${driver}", mapListString.escapeControlMark(clientDto.getJdbcDriver()));
-            replaceMap.put("${url}", mapListString.escapeControlMark(clientDto.getDatabaseDto().getUrl()));
-            replaceMap.put("${schema}", mapListString.escapeControlMark(schema[0].trim()));
-            replaceMap.put("${user}", mapListString.escapeControlMark(clientDto.getDatabaseDto().getUser()));
-            replaceMap.put("${password}", mapListString.escapeControlMark(clientDto.getDatabaseDto().getPassword()));
+            replaceMap.put("@driver@", escapeControlMark(clientDto.getJdbcDriver()));
+            replaceMap.put("@url@", escapeControlMark(clientDto.getDatabaseDto().getUrl()));
+            replaceMap.put("@schema@", escapeControlMark(schema[0].trim()));
+            replaceMap.put("@user@", escapeControlMark(clientDto.getDatabaseDto().getUser()));
+            replaceMap.put("@password@", escapeControlMark(clientDto.getDatabaseDto().getPassword()));
             StringBuilder builder = new StringBuilder();
             for (int i = 1; i < schema.length; i++) {
-                builder.append("            ; " + mapListString.escapeControlMark(schema[i].trim())
+                builder.append("            ; " + escapeControlMark(schema[i].trim())
                         + " = map:{objectTypeTargetList=list:{TABLE; VIEW; SYNONYM}}\r\n");
             }
 
-            replaceMap.put("${additionalSchema}", builder.toString().replaceAll("\r\n$", ""));
+            replaceMap.put("@additionalSchema@", builder.toString().replaceAll("\r\n$", ""));
             fileMap.put(new File(dbfluteClientDir, "/dfprop/databaseInfoMap+.dfprop"), replaceMap);
 
             replaceMap = new LinkedHashMap<String, Object>();
-            replaceMap.put("${aliasDelimiterInDbComment}", ":");
-            replaceMap.put("${isDbCommentOnAliasBasis}", clientDto.isDbCommentOnAliasBasis());
-            replaceMap.put("${isCheckColumnDefOrderDiff}", clientDto.isCheckColumnDefOrderDiff());
-            replaceMap.put("${isCheckDbCommentDiff}", clientDto.isCheckDbCommentDiff());
-            replaceMap.put("${isCheckProcedureDiff}", clientDto.isCheckProcedureDiff());
+            replaceMap.put("@aliasDelimiterInDbComment@", ":");
+            replaceMap.put("@isDbCommentOnAliasBasis@", clientDto.isDbCommentOnAliasBasis());
+            replaceMap.put("@isCheckColumnDefOrderDiff@", clientDto.isCheckColumnDefOrderDiff());
+            replaceMap.put("@isCheckDbCommentDiff@", clientDto.isCheckDbCommentDiff());
+            replaceMap.put("@isCheckProcedureDiff@", clientDto.isCheckProcedureDiff());
             fileMap.put(new File(dbfluteClientDir, "/dfprop/documentDefinitionMap+.dfprop"), replaceMap);
 
             replaceMap = new LinkedHashMap<String, Object>();
-            replaceMap.put("${isGenerateProcedureParameterBean}", clientDto.isGenerateProcedureParameterBean());
-            replaceMap.put("${procedureSynonymHandlingType}", "INCLUDE");
+            replaceMap.put("@isGenerateProcedureParameterBean@", clientDto.isGenerateProcedureParameterBean());
+            replaceMap.put("@procedureSynonymHandlingType@", "INCLUDE");
             fileMap.put(new File(dbfluteClientDir, "/dfprop/outsideSqlDefinitionMap+.dfprop"), replaceMap);
 
             replaceFile(fileMap, false);
@@ -546,15 +547,14 @@ public class DBFluteIntro {
                 throw new RuntimeException(e);
             }
 
-            MapListString mapListString = new MapListString();
             Map<File, Map<String, Object>> fileMap = new LinkedHashMap<File, Map<String, Object>>();
 
             Map<String, Object> replaceMap = new LinkedHashMap<String, Object>();
-            replaceMap.put("${url}", mapListString.escapeControlMark(entry.getValue().getUrl()));
-            replaceMap.put("${schema}", mapListString.escapeControlMark(entry.getValue().getSchema()));
-            replaceMap.put("${user}", mapListString.escapeControlMark(entry.getValue().getUser()));
-            replaceMap.put("${password}", mapListString.escapeControlMark(entry.getValue().getPassword()));
-            replaceMap.put("${env}", mapListString.escapeControlMark(entry.getKey()));
+            replaceMap.put("@url@", escapeControlMark(entry.getValue().getUrl()));
+            replaceMap.put("@schema@", escapeControlMark(entry.getValue().getSchema()));
+            replaceMap.put("@user@", escapeControlMark(entry.getValue().getUser()));
+            replaceMap.put("@password@", escapeControlMark(entry.getValue().getPassword()));
+            replaceMap.put("@env@", escapeControlMark(entry.getKey()));
             fileMap.put(documentDefinitionMapFile, replaceMap);
 
             replaceFile(fileMap, false);
@@ -742,5 +742,12 @@ public class DBFluteIntro {
         }
 
         return databaseDtoMap;
+    }
+
+    // TODO
+    private String escapeControlMark(Object value) {
+        Method method = DfReflectionUtil.getAccessibleMethod(MapListString.class, "escapeControlMark", new Class[] {Object.class});
+        Object result = DfReflectionUtil.invokeForcedly(method, new MapListString(), new Object[] {value});
+        return String.valueOf(result);
     }
 }

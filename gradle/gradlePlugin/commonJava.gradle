@@ -1,10 +1,8 @@
 apply plugin: 'java'
 
-ext.compatibility = '1.6'
-
 tasks.withType(AbstractCompile) {
-    sourceCompatibility = compatibility
-    targetCompatibility = compatibility
+    sourceCompatibility = versions.jdk
+    targetCompatibility = versions.jdk
 }
 
 task sourcesJar(type: Jar, dependsOn:classes) {

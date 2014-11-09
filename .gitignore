@@ -15,8 +15,7 @@ log/
 # Eclipse
 .project
 .classpath
-*/.checkstyle
-*/.settings/
+.settings/
 
 # Java
 classes/

@@ -1,4 +1,4 @@
 map:{
-    ; isGenerateProcedureParameterBean = ${isGenerateProcedureParameterBean}
-    ; procedureSynonymHandlingType = ${procedureSynonymHandlingType}
+    ; isGenerateProcedureParameterBean = @isGenerateProcedureParameterBean@
+    ; procedureSynonymHandlingType = @procedureSynonymHandlingType@
 }

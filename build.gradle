@@ -4,8 +4,20 @@ apply plugin: 'project-report'
 group = 'org.dbflute'
 version = '0.0.3-SNAPSHOT'
 
-def utfluteVersion = '0.3.0'
-def junitVersion ='4.11'
+ext {
+    encoding = 'UTF-8'
+
+    versions =
+        [
+            jdk : '1.6',
+            gradle : '2.1',
+
+            junit : '4.11',
+            utflute : '0.4.8',
+
+            dbflute : '1.0.5M' // '1.1-pilot8-SNAPSHOT'
+        ]
+}
 
 fileTree(dir: 'gradle/gradlePlugin', includes: ['*.gradle']).each { apply from: it }
 
@@ -21,8 +33,9 @@ repositories {
 
 dependencies {
     compile 'commons-io:commons-io:2.4'
-    testCompile "org.seasar.dbflute:utflute-spring:${utfluteVersion}"
-    testCompile "junit:junit:${junitVersion}"
+    compile "org.seasar.dbflute:dbflute-runtime:${versions.dbflute}"
+    testCompile "org.seasar.dbflute:utflute-spring:${versions.utflute}"
+    testCompile "junit:junit:${versions.junit}"
 }
 
 jar {
