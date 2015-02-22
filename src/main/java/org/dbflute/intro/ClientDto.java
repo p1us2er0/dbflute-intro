@@ -17,15 +17,10 @@ public class ClientDto {
     private String packageBase;
     private String jdbcDriver;
     private DatabaseDto databaseDto;
+    private DatabaseDto systemUserDatabaseDto;
     private String jdbcDriverJarPath;
     private String dbfluteVersion;
-    private String aliasDelimiterInDbComment = ":";
-    private boolean isDbCommentOnAliasBasis = true;
-    private boolean isCheckColumnDefOrderDiff = true;
-    private boolean isCheckDbCommentDiff = true;
-    private boolean isCheckProcedureDiff = true;
-    private boolean isGenerateProcedureParameterBean = true;
-    private String procedureSynonymHandlingType = "INCLUDE";
+    private OptionDto optionDto;
 
     // ===================================================================================
     //                                                                            Accessor
@@ -90,6 +85,18 @@ public class ClientDto {
         this.databaseDto = databaseDto;
     }
 
+    public DatabaseDto getSystemUserDatabaseDto() {
+        if (systemUserDatabaseDto == null) {
+            systemUserDatabaseDto = new DatabaseDto();
+        }
+
+        return systemUserDatabaseDto;
+    }
+
+    public void setSystemUserDatabaseDto(DatabaseDto systemUserDatabaseDto) {
+        this.systemUserDatabaseDto = systemUserDatabaseDto;
+    }
+
     public String getJdbcDriverJarPath() {
         return jdbcDriverJarPath;
     }
@@ -106,59 +113,15 @@ public class ClientDto {
         this.dbfluteVersion = versionInfoDBFlute;
     }
 
-    public String getAliasDelimiterInDbComment() {
-        return aliasDelimiterInDbComment;
+    public OptionDto getOptionDto() {
+        if (optionDto == null) {
+            optionDto = new OptionDto();
+        }
+
+        return optionDto;
     }
 
-    public void setAliasDelimiterInDbComment(String aliasDelimiterInDbComment) {
-        this.aliasDelimiterInDbComment = aliasDelimiterInDbComment;
-    }
-
-    public boolean isDbCommentOnAliasBasis() {
-        return isDbCommentOnAliasBasis;
-    }
-
-    public void setDbCommentOnAliasBasis(boolean isDbCommentOnAliasBasis) {
-        this.isDbCommentOnAliasBasis = isDbCommentOnAliasBasis;
-    }
-
-    public boolean isCheckColumnDefOrderDiff() {
-        return isCheckColumnDefOrderDiff;
-    }
-
-    public void setCheckColumnDefOrderDiff(boolean isCheckColumnDefOrderDiff) {
-        this.isCheckColumnDefOrderDiff = isCheckColumnDefOrderDiff;
-    }
-
-    public boolean isCheckDbCommentDiff() {
-        return isCheckDbCommentDiff;
-    }
-
-    public void setCheckDbCommentDiff(boolean isCheckDbCommentDiff) {
-        this.isCheckDbCommentDiff = isCheckDbCommentDiff;
-    }
-
-    public boolean isCheckProcedureDiff() {
-        return isCheckProcedureDiff;
-    }
-
-    public void setCheckProcedureDiff(boolean isCheckProcedureDiff) {
-        this.isCheckProcedureDiff = isCheckProcedureDiff;
-    }
-
-    public boolean isGenerateProcedureParameterBean() {
-        return isGenerateProcedureParameterBean;
-    }
-
-    public void setGenerateProcedureParameterBean(boolean isGenerateProcedureParameterBean) {
-        this.isGenerateProcedureParameterBean = isGenerateProcedureParameterBean;
-    }
-
-    public String getProcedureSynonymHandlingType() {
-        return procedureSynonymHandlingType;
-    }
-
-    public void setProcedureSynonymHandlingType(String procedureSynonymHandlingType) {
-        this.procedureSynonymHandlingType = procedureSynonymHandlingType;
+    public void setOptionDto(OptionDto optionDto) {
+        this.optionDto = optionDto;
     }
 }

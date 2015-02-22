@@ -299,8 +299,7 @@ public class DBFluteIntro {
         try {
             process = processBuilder.start();
             inputStream = process.getInputStream();
-            // TODO 文字コードの確認。
-            inputStreamReader = new InputStreamReader(inputStream, "MS932");
+            inputStreamReader = new InputStreamReader(inputStream);
             bufferedReader = new BufferedReader(inputStreamReader);
             while (true) {
                 String line = bufferedReader.readLine();
@@ -308,8 +307,8 @@ public class DBFluteIntro {
                     break;
                 }
 
-                IOUtils.write(line, outputStream, Charsets.UTF_8);
-                IOUtils.write(System.getProperty("line.separator"), outputStream, Charsets.UTF_8);
+                IOUtils.write(line, outputStream);
+                IOUtils.write(System.getProperty("line.separator"), outputStream);
                 outputStream.flush();
 
                 if (line.equals("BUILD FAILED")) {
@@ -486,25 +485,27 @@ public class DBFluteIntro {
             replaceMap.put("@additionalSchema@", builder.toString().replaceAll("\r\n$", ""));
             fileMap.put(new File(dbfluteClientDir, "/dfprop/databaseInfoMap+.dfprop"), replaceMap);
 
+            OptionDto optionDto = clientDto.getOptionDto();
+
             replaceMap = new LinkedHashMap<String, Object>();
-            replaceMap.put("@aliasDelimiterInDbComment@", ":");
-            replaceMap.put("@isDbCommentOnAliasBasis@", clientDto.isDbCommentOnAliasBasis());
-            replaceMap.put("@isCheckColumnDefOrderDiff@", clientDto.isCheckColumnDefOrderDiff());
-            replaceMap.put("@isCheckDbCommentDiff@", clientDto.isCheckDbCommentDiff());
-            replaceMap.put("@isCheckProcedureDiff@", clientDto.isCheckProcedureDiff());
+            replaceMap.put("@isDbCommentOnAliasBasis@", optionDto.isDbCommentOnAliasBasis());
+            replaceMap.put("@aliasDelimiterInDbComment@", optionDto.getAliasDelimiterInDbComment());
+            replaceMap.put("@isCheckColumnDefOrderDiff@", optionDto.isCheckColumnDefOrderDiff());
+            replaceMap.put("@isCheckDbCommentDiff@", optionDto.isCheckDbCommentDiff());
+            replaceMap.put("@isCheckProcedureDiff@", optionDto.isCheckProcedureDiff());
             fileMap.put(new File(dbfluteClientDir, "/dfprop/documentDefinitionMap+.dfprop"), replaceMap);
 
             replaceMap = new LinkedHashMap<String, Object>();
-            replaceMap.put("@isGenerateProcedureParameterBean@", clientDto.isGenerateProcedureParameterBean());
-            replaceMap.put("@procedureSynonymHandlingType@", clientDto.getProcedureSynonymHandlingType());
+            replaceMap.put("@isGenerateProcedureParameterBean@", optionDto.isGenerateProcedureParameterBean());
+            replaceMap.put("@procedureSynonymHandlingType@", optionDto.getProcedureSynonymHandlingType());
             fileMap.put(new File(dbfluteClientDir, "/dfprop/outsideSqlDefinitionMap+.dfprop"), replaceMap);
 
             replaceMap = new LinkedHashMap<String, Object>();
             replaceMap.put("@driver@", escapeControlMark(clientDto.getJdbcDriver()));
-            replaceMap.put("@url@", escapeControlMark(clientDto.getDatabaseDto().getUrl()));
-            replaceMap.put("@schema@", escapeControlMark(schema[0].trim()));
-            replaceMap.put("@user@", escapeControlMark(clientDto.getDatabaseDto().getUser()));
-            replaceMap.put("@password@", escapeControlMark(clientDto.getDatabaseDto().getPassword()));
+            replaceMap.put("@url@", escapeControlMark(clientDto.getSystemUserDatabaseDto().getUrl()));
+            replaceMap.put("@schema@", escapeControlMark(clientDto.getSystemUserDatabaseDto().getSchema()));
+            replaceMap.put("@user@", escapeControlMark(clientDto.getSystemUserDatabaseDto().getUser()));
+            replaceMap.put("@password@", escapeControlMark(clientDto.getSystemUserDatabaseDto().getPassword()));
             fileMap.put(new File(dbfluteClientDir, "/dfprop/replaceSchemaDefinitionMap+.dfprop"), replaceMap);
 
             replaceFile(fileMap, false);
@@ -707,6 +708,14 @@ public class DBFluteIntro {
         clientDto.getDatabaseDto().setSchema(schema);
         clientDto.getDatabaseDto().setUser((String) map.get("databaseInfoMap.dfprop").get("user"));
         clientDto.getDatabaseDto().setPassword((String) map.get("databaseInfoMap.dfprop").get("password"));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> additionalUserMap = (Map<String, Object>) map.get("replaceSchemaDefinitionMap.dfprop").get("additionalUserMap");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> systemUserDatabaseMap = (Map<String, Object>) additionalUserMap.get("system");
+        clientDto.getSystemUserDatabaseDto().setUrl((String) systemUserDatabaseMap.get("url"));
+        clientDto.getSystemUserDatabaseDto().setSchema((String) systemUserDatabaseMap.get("schema"));
+        clientDto.getSystemUserDatabaseDto().setUser((String) systemUserDatabaseMap.get("user"));
+        clientDto.getSystemUserDatabaseDto().setPassword((String) systemUserDatabaseMap.get("password"));
         File extlibDir = new File(DBFluteIntro.BASE_DIR_PATH, "dbflute_" + project + "/extlib");
         for (File file : extlibDir.listFiles()) {
             if (file.getName().endsWith(".jar")) {
@@ -728,17 +737,18 @@ public class DBFluteIntro {
             clientDto.setDbfluteVersion(matcher.group(2));
         }
 
-        clientDto.setAliasDelimiterInDbComment((String) map.get("documentDefinitionMap.dfprop").get(
-                "aliasDelimiterInDbComment"));
-        clientDto.setDbCommentOnAliasBasis(Boolean.toString(true).equals(
+        OptionDto optionDto = clientDto.getOptionDto();
+        optionDto.setDbCommentOnAliasBasis(Boolean.toString(true).equals(
                 map.get("documentDefinitionMap.dfprop").get("isDbCommentOnAliasBasis")));
-        clientDto.setCheckColumnDefOrderDiff(Boolean.toString(true).equals(
+        optionDto.setAliasDelimiterInDbComment((String) map.get("documentDefinitionMap.dfprop").get(
+                "aliasDelimiterInDbComment"));
+        optionDto.setCheckColumnDefOrderDiff(Boolean.toString(true).equals(
                 map.get("documentDefinitionMap.dfprop").get("isCheckColumnDefOrderDiff")));
-        clientDto.setCheckDbCommentDiff(Boolean.toString(true).equals(
+        optionDto.setCheckDbCommentDiff(Boolean.toString(true).equals(
                 map.get("documentDefinitionMap.dfprop").get("isCheckDbCommentDiff")));
-        clientDto.setCheckProcedureDiff(Boolean.toString(true).equals(
+        optionDto.setCheckProcedureDiff(Boolean.toString(true).equals(
                 map.get("documentDefinitionMap.dfprop").get("isCheckProcedureDiff")));
-        clientDto.setGenerateProcedureParameterBean(Boolean.toString(true).equals(
+        optionDto.setGenerateProcedureParameterBean(Boolean.toString(true).equals(
                 map.get("outsideSqlDefinitionMap.dfprop").get("isGenerateProcedureParameterBean")));
 
         return clientDto;

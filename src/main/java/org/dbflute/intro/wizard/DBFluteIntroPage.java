@@ -64,7 +64,7 @@ public class DBFluteIntroPage {
     private JTextField proxyHostText;
     private JTextField proxyPortText;
 
-    private final DBFluteIntro dbFluteIntro = new DBFluteIntro();
+    protected final DBFluteIntro dbFluteIntro = new DBFluteIntro();
 
     /**
      * Launch the application.
@@ -262,8 +262,7 @@ public class DBFluteIntroPage {
 
                 for (Component component : tabPanel.getComponents()) {
                     if (component instanceof NewClientPanel) {
-                        ((NewClientPanel) component).fireVersionInfoDBFlute();
-                        ;
+                        ((NewClientPanel) component).basicPanel.fireVersionInfoDBFlute();
                     }
                 }
             }

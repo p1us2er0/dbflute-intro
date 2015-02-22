@@ -60,7 +60,7 @@ public class ClientPanel extends JPanel {
     private static final String MSG_EXECUTE = "実行中...";
     private static final String MSG_FINISHED_SUCCESS = "正常終了。";
     private static final String MSG_FINISHED_ERROR = "異常終了。ログファイル=%1$s";
-    private static final String MSG_NOT_FOUND_ENV = NewClientPanel.LABEL_SCHEMA_SYNC_CHECK + "が見つかりません。";
+    private static final String MSG_NOT_FOUND_ENV = OptionPanel.LABEL_SCHEMA_SYNC_CHECK + "が見つかりません。";
     private static final String MSG_CANCELED = "キャンセルしました。";
     private static final String MSG_INVALID_URL = "URLが不正です。";
     private static final String MSG_NOT_FOUND_URL = "「%1$s」\r\nが見つかりません。";
