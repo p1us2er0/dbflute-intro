@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'war'
 apply plugin: 'project-report'
 
 group = 'org.dbflute'
@@ -9,37 +10,71 @@ ext {
 
     versions =
         [
-            jdk : '1.6',
-            gradle : '2.1',
+            jdk : '1.8',
+            gradle : '2.3',
 
             junit : '4.11',
             utflute : '0.4.8',
 
-            dbflute : '1.0.5M' // '1.1-pilot8-SNAPSHOT'
+            lastaflute : '0.6.0-SNAPSHOT',
+            dbflute : '1.1-sp1'
         ]
 }
+
+def classesDir = 'src/main/webapp/WEB-INF/classes'
+sourceSets.main.output.classesDir = classesDir
+sourceSets.main.output.resourcesDir = classesDir
 
 fileTree(dir: 'gradle/gradlePlugin', includes: ['*.gradle']).each { apply from: it }
 
 repositories {
+    mavenLocal()
     mavenCentral()
-    maven {
-        url 'http://maven.seasar.org/maven2'
-    }
-    maven {
-        url 'http://maven.seasar.org/maven2-snapshot'
-    }
 }
 
 dependencies {
     compile 'commons-io:commons-io:2.4'
-    compile "org.seasar.dbflute:dbflute-runtime:${versions.dbflute}"
-    testCompile "org.seasar.dbflute:utflute-spring:${versions.utflute}"
-    testCompile "junit:junit:${versions.junit}"
+
+    providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
+    compile 'javax.transaction:javax.transaction-api:1.2'
+
+    compile "org.dbflute:dbflute-runtime:${versions.dbflute}"
+    compile "org.dbflute.lasta:lastaflute:${versions.lastaflute}"
+
+    providedCompile 'org.eclipse.jetty:jetty-webapp:9.2.10.v20150310'
+    providedCompile 'org.eclipse.jetty:jetty-annotations:9.2.10.v20150310'
 }
 
-jar {
-    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+eclipse {
+    classpath {
+        defaultOutputDir = file(classesDir)
+        downloadSources = true
+        downloadJavadoc = false
+
+        file.whenMerged { cp ->
+            cp.entries.findAll {
+                it.path.contains('JRE_CONTAINER')
+            }*.path = "org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-${versions.jdk}"
+        }
+    }
+}
+
+javadoc {
+    failOnError = false
+}
+
+war {
+    // 1
+    from {
+        configurations.providedCompile.collect {
+            it.isDirectory() ? it : project.zipTree(it)
+        }
+    }
+
+    // 2
+    from fileTree(dir: file(classesDir), include: '**/Main.class')
+
+    includeEmptyDirs = false
 
     version = ''
 
@@ -50,7 +85,7 @@ jar {
         attributes 'SCM-Revision': 'TODO'
         attributes 'Build-Timestamp': 'TODO'
         attributes 'Jenkins-Build-Number': 'TODO'
-        attributes 'Main-Class' : 'org.dbflute.intro.wizard.DBFluteIntroPage'
+        attributes 'Main-Class' : 'org.dbflute.jetty.Main'
     }
 }
 
