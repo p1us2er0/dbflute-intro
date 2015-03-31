@@ -190,8 +190,8 @@ public class BasicPanel extends JPanel {
 
     protected void fireVersionInfoDBFlute() {
         dbfluteVersionCombo.removeAllItems();
-        DBFluteIntroLogic dbFluteIntro = new DBFluteIntroLogic();
-        List<String> existedDBFluteVersionList = dbFluteIntro.getExistedDBFluteVersionList();
+        DBFluteIntroLogic dbFluteIntroLogic = new DBFluteIntroLogic();
+        List<String> existedDBFluteVersionList = dbFluteIntroLogic.getExistedDBFluteVersionList();
         for (String version : existedDBFluteVersionList) {
             dbfluteVersionCombo.addItem(version);
         }

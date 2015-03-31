@@ -175,9 +175,9 @@ public class NewClientPanel extends JPanel {
                 return;
             }
 
-            DBFluteIntroLogic dbFluteIntro = new DBFluteIntroLogic();
+            DBFluteIntroLogic dbFluteIntroLogic = new DBFluteIntroLogic();
             try {
-                dbFluteIntro.testConnection(clientBean, schemaSyncCheckMap);
+                dbFluteIntroLogic.testConnection(clientBean, schemaSyncCheckMap);
             } catch (RuntimeException e) {
                 int result = JOptionPane.showConfirmDialog(frame,
                         String.format(MSG_TEST_CONNECTION_ERROR, e.getMessage()), null, JOptionPane.YES_NO_OPTION);
@@ -187,7 +187,7 @@ public class NewClientPanel extends JPanel {
             }
 
             try {
-                dbFluteIntro.createNewClient(clientBean, schemaSyncCheckMap);
+                dbFluteIntroLogic.createNewClient(clientBean, schemaSyncCheckMap);
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(frame, String.format(MSG_CLIENT_CREATE_ERROR, getValue(NAME)));

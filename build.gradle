@@ -64,15 +64,13 @@ javadoc {
 }
 
 war {
-    // 1
     from {
         configurations.providedCompile.collect {
             it.isDirectory() ? it : project.zipTree(it)
         }
     }
 
-    // 2
-    from fileTree(dir: file(classesDir), include: '**/Main.class')
+    from fileTree(dir: file(classesDir), include: '**/org/dbflute/boot/*Main.class')
 
     includeEmptyDirs = false
 
@@ -85,7 +83,7 @@ war {
         attributes 'SCM-Revision': 'TODO'
         attributes 'Build-Timestamp': 'TODO'
         attributes 'Jenkins-Build-Number': 'TODO'
-        attributes 'Main-Class' : 'org.dbflute.jetty.Main'
+        attributes 'Main-Class' : 'org.dbflute.boot.JettyMain'
     }
 }
 

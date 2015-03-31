@@ -48,12 +48,12 @@ public class DbfluteActionAdjustmentProvider implements ActionAdjustmentProvider
     }
 
     public boolean isForcedRoutingTarget(HttpServletRequest request, String requestPath) {
-        return false;
+        return true;
     }
 
     // #migration: S2ExecuteConfig to ActionExecuteConfig
     public boolean isForcedSuppressRedirectWithSlash(HttpServletRequest request, String requestPath, ActionExecute executeConfig) {
-        return false;
+        return true;
     }
 
     public String customizeActionMappingRequestPath(String requestPath) {

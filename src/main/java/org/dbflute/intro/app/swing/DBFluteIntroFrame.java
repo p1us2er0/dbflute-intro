@@ -64,7 +64,7 @@ public class DBFluteIntroFrame {
     private JTextField proxyHostText;
     private JTextField proxyPortText;
 
-    protected final DBFluteIntroLogic dbFluteIntro = new DBFluteIntroLogic();
+    protected final DBFluteIntroLogic dbFluteIntroLogic = new DBFluteIntroLogic();
 
     /**
      * Launch the application.
@@ -95,7 +95,7 @@ public class DBFluteIntroFrame {
      */
     private void initialize() {
 
-        dbFluteIntro.loadProxy();
+        dbFluteIntroLogic.loadProxy();
 
         frame = new JFrame(LABEL_TITLE);
         frame.setBounds(100, 100, 500, 725);
@@ -130,13 +130,13 @@ public class DBFluteIntroFrame {
         JMenu help = new JMenu(LABEL_HELP);
         menuBar.add(help);
 
-        JMenuItem versionMenuItem = new JMenuItem(LABEL_VERSION + ": " + dbFluteIntro.getVersion());
+        JMenuItem versionMenuItem = new JMenuItem(LABEL_VERSION + ": " + dbFluteIntroLogic.getVersion());
         help.add(versionMenuItem);
 
         JMenuItem upgradeMenuItem = new JMenuItem(new UpgradeAction());
         help.add(upgradeMenuItem);
 
-        if (dbFluteIntro.getExistedDBFluteVersionList().isEmpty()) {
+        if (dbFluteIntroLogic.getExistedDBFluteVersionList().isEmpty()) {
             downloadDBFlute();
         }
     }
@@ -177,7 +177,7 @@ public class DBFluteIntroFrame {
 
         public void actionPerformed(ActionEvent event) {
 
-            Properties properties = dbFluteIntro.getProperties();
+            Properties properties = dbFluteIntroLogic.getProperties();
             properties.put("proxyHost", proxyHostText.getText());
             properties.put("proxyPort", proxyPortText.getText());
             properties.put("java.net.useSystemProxies", String.valueOf(useSystemProxiesCheckBox.isSelected()));
@@ -192,11 +192,11 @@ public class DBFluteIntroFrame {
                 IOUtils.closeQuietly(stream);
             }
 
-            dbFluteIntro.loadProxy();
+            dbFluteIntroLogic.loadProxy();
 
             dialog.setVisible(false);
 
-            if (dbFluteIntro.getExistedDBFluteVersionList().isEmpty()) {
+            if (dbFluteIntroLogic.getExistedDBFluteVersionList().isEmpty()) {
                 downloadDBFlute();
             }
         }
@@ -212,7 +212,7 @@ public class DBFluteIntroFrame {
 
         public void actionPerformed(ActionEvent event) {
 
-            boolean result = dbFluteIntro.upgrade();
+            boolean result = dbFluteIntroLogic.upgrade();
             if (!result) {
                 JOptionPane.showMessageDialog(frame, MSG_DOWNLOAD_ERROR);
                 return;
@@ -233,7 +233,7 @@ public class DBFluteIntroFrame {
         Properties publicProperties = null;
 
         try {
-            publicProperties = dbFluteIntro.getPublicProperties();
+            publicProperties = dbFluteIntroLogic.getPublicProperties();
         } catch (IllegalStateException e) {
             JOptionPane.showMessageDialog(frame, MSG_NETWORK_ERROR);
             viewProxySettings();
@@ -254,7 +254,7 @@ public class DBFluteIntroFrame {
             @Override
             public void execute() {
                 try {
-                    dbFluteIntro.downloadDBFlute(dbfluteVersion);
+                    dbFluteIntroLogic.downloadDBFlute(dbfluteVersion);
                 } catch (RuntimeException e) {
                     JOptionPane.showMessageDialog(frame, MSG_DOWNLOAD_ERROR);
                     return;
@@ -273,7 +273,7 @@ public class DBFluteIntroFrame {
 
     private void viewProxySettings() {
 
-        Properties properties = dbFluteIntro.getProperties();
+        Properties properties = dbFluteIntroLogic.getProperties();
         boolean javaNetUseSystemProxies = Boolean.parseBoolean(properties.getProperty("java.net.useSystemProxies"));
         String proxyHost = properties.getProperty("proxyHost");
         String proxyPort = properties.getProperty("proxyPort");
