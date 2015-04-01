@@ -10,7 +10,7 @@ import org.dbflute.lastaflute.web.Execute;
 import org.dbflute.lastaflute.web.response.JsonResponse;
 import org.dbflute.util.DfStringUtil;
 
-public class EngineIndexAction extends DbfluteIntroBaseAction {
+public class EngineAction extends DbfluteIntroBaseAction {
 
     @Resource
     protected DBFluteIntroLogic dbFluteIntroLogic;

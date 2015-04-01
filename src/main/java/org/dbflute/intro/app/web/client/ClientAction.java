@@ -17,7 +17,7 @@ import org.dbflute.util.DfStringUtil;
 /**
  * @author p1us2er0
  */
-public class ClientIndexAction extends DbfluteIntroBaseAction {
+public class ClientAction extends DbfluteIntroBaseAction {
 
     @Resource
     protected DBFluteIntroLogic dbFluteIntroLogic;

@@ -52,15 +52,12 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     @Resource
     protected DbfluteConfig maihamaConfig;
 
-    @Resource
-    protected LoginManager loginManager;
-
     // ===================================================================================
     //                                                                      Login Handling
     //                                                                      ==============
     @Override
     protected OptionalThing<LoginManager> myLoginManager() {
-        return OptionalObject.of(loginManager);
+        return OptionalObject.empty();
     }
 
     // ===================================================================================

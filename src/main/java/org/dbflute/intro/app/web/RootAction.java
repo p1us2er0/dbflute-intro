@@ -13,14 +13,19 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.dbflute.intro.app.logic;
+package org.dbflute.intro.app.web;
 
-import org.dbflute.Entity;
-import org.dbflute.intro.app.base.NoneLoginBaseLogic;
-import org.dbflute.intro.mylasta.action.DbfluteIntroUserBean;
+import org.dbflute.intro.app.web.base.DbfluteIntroBaseAction;
+import org.dbflute.lastaflute.web.Execute;
+import org.dbflute.lastaflute.web.response.JsonResponse;
 
 /**
- * @author jflute
+ * @author p1us2er0
  */
-public class MemberLoginLogic extends NoneLoginBaseLogic<DbfluteIntroUserBean, Entity> {
+public class RootAction extends DbfluteIntroBaseAction {
+
+    @Execute
+    public JsonResponse index() {
+        return new JsonResponse("OK");
+    }
 }

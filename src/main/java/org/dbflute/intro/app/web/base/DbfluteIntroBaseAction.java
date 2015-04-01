@@ -15,15 +15,10 @@
  */
 package org.dbflute.intro.app.web.base;
 
-import javax.annotation.Resource;
-
 import org.dbflute.intro.app.base.DbfluteBaseAction;
-import org.dbflute.intro.app.logic.MemberLoginLogic;
 import org.dbflute.intro.mylasta.action.DbfluteIntroMessages;
-import org.dbflute.intro.mylasta.action.DbfluteIntroUserBean;
 import org.dbflute.lastaflute.web.callback.ActionRuntimeMeta;
 import org.dbflute.lastaflute.web.login.UserBean;
-import org.dbflute.lastaflute.web.login.exception.LoginTimeoutException;
 import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
 
@@ -47,8 +42,6 @@ public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction {
     // -----------------------------------------------------
     //                                          DI Component
     //                                          ------------
-    @Resource
-    protected MemberLoginLogic memberLoginLogic;
 
     // -----------------------------------------------------
     //                                          Display Data
@@ -66,24 +59,9 @@ public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction {
     // ===================================================================================
     //                                                                      Login Handling
     //                                                                      ==============
-    /**
-     * Get the bean of login user on session. (for application)
-     * @return The optional thing of found user bean. (NotNull, EmptyAllowed: when not login)
-     */
-    protected OptionalThing<DbfluteIntroUserBean> getUserBean() { // user interface
-        return wrapUserBeanAsOptional(memberLoginLogic.getSessionUserBean());
-    }
-
     @Override
     protected OptionalThing<UserBean> myUserBean() { // for interface handling
-        return wrapUserBeanAsOptional(getUserBean().orElse(null));
-    }
-
-    @SuppressWarnings("unchecked")
-    protected <USER_BEAN> OptionalThing<USER_BEAN> wrapUserBeanAsOptional(final DbfluteIntroUserBean userBean) {
-        return (OptionalThing<USER_BEAN>) OptionalObject.ofNullable(userBean, () -> {
-            throw new LoginTimeoutException("Not found the user in session."); /* to login action */
-        });
+        return OptionalObject.empty();
     }
 
     @Override
