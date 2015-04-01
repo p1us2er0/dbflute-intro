@@ -26,7 +26,9 @@ import javax.swing.JTextField;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.dbflute.intro.app.logic.DBFluteIntroLogic;
+import org.dbflute.intro.app.logic.DbFluteClientLogic;
+import org.dbflute.intro.app.logic.DbFluteEngineLogic;
+import org.dbflute.intro.app.logic.DbFluteIntroLogic;
 import org.dbflute.intro.mylasta.util.SwingUtil;
 import org.dbflute.intro.mylasta.util.SwingUtil.ProgressBarDialog;
 
@@ -64,7 +66,9 @@ public class DBFluteIntroFrame {
     private JTextField proxyHostText;
     private JTextField proxyPortText;
 
-    protected final DBFluteIntroLogic dbFluteIntroLogic = new DBFluteIntroLogic();
+    protected final DbFluteIntroLogic dbFluteIntroLogic = new DbFluteIntroLogic();
+    protected final DbFluteEngineLogic dbFluteEngineLogic = new DbFluteEngineLogic();
+    protected final DbFluteClientLogic dbFluteClientLogic = new DbFluteClientLogic();
 
     /**
      * Launch the application.
@@ -107,7 +111,7 @@ public class DBFluteIntroFrame {
         tabPanel = new JTabbedPane();
         frame.getContentPane().add(tabPanel, "name_5009361789717");
 
-        if (!DBFluteIntroLogic.getProjectList().isEmpty()) {
+        if (!dbFluteClientLogic.getProjectList().isEmpty()) {
             ClientPanel clientPanel = new ClientPanel(frame);
             tabPanel.addTab(NewClientPanel.LABEL_PROJECT_TAB, clientPanel);
         }
@@ -136,7 +140,7 @@ public class DBFluteIntroFrame {
         JMenuItem upgradeMenuItem = new JMenuItem(new UpgradeAction());
         help.add(upgradeMenuItem);
 
-        if (dbFluteIntroLogic.getExistedDBFluteVersionList().isEmpty()) {
+        if (dbFluteEngineLogic.getExistedVersionList().isEmpty()) {
             downloadDBFlute();
         }
     }
@@ -184,7 +188,7 @@ public class DBFluteIntroFrame {
 
             FileOutputStream stream = null;
             try {
-                stream = FileUtils.openOutputStream(new File(DBFluteIntroLogic.INI_FILE_PATH));
+                stream = FileUtils.openOutputStream(new File(DbFluteIntroLogic.INI_FILE_PATH));
                 properties.store(stream, "Proxy Setting");
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -196,7 +200,7 @@ public class DBFluteIntroFrame {
 
             dialog.setVisible(false);
 
-            if (dbFluteIntroLogic.getExistedDBFluteVersionList().isEmpty()) {
+            if (dbFluteEngineLogic.getExistedVersionList().isEmpty()) {
                 downloadDBFlute();
             }
         }
@@ -254,7 +258,7 @@ public class DBFluteIntroFrame {
             @Override
             public void execute() {
                 try {
-                    dbFluteIntroLogic.downloadDBFlute(dbfluteVersion);
+                    dbFluteEngineLogic.download(dbfluteVersion);
                 } catch (RuntimeException e) {
                     JOptionPane.showMessageDialog(frame, MSG_DOWNLOAD_ERROR);
                     return;

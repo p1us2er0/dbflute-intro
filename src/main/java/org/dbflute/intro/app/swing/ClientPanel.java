@@ -33,7 +33,9 @@ import javax.swing.event.HyperlinkListener;
 import org.apache.commons.io.IOUtils;
 import org.dbflute.intro.app.bean.ClientBean;
 import org.dbflute.intro.app.bean.DatabaseBean;
-import org.dbflute.intro.app.logic.DBFluteIntroLogic;
+import org.dbflute.intro.app.logic.DbFluteClientLogic;
+import org.dbflute.intro.app.logic.DbFluteIntroLogic;
+import org.dbflute.intro.app.logic.DbFluteTaskLogic;
 import org.dbflute.intro.mylasta.util.SwingUtil.JTextAreaStream;
 import org.dbflute.intro.mylasta.util.SwingUtil.ProgressBarDialog;
 
@@ -74,8 +76,12 @@ public class ClientPanel extends JPanel {
     private JComboBox<String> projectCombo;
     private JTextArea consoleArea;
 
+    // TODO
+    private DbFluteClientLogic dbFluteClientLogic = new DbFluteClientLogic();
+    private DbFluteTaskLogic dbFluteTaskLogic = new DbFluteTaskLogic();
+
     static {
-        final File docDir = new File(DBFluteIntroLogic.BASE_DIR_PATH, "dbflute_${project}/output/doc/");
+        final File docDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_${project}/output/doc/");
 
         LABEL_SCHEMA_HTML = "<a href='" + new File(docDir, "schema-${project}.html").toURI()
                 + "'>テーブル定義を開く</a> (SchemaHTML)";
@@ -135,8 +141,8 @@ public class ClientPanel extends JPanel {
                 tabPanel.insertTab(LABEL_PROJECT_TAB, null, newClientPanel, null, 0);
                 tabPanel.setSelectedComponent(newClientPanel);
 
-                ClientBean clientBean = DBFluteIntroLogic.convClientBeanFromDfprop(project);
-                Map<String, DatabaseBean> databaseBeanMap = DBFluteIntroLogic.convDatabaseBeanMapFromDfprop(project);
+                ClientBean clientBean = dbFluteClientLogic.convClientBeanFromDfprop(project);
+                Map<String, DatabaseBean> databaseBeanMap = dbFluteClientLogic.convDatabaseBeanMapFromDfprop(project);
 
                 newClientPanel.reflect(clientBean, databaseBeanMap);
             }
@@ -159,7 +165,7 @@ public class ClientPanel extends JPanel {
                     return;
                 }
 
-                boolean delete = DBFluteIntroLogic.deleteClient((String) projectCombo.getSelectedItem());
+                boolean delete = dbFluteClientLogic.deleteClient((String) projectCombo.getSelectedItem());
                 msg = String.format(delete ? MSG_REMOVE_SUCCESS : MSG_REMOVE_ERROR, project);
                 JOptionPane.showMessageDialog(frame, msg);
                 projectCombo.actionPerformed(null);
@@ -169,23 +175,23 @@ public class ClientPanel extends JPanel {
         this.add(createHTMLLink(LABEL_SCHEMA_HTML, 55));
         this.add(createHTMLLink(LABEL_HISTORY_HTML, 80));
 
-        JButton button = new JButton(new TaskAction(LABEL_DOC, DBFluteIntroLogic.getJdbcDocCommandList()));
+        JButton button = new JButton(new TaskAction(LABEL_DOC, dbFluteTaskLogic.getJdbcDocCommandList()));
         button.setBounds(10, 105, 250, 20);
         this.add(button);
 
         this.add(createHTMLLink(LABEL_LOAD_DATA_REVERSE_HTML, 150));
 
-        button = new JButton(new TaskAction(LABEL_LOAD_DATA_REVERSE, DBFluteIntroLogic.getLoadDataReverseCommandList()));
+        button = new JButton(new TaskAction(LABEL_LOAD_DATA_REVERSE, dbFluteTaskLogic.getLoadDataReverseCommandList()));
         button.setBounds(10, 175, 250, 20);
         this.add(button);
 
         this.add(createHTMLLink(LABEL_SYNC_CHECK_HTML, 220));
 
-        button = new JButton(new TaskAction(LABEL_SYNC_CHECK, DBFluteIntroLogic.getSchemaSyncCheckCommandList()));
+        button = new JButton(new TaskAction(LABEL_SYNC_CHECK, dbFluteTaskLogic.getSchemaSyncCheckCommandList()));
         button.setBounds(10, 245, 250, 20);
         this.add(button);
 
-        button = new JButton(new TaskAction(LABEL_REPLACE_SCHEMA, DBFluteIntroLogic.getReplaceSchemaCommandList()));
+        button = new JButton(new TaskAction(LABEL_REPLACE_SCHEMA, dbFluteTaskLogic.getReplaceSchemaCommandList()));
         button.setBounds(10, 300, 250, 20);
         this.add(button);
 
@@ -257,7 +263,7 @@ public class ClientPanel extends JPanel {
             final Map<String, Integer> resultMap = new LinkedHashMap<String, Integer>();
             for (final ProcessBuilder processBuilder : taskList) {
 
-                processBuilder.directory(new File(DBFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project));
+                processBuilder.directory(new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project));
 
                 Map<String, String> environment = processBuilder.environment();
                 environment.put("pause_at_end", "n");
@@ -276,7 +282,7 @@ public class ClientPanel extends JPanel {
 
                         try {
                             textAreaStream = new JTextAreaStream(consoleArea);
-                            int result = DBFluteIntroLogic.executeCommand(processBuilder, textAreaStream);
+                            int result = dbFluteTaskLogic.executeCommand(processBuilder, textAreaStream);
                             resultMap.put(processBuilder.command().toString(), result);
                         } finally {
                             IOUtils.closeQuietly(textAreaStream);
@@ -294,7 +300,7 @@ public class ClientPanel extends JPanel {
             String message = MSG_FINISHED_SUCCESS;
             if (Collections.frequency(resultMap.values(), 0) != resultMap.size()) {
                 try {
-                    String logPath = DBFluteIntroLogic.BASE_DIR_PATH + "dbflute_" + project + "/log/dbflute.log";
+                    String logPath = DbFluteIntroLogic.BASE_DIR_PATH + "dbflute_" + project + "/log/dbflute.log";
                     logPath = new File(logPath).getCanonicalPath();
                     message = String.format(MSG_FINISHED_ERROR, logPath);
                 } catch (IOException e) {
@@ -308,7 +314,7 @@ public class ClientPanel extends JPanel {
 
     private String showSchemaSyncCheckEnvDialog(String project) {
 
-        List<String> envList = DBFluteIntroLogic.getEnvList(project);
+        List<String> envList = dbFluteClientLogic.getEnvList(project);
 
         if (envList.isEmpty()) {
             JOptionPane.showMessageDialog(frame, MSG_NOT_FOUND_ENV);
@@ -386,7 +392,7 @@ public class ClientPanel extends JPanel {
     protected void fireProjectCombo(String project) {
 
         projectCombo.removeAllItems();
-        for (String projectTemp : DBFluteIntroLogic.getProjectList()) {
+        for (String projectTemp : dbFluteClientLogic.getProjectList()) {
             projectCombo.addItem(projectTemp);
         }
 
@@ -410,7 +416,7 @@ public class ClientPanel extends JPanel {
             if (component instanceof JButton) {
                 JButton button = (JButton) component;
                 if (LABEL_REPLACE_SCHEMA.equals(button.getText())) {
-                    button.setVisible(selected && DBFluteIntroLogic.existReplaceSchemaFile(selectedProject));
+                    button.setVisible(selected && dbFluteClientLogic.existReplaceSchemaFile(selectedProject));
                 }
             }
         }

@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.dbflute.intro.app.logic.DBFluteIntroLogic;
+import org.dbflute.intro.app.logic.DbFluteEngineLogic;
 import org.dbflute.intro.app.web.base.DbfluteIntroBaseAction;
 import org.dbflute.lastaflute.web.Execute;
 import org.dbflute.lastaflute.web.response.JsonResponse;
@@ -13,11 +13,11 @@ import org.dbflute.util.DfStringUtil;
 public class EngineAction extends DbfluteIntroBaseAction {
 
     @Resource
-    protected DBFluteIntroLogic dbFluteIntroLogic;
+    protected DbFluteEngineLogic dbFluteEngineLogic;
 
     @Execute
     public JsonResponse versions() {
-        List<String> dbFluteVersionList = dbFluteIntroLogic.getExistedDBFluteVersionList();
+        List<String> dbFluteVersionList = dbFluteEngineLogic.getExistedVersionList();
         return asJson(dbFluteVersionList);
     }
 
@@ -25,12 +25,7 @@ public class EngineAction extends DbfluteIntroBaseAction {
     public JsonResponse download(String version) {
         // TODO urlPattern
         version = DfStringUtil.substringFirstRear(version, "/");
-        dbFluteIntroLogic.downloadDBFlute(version);
+        dbFluteEngineLogic.download(version);
         return asJson(true);
-    }
-
-    @Execute
-    public JsonResponse publicProperties() {
-        return asJson(dbFluteIntroLogic.getPublicProperties());
     }
 }

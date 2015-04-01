@@ -8,7 +8,7 @@ import javax.annotation.Resource;
 
 import org.dbflute.intro.app.bean.ClientBean;
 import org.dbflute.intro.app.bean.DatabaseBean;
-import org.dbflute.intro.app.logic.DBFluteIntroLogic;
+import org.dbflute.intro.app.logic.DbFluteClientLogic;
 import org.dbflute.intro.app.web.base.DbfluteIntroBaseAction;
 import org.dbflute.lastaflute.web.Execute;
 import org.dbflute.lastaflute.web.response.JsonResponse;
@@ -20,11 +20,11 @@ import org.dbflute.util.DfStringUtil;
 public class ClientAction extends DbfluteIntroBaseAction {
 
     @Resource
-    protected DBFluteIntroLogic dbFluteIntroLogic;
+    protected DbFluteClientLogic dbFluteClientLogic;
 
     @Execute
     public JsonResponse list(ClientSearchForm clientSearchForm) {
-        List<String> projectList = DBFluteIntroLogic.getProjectList();
+        List<String> projectList = dbFluteClientLogic.getProjectList();
         return asJson(projectList);
     }
 
@@ -32,7 +32,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
     public JsonResponse detail(String project) {
         // TODO urlPattern
         project = DfStringUtil.substringFirstRear(project, "/");
-        ClientBean clientBean = DBFluteIntroLogic.convClientBeanFromDfprop(project);
+        ClientBean clientBean = dbFluteClientLogic.convClientBeanFromDfprop(project);
         return asJson(clientBean);
     }
 
@@ -40,7 +40,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
     public JsonResponse create(ClientCreateForm clientCreateForm) {
         ClientBean clientBean = new ClientBean(); // TODO convert
         Map<String, DatabaseBean> schemaSyncCheckMap = new LinkedHashMap<String, DatabaseBean>();
-        dbFluteIntroLogic.createNewClient(clientBean, schemaSyncCheckMap);
+        dbFluteClientLogic.createNewClient(clientBean, schemaSyncCheckMap);
         return asJson(clientBean);
     }
 }

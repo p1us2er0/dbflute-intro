@@ -19,7 +19,8 @@ import javax.swing.JTextField;
 import org.dbflute.intro.app.bean.ClientBean;
 import org.dbflute.intro.app.bean.DatabaseBean;
 import org.dbflute.intro.app.definition.DatabaseInfoDef;
-import org.dbflute.intro.app.logic.DBFluteIntroLogic;
+import org.dbflute.intro.app.logic.DbFluteIntroLogic;
+import org.dbflute.intro.app.logic.DbFluteClientLogic;
 
 /**
  * @author p1us2er0
@@ -155,7 +156,7 @@ public class NewClientPanel extends JPanel {
                 }
             }
 
-            final File dbfluteClientDir = new File(DBFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + clientBean.getProject());
+            final File dbfluteClientDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + clientBean.getProject());
             if (projectText.isEnabled() && dbfluteClientDir.exists()) {
                 JOptionPane.showMessageDialog(frame, String.format(MSG_EXIST_PROJECT, clientBean.getProject()));
                 return;
@@ -175,7 +176,7 @@ public class NewClientPanel extends JPanel {
                 return;
             }
 
-            DBFluteIntroLogic dbFluteIntroLogic = new DBFluteIntroLogic();
+            DbFluteClientLogic dbFluteIntroLogic = new DbFluteClientLogic();
             try {
                 dbFluteIntroLogic.testConnection(clientBean, schemaSyncCheckMap);
             } catch (RuntimeException e) {

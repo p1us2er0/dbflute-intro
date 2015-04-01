@@ -1,169 +1,43 @@
 package org.dbflute.intro.app.logic;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.ProxySelector;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.dbflute.helper.mapstring.MapListString;
 import org.dbflute.infra.dfprop.DfPropFile;
 import org.dbflute.intro.app.bean.ClientBean;
 import org.dbflute.intro.app.bean.DatabaseBean;
 import org.dbflute.intro.app.bean.OptionBean;
-import org.dbflute.intro.app.swing.DBFluteIntroFrame;
 import org.dbflute.intro.mylasta.util.ZipUtil;
 
 /**
  * @author p1us2er0
  * @author jflute
  */
-public class DBFluteIntroLogic {
+public class DbFluteClientLogic {
 
-    /**
-     * <pre>
-     * e.g. "."
-     *  dbflute-intro
-     *   |-dbflute_exampledb // DBFlute client
-     *   |-mydbflute         // DBFlute module
-     *   |-dbflute-intro.jar
-     * </pre>
-     */
-    public static final String BASE_DIR_PATH = ".";
-    public static final String INI_FILE_PATH = BASE_DIR_PATH + "/dbflute-intro.ini";
-    private static final String MY_DBFLUTE_PATH = BASE_DIR_PATH + "/mydbflute/dbflute-%1$s";
-
-    private Properties publicProperties;
-
-    public Properties getPublicProperties() {
-
-        if (publicProperties != null) {
-            return publicProperties;
-        }
-
-        publicProperties = new Properties();
-        try {
-            // TODO
-            URL url = new URL("http://dbflute.org/meta/public.properties");
-            publicProperties.load(url.openStream());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return publicProperties;
-    }
-
-    public Properties getProperties() {
-
-        File file = new File(DBFluteIntroLogic.INI_FILE_PATH);
-        Properties properties = new Properties();
-        if (file.exists()) {
-            FileInputStream fileInputStream = null;
-            try {
-                fileInputStream = new FileInputStream(file);
-                properties.load(fileInputStream);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                IOUtils.closeQuietly(fileInputStream);
-            }
-        }
-
-        return properties;
-    }
-
-    public void loadProxy() {
-
-        System.clearProperty("proxySet");
-        System.clearProperty("proxyHost");
-        System.clearProperty("proxyPort");
-
-        Properties properties = getProperties();
-        String proxyHost = properties.getProperty("proxyHost");
-        String proxyPort = properties.getProperty("proxyPort");
-        boolean useSystemProxies = Boolean.parseBoolean(properties.getProperty("java.net.useSystemProxies"));
-
-        if (useSystemProxies) {
-            System.setProperty("java.net.useSystemProxies", String.valueOf(useSystemProxies));
-        } else {
-            if (proxyHost != null && !proxyHost.equals("")) {
-                System.setProperty("proxySet", "true");
-                System.setProperty("proxyHost", proxyHost);
-            }
-
-            if (proxyPort != null && !proxyPort.equals("")) {
-                System.setProperty("proxyPort", proxyPort);
-            }
-        }
-    }
-
-    public Map<String, Object> getManifestMap() {
-
-        Map<String, Object> manifestMap = new LinkedHashMap<String, Object>();
-        InputStream inputStream = null;
-        try {
-
-            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-            Enumeration<URL> resources = contextClassLoader.getResources("META-INF/MANIFEST.MF");
-            while (resources.hasMoreElements()) {
-                inputStream = resources.nextElement().openStream();
-                Manifest manifest = new Manifest(inputStream);
-
-                for (Entry<Object, Object> entry : manifest.getMainAttributes().entrySet()) {
-                    manifestMap.put(String.valueOf(entry.getKey()), entry.getValue());
-                }
-
-                if (DBFluteIntroFrame.class.getName().equals(manifestMap.get("Main-Class"))) {
-                    break;
-                }
-
-                manifestMap.clear();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return manifestMap;
-    }
-
-    public String getVersion() {
-        return String.valueOf(getManifestMap().get("Implementation-Version"));
-    }
-
-    public static List<String> getProjectList() {
+    public List<String> getProjectList() {
 
         List<String> list = new ArrayList<String>();
-        final File baseDir = new File(DBFluteIntroLogic.BASE_DIR_PATH);
+        final File baseDir = new File(DbFluteIntroLogic.BASE_DIR_PATH);
         if (baseDir.exists()) {
             for (File file : baseDir.listFiles()) {
                 if (file.isDirectory() && file.getName().startsWith("dbflute_")) {
@@ -175,9 +49,9 @@ public class DBFluteIntroLogic {
         return list;
     }
 
-    public static List<String> getEnvList(String project) {
+    public List<String> getEnvList(String project) {
         List<String> envList = new ArrayList<String>();
-        File dfpropDir = new File(DBFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
+        File dfpropDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
         for (File file : dfpropDir.listFiles()) {
             if (file.isDirectory() && file.getName().startsWith("schemaSyncCheck_")) {
                 envList.add(file.getName().substring("schemaSyncCheck_".length()));
@@ -187,11 +61,11 @@ public class DBFluteIntroLogic {
         return envList;
     }
 
-    public static boolean existReplaceSchemaFile(String project) {
+    public boolean existReplaceSchemaFile(String project) {
 
         boolean exist = false;
 
-        final File playsqlDir = new File(DBFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/playsql");
+        final File playsqlDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/playsql");
         for (File file : playsqlDir.listFiles()) {
             if (file.isFile() && file.getName().startsWith("replace-schema") && file.getName().endsWith(".sql")) {
                 try {
@@ -207,163 +81,6 @@ public class DBFluteIntroLogic {
         return exist;
     }
 
-    public List<String> getExistedDBFluteVersionList() {
-
-        List<String> list = new ArrayList<String>();
-        final File mydbfluteDir = new File(DBFluteIntroLogic.BASE_DIR_PATH, "mydbflute");
-        if (mydbfluteDir.exists()) {
-            for (File file : mydbfluteDir.listFiles()) {
-                if (file.isDirectory() && file.getName().startsWith("dbflute-")) {
-                    list.add(file.getName().substring(8));
-                }
-            }
-        }
-
-        return list;
-    }
-
-    protected static List<ProcessBuilder> getCommandList(List<List<String>> commandList) {
-
-        List<ProcessBuilder> processBuilderList = new ArrayList<ProcessBuilder>();
-        for (List<String> command : commandList) {
-
-            if (command.isEmpty()) {
-                continue;
-            }
-
-            String onName = System.getProperty("os.name").toLowerCase();
-            List<String> list = new ArrayList<String>();
-            if (onName.startsWith("windows")) {
-                list.add("cmd");
-                list.add("/c");
-                list.add(command.get(0) + ".bat");
-            } else {
-                list.add("sh");
-                list.add(command.get(0) + ".sh");
-            }
-
-            if (command.size() > 1) {
-                list.addAll(command.subList(1, command.size()));
-            }
-
-            processBuilderList.add(new ProcessBuilder(list));
-        }
-
-        return processBuilderList;
-    }
-
-    public static List<ProcessBuilder> getJdbcDocCommandList() {
-
-        List<List<String>> commandList = new ArrayList<List<String>>();
-        commandList.add(Arrays.asList("manage", "jdbc"));
-        commandList.add(Arrays.asList("manage", "doc"));
-
-        return getCommandList(commandList);
-    }
-
-    public static List<ProcessBuilder> getLoadDataReverseCommandList() {
-
-        List<List<String>> commandList = new ArrayList<List<String>>();
-        commandList.add(Arrays.asList("manage", "jdbc"));
-        commandList.add(Arrays.asList("manage", "load-data-reverse"));
-
-        return getCommandList(commandList);
-    }
-
-    public static List<ProcessBuilder> getSchemaSyncCheckCommandList() {
-
-        List<List<String>> commandList = new ArrayList<List<String>>();
-        commandList.add(Arrays.asList("manage", "schema-sync-check"));
-
-        return getCommandList(commandList);
-    }
-
-    public static List<ProcessBuilder> getReplaceSchemaCommandList() {
-
-        List<List<String>> commandList = new ArrayList<List<String>>();
-        commandList.add(Arrays.asList("manage", "replace-schema"));
-
-        return getCommandList(commandList);
-    }
-
-    public static int executeCommand(ProcessBuilder processBuilder, OutputStream outputStream) {
-
-        processBuilder.redirectErrorStream(true);
-
-        InputStream inputStream = null;
-        InputStreamReader inputStreamReader = null;
-        BufferedReader bufferedReader = null;
-        Process process;
-
-        int result = 0;
-        try {
-            process = processBuilder.start();
-            inputStream = process.getInputStream();
-            inputStreamReader = new InputStreamReader(inputStream);
-            bufferedReader = new BufferedReader(inputStreamReader);
-            while (true) {
-                String line = bufferedReader.readLine();
-                if (line == null) {
-                    break;
-                }
-
-                IOUtils.write(line, outputStream);
-                IOUtils.write(System.getProperty("line.separator"), outputStream);
-                outputStream.flush();
-
-                if (line.equals("BUILD FAILED")) {
-                    result = 1;
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(bufferedReader);
-            IOUtils.closeQuietly(inputStreamReader);
-            IOUtils.closeQuietly(inputStream);
-        }
-
-        if (result == 0) {
-            result = process.exitValue();
-        }
-
-        return result;
-    }
-
-    public void downloadDBFlute(String dbfluteVersion) {
-
-        final String downloadVersion = dbfluteVersion;
-        if (downloadVersion == null || downloadVersion.trim().length() == 0) {
-            return;
-        }
-
-        final String downloadUrl;
-        {
-            downloadUrl = getPublicProperties().getProperty("dbflute.engine.download.url").replace("$$version$$", downloadVersion);
-        }
-
-        final File mydbfluteDir = new File(String.format(MY_DBFLUTE_PATH, downloadVersion));
-        mydbfluteDir.mkdirs();
-
-        final String zipFilename;
-        {
-            zipFilename = mydbfluteDir.getAbsolutePath() + ".zip";
-            try {
-                FileUtils.copyURLToFile(new URL(downloadUrl), new File(zipFilename));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        ZipUtil.decrypt(zipFilename, mydbfluteDir.getAbsolutePath());
-
-        FileUtils.deleteQuietly(new File(zipFilename));
-
-        final String templateZipFileName = mydbfluteDir.getAbsolutePath() + "/etc/client-template/dbflute_dfclient.zip";
-        final String templateExtractDirectoryBase = mydbfluteDir.getAbsolutePath() + "/client-template/dbflute_dfclient.zip";
-        ZipUtil.decrypt(templateZipFileName, templateExtractDirectoryBase);
-    }
-
     public void testConnection(ClientBean clientBean, Map<String, DatabaseBean> schemaSyncCheckMap) {
 
         ProxySelector proxySelector = ProxySelector.getDefault();
@@ -377,7 +94,7 @@ public class DBFluteIntroLogic {
 
             List<URL> urls = new ArrayList<URL>();
             if (clientBean.getJdbcDriverJarPath() == null || clientBean.getJdbcDriverJarPath().equals("")) {
-                File mydbfluteDir = new File(String.format(MY_DBFLUTE_PATH, clientBean.getDbfluteVersion()), "lib");
+                File mydbfluteDir = new File(String.format(DbFluteIntroLogic.MY_DBFLUTE_PATH, clientBean.getDbfluteVersion()), "lib");
                 for (File file : FileUtils.listFiles(mydbfluteDir, FileFilterUtils.suffixFileFilter(".jar"), null)) {
                     urls.add(file.toURI().toURL());
                 }
@@ -410,18 +127,18 @@ public class DBFluteIntroLogic {
 
     public void createNewClient(ClientBean clientBean, Map<String, DatabaseBean> schemaSyncCheckMap) {
 
-        final File dbfluteClientDir = new File(BASE_DIR_PATH, "dbflute_" + clientBean.getProject());
+        final File dbfluteClientDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + clientBean.getProject());
 
         try {
             final String dbfluteVersionExpression = "dbflute-" + clientBean.getDbfluteVersion();
 
-            final File mydbflutePureFile = new File(BASE_DIR_PATH, "/mydbflute");
+            final File mydbflutePureFile = new File(DbFluteIntroLogic.BASE_DIR_PATH, "/mydbflute");
             final String extractDirectoryBase = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression;
 
             if (!dbfluteClientDir.exists()) {
                 final String templateZipFileName = extractDirectoryBase + "/etc/client-template/dbflute_dfclient.zip";
-                ZipUtil.decrypt(templateZipFileName, BASE_DIR_PATH);
-                new File(BASE_DIR_PATH, "dbflute_dfclient").renameTo(dbfluteClientDir);
+                ZipUtil.decrypt(templateZipFileName, DbFluteIntroLogic.BASE_DIR_PATH);
+                new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_dfclient").renameTo(dbfluteClientDir);
             }
 
             List<String> dfpropFileList = new ArrayList<String>();
@@ -555,7 +272,7 @@ public class DBFluteIntroLogic {
 
     private void createSchemaSyncCheck(ClientBean clientBean, Map<String, DatabaseBean> schemaSyncCheckMap) {
 
-        final File dbfluteClientDir = new File(BASE_DIR_PATH, "dbflute_" + clientBean.getProject());
+        final File dbfluteClientDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + clientBean.getProject());
         URL schemaSyncCheckURL = ClassLoader.getSystemResource("dfprop/documentDefinitionMap+schemaSyncCheck.dfprop");
 
         for (Entry<String, DatabaseBean> entry : schemaSyncCheckMap.entrySet()) {
@@ -583,13 +300,13 @@ public class DBFluteIntroLogic {
         }
     }
 
-    public static boolean deleteClient(String project) {
+    public boolean deleteClient(String project) {
 
         if (project == null) {
             return false;
         }
 
-        final File dbfluteClientDir = new File(BASE_DIR_PATH, "dbflute_" + project);
+        final File dbfluteClientDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project);
         try {
             FileUtils.deleteDirectory(dbfluteClientDir);
         } catch (IOException e) {
@@ -621,42 +338,10 @@ public class DBFluteIntroLogic {
         }
     }
 
-    public boolean upgrade() {
-
-        File jarPathFile = new File("./dbflute-intro.jar");
-
-        Class<?> clazz = this.getClass();
-        URL location = clazz.getResource("/" + clazz.getName().replaceAll("\\.", "/") + ".class");
-        String path = location.getPath();
-
-        if (path.lastIndexOf("!") != -1) {
-            try {
-                jarPathFile = new File(URLDecoder.decode(path.substring("file:/".length(), path.lastIndexOf("!")),
-                        Charsets.UTF_8.name()));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-
-        try {
-            FileUtils.copyURLToFile(new URL("http://p1us2er0.github.io/dbflute-intro/download/" + jarPathFile.getName()),
-                    jarPathFile);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
-    }
-
-    public static ClientBean convClientBeanFromDfprop(String project) {
+    public ClientBean convClientBeanFromDfprop(String project) {
 
         Map<String, Map<String, Object>> map = new LinkedHashMap<String, Map<String, Object>>();
-        File dfpropDir = new File(DBFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
+        File dfpropDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
 
         for (File file : dfpropDir.listFiles()) {
             if (!file.getName().endsWith(".dfprop") || file.getName().startsWith("allClassCopyright")) {
@@ -711,14 +396,14 @@ public class DBFluteIntroLogic {
         clientBean.getSystemUserDatabaseBean().setSchema((String) systemUserDatabaseMap.get("schema"));
         clientBean.getSystemUserDatabaseBean().setUser((String) systemUserDatabaseMap.get("user"));
         clientBean.getSystemUserDatabaseBean().setPassword((String) systemUserDatabaseMap.get("password"));
-        File extlibDir = new File(DBFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/extlib");
+        File extlibDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/extlib");
         for (File file : extlibDir.listFiles()) {
             if (file.getName().endsWith(".jar")) {
                 clientBean.setJdbcDriverJarPath(file.getPath());
             }
         }
 
-        File projectFile = new File(DBFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/_project.bat");
+        File projectFile = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/_project.bat");
         String data = null;
         try {
             data = FileUtils.readFileToString(projectFile);
@@ -749,10 +434,10 @@ public class DBFluteIntroLogic {
         return clientBean;
     }
 
-    public static Map<String, DatabaseBean> convDatabaseBeanMapFromDfprop(String project) {
+    public Map<String, DatabaseBean> convDatabaseBeanMapFromDfprop(String project) {
 
         Map<String, DatabaseBean> databaseBeanMap = new LinkedHashMap<String, DatabaseBean>();
-        File dfpropDir = new File(DBFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
+        File dfpropDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
         for (File file : dfpropDir.listFiles()) {
             if (!file.isDirectory() || !file.getName().startsWith("schemaSyncCheck_")) {
                 continue;

@@ -20,7 +20,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.dbflute.intro.app.bean.ClientBean;
 import org.dbflute.intro.app.bean.DatabaseBean;
 import org.dbflute.intro.app.definition.DatabaseInfoDef;
-import org.dbflute.intro.app.logic.DBFluteIntroLogic;
+import org.dbflute.intro.app.logic.DbFluteEngineLogic;
 import org.dbflute.intro.mylasta.util.SwingUtil;
 
 /**
@@ -190,8 +190,8 @@ public class BasicPanel extends JPanel {
 
     protected void fireVersionInfoDBFlute() {
         dbfluteVersionCombo.removeAllItems();
-        DBFluteIntroLogic dbFluteIntroLogic = new DBFluteIntroLogic();
-        List<String> existedDBFluteVersionList = dbFluteIntroLogic.getExistedDBFluteVersionList();
+        DbFluteEngineLogic dbFluteEngineLogic = new DbFluteEngineLogic();
+        List<String> existedDBFluteVersionList = dbFluteEngineLogic.getExistedVersionList();
         for (String version : existedDBFluteVersionList) {
             dbfluteVersionCombo.addItem(version);
         }
