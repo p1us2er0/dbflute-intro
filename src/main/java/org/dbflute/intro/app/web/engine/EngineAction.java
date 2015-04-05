@@ -8,7 +8,6 @@ import org.dbflute.intro.app.logic.DbFluteEngineLogic;
 import org.dbflute.intro.app.web.base.DbfluteIntroBaseAction;
 import org.dbflute.lastaflute.web.Execute;
 import org.dbflute.lastaflute.web.response.JsonResponse;
-import org.dbflute.util.DfStringUtil;
 
 public class EngineAction extends DbfluteIntroBaseAction {
 
@@ -23,8 +22,6 @@ public class EngineAction extends DbfluteIntroBaseAction {
 
     @Execute(urlPattern = "download/{version}")
     public JsonResponse download(String version) {
-        // TODO urlPattern
-        version = DfStringUtil.substringFirstRear(version, "/");
         dbFluteEngineLogic.download(version);
         return asJson(true);
     }
