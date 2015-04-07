@@ -7,10 +7,10 @@ import org.dbflute.dbFlute.mylasta.direction.DbfluteConfig;
  */
 public interface DbFluteIntroConfig extends DbfluteConfig {
 
-    /** The key of the configuration. e.g. Dockside */
+    /** The key of the configuration. e.g. DbfluteIntro */
     String DOMAIN_TITLE = "domain.title";
 
-    /** The key of the configuration. e.g. DCK */
+    /** The key of the configuration. e.g. DbfluteIntro */
     String COOKIE_AUTO_LOGIN_DOCKSIDE_KEY = "cookie.auto.login.dockside.key";
 
     /**
@@ -29,7 +29,7 @@ public interface DbFluteIntroConfig extends DbfluteConfig {
 
     /**
      * Get the value for the key 'domain.title'. <br />
-     * The value is, e.g. Dockside <br />
+     * The value is, e.g. DbfluteIntro <br />
      * comment: @Override The title of domain the application for logging
      * @return The value of found property. (NullAllowed: if null, not found)
      */
@@ -37,7 +37,7 @@ public interface DbFluteIntroConfig extends DbfluteConfig {
 
     /**
      * Get the value for the key 'cookie.auto.login.dockside.key'. <br />
-     * The value is, e.g. DCK <br />
+     * The value is, e.g. DbfluteIntro <br />
      * comment: The cookie key of auto-login for Dockside
      * @return The value of found property. (NullAllowed: if null, not found)
      */
