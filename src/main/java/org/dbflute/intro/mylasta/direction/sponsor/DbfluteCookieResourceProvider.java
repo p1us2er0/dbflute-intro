@@ -24,20 +24,20 @@ import org.dbflute.lastaflute.web.servlet.cookie.CookieResourceProvider;
  */
 public class DbfluteCookieResourceProvider implements CookieResourceProvider {
 
-    protected final DbfluteConfig maihamaConfig;
+    protected final DbfluteConfig dbfluteConfig;
     protected final InvertibleCryptographer cookieCipher;
 
-    public DbfluteCookieResourceProvider(DbfluteConfig maihamaConfig, InvertibleCryptographer cookieCipher) {
-        this.maihamaConfig = maihamaConfig;
+    public DbfluteCookieResourceProvider(DbfluteConfig dbfluteConfig, InvertibleCryptographer cookieCipher) {
+        this.dbfluteConfig = dbfluteConfig;
         this.cookieCipher = cookieCipher;
     }
 
     public String provideDefaultPath() {
-        return maihamaConfig.getCookieDefaultPath();
+        return dbfluteConfig.getCookieDefaultPath();
     }
 
     public Integer provideDefaultExpire() {
-        return maihamaConfig.getCookieDefaultExpireAsInteger();
+        return dbfluteConfig.getCookieDefaultExpireAsInteger();
     }
 
     public InvertibleCryptographer provideCipher() {

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.dbflute.intro.app.bean.ClientBean;
@@ -37,7 +38,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
         return asJson(projectList);
     }
 
-    @Execute(urlPattern = "detail/{project}")
+    @Execute
     public JsonResponse detail(String project) {
         ClientBean clientBean = dbFluteClientLogic.convClientBeanFromDfprop(project);
         return asJson(clientBean);
@@ -59,18 +60,20 @@ public class ClientAction extends DbfluteIntroBaseAction {
         return asJson(clientBean);
     }
 
-    @Execute(urlPattern = "destroy/{project}")
+    @Execute
     public JsonResponse remove(String project) {
         dbFluteClientLogic.deleteClient(project);
         return asJson(true);
     }
 
-    @Execute(urlPattern = "task/{project}/{task}")
+    @Execute
     public ActionResponse task(String project, String task) {
 
+        HttpServletResponse response = responseManager.getResponse();
+        response.setContentType("text/plain; charset=UTF-8");
         OutputStream outputStream;
         try {
-            outputStream = responseManager.getResponse().getOutputStream();
+            outputStream = response.getOutputStream();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -95,13 +98,13 @@ public class ClientAction extends DbfluteIntroBaseAction {
         return ActionResponse.empty();
     }
 
-    @Execute(urlPattern = "schemahtml/{task}")
+    @Execute
     public ActionResponse schemahtml(String project) {
         String filePath = "dbflute_" + project + "/output/doc/schema-" + project + ".html";
         return createHtmlStreamResponse(filePath);
     }
 
-    @Execute(urlPattern = "historyhtml/{project}")
+    @Execute
     public ActionResponse historyhtml(String project) {
         String filePath = "dbflute_" + project + "/output/doc/history-" + project + ".html";
         return createHtmlStreamResponse(filePath);
@@ -110,7 +113,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
     protected StreamResponse createHtmlStreamResponse(String filePath) {
         File file = new File(DbFluteIntroLogic.BASE_DIR_PATH, filePath);
         StreamResponse streamResponse = new StreamResponse("");
-        streamResponse.contentType("Content-Type: text/html;");
+        streamResponse.contentType("text/html; charset=UTF-8");
         try {
             streamResponse.stream(FileUtils.openInputStream(file));
         } catch (IOException e) {

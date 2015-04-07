@@ -30,8 +30,8 @@ public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction {
     // ===================================================================================
     //                                                                          Definition
     //                                                                          ==========
-    /** The application type for Dockside, e.g. used by access context. */
-    protected static final String APP_TYPE = "DCK";
+    /** The application type for DbfluteIntro, e.g. used by access context. */
+    protected static final String APP_TYPE = "DbfluteIntro";
 
     /** The user type for Member, e.g. used by access context. */
     protected static final String USER_TYPE = "M";

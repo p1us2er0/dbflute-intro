@@ -20,7 +20,7 @@ public class EngineAction extends DbfluteIntroBaseAction {
         return asJson(dbFluteVersionList);
     }
 
-    @Execute(urlPattern = "download/{version}")
+    @Execute
     public JsonResponse download(String version) {
         dbFluteEngineLogic.download(version);
         return asJson(true);

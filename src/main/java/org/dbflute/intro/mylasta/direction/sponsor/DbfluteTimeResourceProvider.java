@@ -32,14 +32,14 @@ public class DbfluteTimeResourceProvider implements TimeResourceProvider {
     // ===================================================================================
     //                                                                           Attribute
     //                                                                           =========
-    protected final DbfluteConfig maihamaConfig;
+    protected final DbfluteConfig dbfluteConfig;
     protected final RelativeDateScript script = new RelativeDateScript();
 
     // ===================================================================================
     //                                                                         Constructor
     //                                                                         ===========
-    public DbfluteTimeResourceProvider(DbfluteConfig maihamaConfig) {
-        this.maihamaConfig = maihamaConfig;
+    public DbfluteTimeResourceProvider(DbfluteConfig dbfluteConfig) {
+        this.dbfluteConfig = dbfluteConfig;
     }
 
     // ===================================================================================
@@ -62,12 +62,12 @@ public class DbfluteTimeResourceProvider implements TimeResourceProvider {
     //                                                                     Time Adjustment
     //                                                                     ===============
     public boolean isAdjustAbsoluteMode() { // *1
-        final String exp = maihamaConfig.getTimeAdjustTimeMillis();
+        final String exp = dbfluteConfig.getTimeAdjustTimeMillis();
         return exp.startsWith("$"); // means absolute e.g. $(2014/07/10)
     }
 
     public long provideAdjustTimeMillis() { // *1
-        final String exp = maihamaConfig.getTimeAdjustTimeMillis();
+        final String exp = dbfluteConfig.getTimeAdjustTimeMillis();
         try {
             return doProvideAdjustTimeMillis(exp);
         } catch (RuntimeException e) {
@@ -84,7 +84,7 @@ public class DbfluteTimeResourceProvider implements TimeResourceProvider {
             final Date resolved = script.resolveRelativeDate(exp, new Date(current));
             return resolved.getTime() - current;
         } else { // should be millisecond as relative
-            return maihamaConfig.getTimeAdjustTimeMillisAsLong();
+            return dbfluteConfig.getTimeAdjustTimeMillisAsLong();
         }
     }
     // *1: called per called for dynamic change in development

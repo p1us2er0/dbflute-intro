@@ -40,15 +40,15 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
     // ===================================================================================
     //                                                                          Definition
     //                                                                          ==========
-    public static final String MAIHAMA_CONFIG_FILE = "maihama_config.properties";
-    public static final String MAIHAMA_ENV_FILE = "maihama_env.properties";
-    public static final String MAIHAMA_MESSAGE_NAME = "maihama_message";
+    public static final String DBFLUTE_CONFIG_FILE = "dbflute_config.properties";
+    public static final String DBFLUTE_ENV_FILE = "dbflute_env.properties";
+    public static final String DBFLUTE_MESSAGE_NAME = "dbflute_message";
 
     // ===================================================================================
     //                                                                           Attribute
     //                                                                           =========
     @Resource
-    protected DbfluteConfig maihamaConfig;
+    protected DbfluteConfig dbfluteConfig;
 
     // ===================================================================================
     //                                                                              Assist
@@ -67,7 +67,7 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
     protected abstract String getDomainConfigFile();
 
     protected String[] getExtendsConfigFiles() {
-        return new String[] { MAIHAMA_CONFIG_FILE, MAIHAMA_ENV_FILE };
+        return new String[] { DBFLUTE_CONFIG_FILE, DBFLUTE_ENV_FILE };
     }
 
     // ===================================================================================
@@ -86,17 +86,17 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
     //                                             Framework
     //                                             ---------
     protected void prepareFramework(OptionalCoreDirection direction) {
-        // this configuration is on maihama_env.properties
+        // this configuration is on dbflute_env.properties
         // because this is true only when development
-        direction.directDevelopmentHere(maihamaConfig.isDevelopmentHere());
+        direction.directDevelopmentHere(dbfluteConfig.isDevelopmentHere());
 
         // titles are from configurations
-        direction.directLoggingTitle(maihamaConfig.getDomainTitle(), maihamaConfig.getEnvironmentTitle());
+        direction.directLoggingTitle(dbfluteConfig.getDomainTitle(), dbfluteConfig.getEnvironmentTitle());
 
         // this configuration is on sea_env.properties
         // because it has no influence to production
         // even if you set true manually and forget to set false back
-        direction.directFrameworkDebug(maihamaConfig.isFrameworkDebug()); // basically false
+        direction.directFrameworkDebug(dbfluteConfig.isFrameworkDebug()); // basically false
 
         // you can add your own process when your application is booting
         direction.directBootProcessCallback(createBootProcessCallback());
@@ -120,7 +120,7 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
     }
 
     protected String getPrimarySecurityWord() {
-        return "maihama:dockside"; // #change_it hard coding for now
+        return "dbflute:dbfluteIntro"; // #change_it hard coding for now
     }
 
     // -----------------------------------------------------
@@ -131,7 +131,7 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
     }
 
     protected DbfluteTimeResourceProvider createTimeResourceProvider() {
-        return new DbfluteTimeResourceProvider(maihamaConfig);
+        return new DbfluteTimeResourceProvider(dbfluteConfig);
     }
 
     // ===================================================================================
@@ -177,11 +177,11 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
 
     protected DbfluteCookieResourceProvider createCookieResourceProvider() { // #change_it AES for now
         final InvertibleCryptographer cryptographer = InvertibleCryptographer.createAesCipher(getCookieSecurityWord());
-        return new DbfluteCookieResourceProvider(maihamaConfig, cryptographer);
+        return new DbfluteCookieResourceProvider(dbfluteConfig, cryptographer);
     }
 
     protected String getCookieSecurityWord() {
-        return "dockside:maihama"; // #change_it hard coding for now
+        return "dbfluteIntro:dbflute"; // #change_it hard coding for now
     }
 
     // -----------------------------------------------------
@@ -202,6 +202,6 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
     protected abstract String getDomainMessageName();
 
     protected String[] getExtendsMessageNames() {
-        return new String[] { MAIHAMA_MESSAGE_NAME };
+        return new String[] { DBFLUTE_MESSAGE_NAME };
     }
 }

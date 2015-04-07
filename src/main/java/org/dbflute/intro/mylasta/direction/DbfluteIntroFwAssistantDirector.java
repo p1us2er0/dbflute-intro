@@ -15,7 +15,6 @@
  */
 package org.dbflute.intro.mylasta.direction;
 
-import org.dbflute.intro.mylasta.direction.DbfluteFwAssistantDirector;
 
 /**
  * @author jflute
@@ -24,11 +23,11 @@ public class DbfluteIntroFwAssistantDirector extends DbfluteFwAssistantDirector 
 
     @Override
     protected String getDomainConfigFile() {
-        return "dockside_config.properties";
+        return "dbfluteIntro_config.properties";
     }
 
     @Override
     protected String getDomainMessageName() {
-        return "dockside_message";
+        return "dbfluteIntro_message";
     }
 }

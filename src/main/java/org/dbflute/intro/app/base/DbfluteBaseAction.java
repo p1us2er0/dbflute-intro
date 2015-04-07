@@ -50,7 +50,7 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     //                                                                           Attribute
     //                                                                           =========
     @Resource
-    protected DbfluteConfig maihamaConfig;
+    protected DbfluteConfig dbfluteConfig;
 
     // ===================================================================================
     //                                                                      Login Handling
@@ -79,8 +79,8 @@ public abstract class DbfluteBaseAction extends TypicalAction {
      * @param linkPaths The varying array of link paths. (NotNull, EmptyAllowed)
      */
     protected void preparePagingNavi(PagingNavi pagingNavi, PagingResultBean<? extends Entity> page, Object... linkPaths) {
-        final Integer rangeSize = maihamaConfig.getPagingPageRangeSizeAsInteger();
-        final boolean fillLimit = maihamaConfig.isPagingPageRangeFillLimit();
+        final Integer rangeSize = dbfluteConfig.getPagingPageRangeSizeAsInteger();
+        final boolean fillLimit = dbfluteConfig.isPagingPageRangeFillLimit();
         pagingNavi.prepare(page, op -> {
             op.rangeSize(rangeSize);
             if (fillLimit) {
@@ -94,7 +94,7 @@ public abstract class DbfluteBaseAction extends TypicalAction {
      * @return The integer as page size. (NotZero, NotMinus)
      */
     protected int getPagingPageSize() {
-        return maihamaConfig.getPagingPageSizeAsInteger();
+        return dbfluteConfig.getPagingPageSizeAsInteger();
     }
 
     // ===================================================================================

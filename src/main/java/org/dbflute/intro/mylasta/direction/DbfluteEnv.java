@@ -28,13 +28,13 @@ public interface DbfluteEnv {
     /** The key of the configuration. e.g. com.mysql.jdbc.Driver */
     String JDBC_DRIVER = "jdbc.driver";
 
-    /** The key of the configuration. e.g. jdbc:mysql://localhost:3306/maihamadb */
+    /** The key of the configuration. e.g. jdbc:mysql://localhost:3306/dbflutedb */
     String JDBC_URL = "jdbc.url";
 
-    /** The key of the configuration. e.g. maihamadb */
+    /** The key of the configuration. e.g. dbflutedb */
     String JDBC_USER = "jdbc.user";
 
-    /** The key of the configuration. e.g. maihamadb */
+    /** The key of the configuration. e.g. dbflutedb */
     String JDBC_PASSWORD = "jdbc.password";
 
     /** The key of the configuration. e.g. 10 */
@@ -145,7 +145,7 @@ public interface DbfluteEnv {
 
     /**
      * Get the value for the key 'jdbc.url'. <br />
-     * The value is, e.g. jdbc:mysql://localhost:3306/maihamadb <br />
+     * The value is, e.g. jdbc:mysql://localhost:3306/dbflutedb <br />
      * comment: The URL of database connection for JDBC
      * @return The value of found property. (NullAllowed: if null, not found)
      */
@@ -153,7 +153,7 @@ public interface DbfluteEnv {
 
     /**
      * Get the value for the key 'jdbc.user'. <br />
-     * The value is, e.g. maihamadb <br />
+     * The value is, e.g. dbflutedb <br />
      * comment: The user of database connection for JDBC
      * @return The value of found property. (NullAllowed: if null, not found)
      */
@@ -161,7 +161,7 @@ public interface DbfluteEnv {
 
     /**
      * Get the value for the key 'jdbc.password'. <br />
-     * The value is, e.g. maihamadb <br />
+     * The value is, e.g. dbflutedb <br />
      * comment: @Secure The password of database connection for JDBC
      * @return The value of found property. (NullAllowed: if null, not found)
      */

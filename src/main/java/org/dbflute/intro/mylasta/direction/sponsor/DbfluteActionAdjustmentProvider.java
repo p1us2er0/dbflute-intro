@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.dbflute.lastaflute.web.path.ActionAdjustmentProvider;
 import org.dbflute.lastaflute.web.ruts.config.ActionExecute;
 import org.dbflute.lastaflute.web.ruts.config.ActionMapping;
+import org.dbflute.util.DfStringUtil;
 import org.dbflute.util.DfTypeUtil;
 
 /**
@@ -57,7 +58,7 @@ public class DbfluteActionAdjustmentProvider implements ActionAdjustmentProvider
     }
 
     public String customizeActionMappingRequestPath(String requestPath) {
-        return null;
+        return DfStringUtil.substringFirstRear(requestPath, "/api");
     }
 
     @Override
