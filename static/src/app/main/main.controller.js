@@ -3,7 +3,17 @@
 angular.module('static')
   .controller('MainCtrl', function ($scope, $http, $window) {
 
+      $scope.manifest = {};
       $scope.projectList = [];
+
+      $scope.manifest = function() {
+          $http({
+              method : 'POST',
+              url : 'api/intro/manifest'
+          }).success(function(data) {
+              $scope.manifest = data;
+          });
+      }
 
       $scope.list = function() {
           $http({
@@ -46,5 +56,6 @@ angular.module('static')
           $window.open('api/client/task/' + project + '/' + task);
       }
 
+      $scope.manifest();
       $scope.list();
 });

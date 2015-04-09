@@ -74,7 +74,7 @@ public class PagingNavi implements Serializable {
     }
 
     /**
-     * Create the list of page number link. <br />
+     * Create the list of page number link. <br>
      * @param page The bean of paging result. (NotNull)
      * @param opLambda The callback for option of page range. (NotNull)
      * @param linkPaths The array of like paths. (NotNull)

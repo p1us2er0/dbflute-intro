@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.ProtectionDomain;
 
 import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.plus.webapp.EnvConfiguration;
@@ -24,35 +23,36 @@ public class JettyMain {
     private static final int PORT = 9000;
 
     public static void main(String[] args) throws Exception {
-        WebAppContext war = new WebAppContext();
-        if (JettyMain.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().endsWith(".war")) {
-            ProtectionDomain domain = JettyMain.class.getProtectionDomain();
-            URL warLocation = domain.getCodeSource().getLocation();
-            war.setWar(warLocation.toExternalForm());
+
+        URL warLocation = JettyMain.class.getProtectionDomain().getCodeSource().getLocation();
+        String path = warLocation.toURI().getPath();
+
+        WebAppContext context = new WebAppContext();
+        if (path.endsWith(".war")) {
+            context.setWar(warLocation.toExternalForm());
         } else {
-            war.setResourceBase("./src/main/webapp/");
+            context.setResourceBase("./src/main/webapp/");
         }
 
         Configuration[] configurations = {
-            new AnnotationConfiguration(),
-            new WebInfConfiguration(),
-            new WebXmlConfiguration(),
-            new MetaInfConfiguration(),
-            new FragmentConfiguration(),
-            new EnvConfiguration(),
-            new PlusConfiguration(),
-            new JettyWebXmlConfiguration()
-        };
+                new AnnotationConfiguration(),
+                new WebInfConfiguration(),
+                new WebXmlConfiguration(),
+                new MetaInfConfiguration(),
+                new FragmentConfiguration(),
+                new EnvConfiguration(),
+                new PlusConfiguration(),
+                new JettyWebXmlConfiguration()
+            };
 
-        war.setConfigurations(configurations);
+        context.setConfigurations(configurations);
 
         Server server = new Server(PORT);
-        server.setHandler(war);
+        server.setHandler(context);
         server.start();
-
         Desktop desktop = Desktop.getDesktop();
         try {
-            desktop.browse(new URI("http://localhost:" + PORT + war.getContextPath()));
+            desktop.browse(new URI("http://localhost:" + PORT + context.getContextPath()));
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }

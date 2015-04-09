@@ -39,8 +39,8 @@ public class BasicPanel extends JPanel {
     protected static final String LABEL_DBFLUTE_VERSION = "DBFluteバージョン";
     protected static final String LABEL_SYSTEM_USER_DATABASE = "システムユーザ ※DBスキーマ(再)構築 (ReplaceSchema)の初回で利用";
 
-    private static final String MSG_DBFLUTE_VERSION = "DBFluteモジュールをダウンロードして下さい。(" + DBFluteIntroFrame.LABEL_SETTING
-            + " → " + DBFluteIntroFrame.LABEL_DOWNLOAD;
+    private static final String MSG_DBFLUTE_VERSION = "DBFluteモジュールをダウンロードして下さい。(" + DbfluteIntroFrame.LABEL_SETTING
+            + " → " + DbfluteIntroFrame.LABEL_DOWNLOAD;
 
     private JFrame frame;
 

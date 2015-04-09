@@ -19,7 +19,6 @@ import java.util.jar.Manifest;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.dbflute.intro.app.swing.DBFluteIntroFrame;
 
 /**
  * @author p1us2er0
@@ -151,16 +150,15 @@ public class DbFluteIntroLogic {
             while (resources.hasMoreElements()) {
                 inputStream = resources.nextElement().openStream();
                 Manifest manifest = new Manifest(inputStream);
+                if (!"dbflute-intro".equals(manifest.getMainAttributes().getValue("Implementation-Title"))) {
+                    continue;
+                }
 
                 for (Entry<Object, Object> entry : manifest.getMainAttributes().entrySet()) {
                     manifestMap.put(String.valueOf(entry.getKey()), entry.getValue());
                 }
 
-                if (DBFluteIntroFrame.class.getName().equals(manifestMap.get("Main-Class"))) {
-                    break;
-                }
-
-                manifestMap.clear();
+                break;
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

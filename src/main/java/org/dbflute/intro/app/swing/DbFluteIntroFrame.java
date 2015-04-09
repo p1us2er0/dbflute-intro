@@ -37,7 +37,7 @@ import org.dbflute.intro.mylasta.util.SwingUtil.ProgressBarDialog;
  * @author jflute
  * @author shin1988
  */
-public class DBFluteIntroFrame {
+public class DbfluteIntroFrame {
 
     private static final String LABEL_TITLE = "DBFlute Intro";
     protected static final String LABEL_SETTING = "設定";
@@ -58,6 +58,10 @@ public class DBFluteIntroFrame {
     private static final String MSG_DOWNLOAD_ERROR = "ダウンロードエラー";
     private static final String MSG_DOWNLOADING = "ダウンロード中。";
 
+    protected DbFluteIntroLogic dbFluteIntroLogic = new DbFluteIntroLogic();
+    protected DbFluteEngineLogic dbFluteEngineLogic = new DbFluteEngineLogic();
+    protected DbFluteClientLogic dbFluteClientLogic = new DbFluteClientLogic();
+
     private JFrame frame;
     JTabbedPane tabPanel;
 
@@ -66,32 +70,26 @@ public class DBFluteIntroFrame {
     private JTextField proxyHostText;
     private JTextField proxyPortText;
 
-    protected final DbFluteIntroLogic dbFluteIntroLogic = new DbFluteIntroLogic();
-    protected final DbFluteEngineLogic dbFluteEngineLogic = new DbFluteEngineLogic();
-    protected final DbFluteClientLogic dbFluteClientLogic = new DbFluteClientLogic();
-
     /**
      * Launch the application.
      */
     public static void main(String[] args) {
 
+//        SingletonLaContainerFactory.setConfigPath("app_swing.xml");
+//        SingletonLaContainerFactory.init();
+//        DbfluteIntroFrame dbfluteIntroFrame = SingletonLaContainerFactory.getContainer().getComponent("dbfluteIntroFrame");
+        DbfluteIntroFrame dbfluteIntroFrame = new DbfluteIntroFrame();
+
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    DBFluteIntroFrame window = new DBFluteIntroFrame();
-                    window.frame.setVisible(true);
+                    dbfluteIntroFrame.initialize();
+                    dbfluteIntroFrame.frame.setVisible(true);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
         });
-    }
-
-    /**
-     * Create the application.
-     */
-    public DBFluteIntroFrame() {
-        initialize();
     }
 
     /**

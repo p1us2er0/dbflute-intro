@@ -53,17 +53,17 @@ public class ClientAction extends DbfluteIntroBaseAction {
     }
 
     @Execute
+    public JsonResponse remove(String project) {
+        dbFluteClientLogic.deleteClient(project);
+        return asJson(true);
+    }
+
+    @Execute
     public JsonResponse update(ClientForm clientForm) {
         ClientBean clientBean = clientForm.clientBean;
         Map<String, DatabaseBean> schemaSyncCheckMap = clientForm.schemaSyncCheckMap;
         dbFluteClientLogic.createNewClient(clientBean, schemaSyncCheckMap);
         return asJson(clientBean);
-    }
-
-    @Execute
-    public JsonResponse remove(String project) {
-        dbFluteClientLogic.deleteClient(project);
-        return asJson(true);
     }
 
     @Execute

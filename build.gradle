@@ -63,6 +63,18 @@ javadoc {
     failOnError = false
 }
 
+tasks['classes'].dependsOn(['gulpBuild'])
+task gulpBuild (type: Exec) {
+    workingDir file('static')
+    commandLine 'gulp', 'build'
+}
+
+tasks['clean'].dependsOn(['gulpClean'])
+task gulpClean (type: Exec) {
+    workingDir file('static')
+    commandLine 'gulp', 'clean'
+}
+
 war {
     from {
         configurations.providedCompile.collect {
@@ -71,6 +83,8 @@ war {
     }
 
     from fileTree(dir: file(classesDir), include: '**/org/dbflute/boot/*Main.class')
+    from sourceSets.main.resources.srcDirs
+    from fileTree(dir: file('static/dist'), include: '**/**')
 
     includeEmptyDirs = false
 
@@ -83,7 +97,7 @@ war {
         attributes 'SCM-Revision': 'TODO'
         attributes 'Build-Timestamp': 'TODO'
         attributes 'Jenkins-Build-Number': 'TODO'
-        attributes 'Main-Class' : 'org.dbflute.boot.JettyMain'
+        attributes 'Main-Class' : 'org.dbflute.boot.DbfluteIntroMain'
     }
 }
 

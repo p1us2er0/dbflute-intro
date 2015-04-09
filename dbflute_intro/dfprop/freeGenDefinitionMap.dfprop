@@ -6,12 +6,12 @@ map:{
         ; resourceMap = map:{
             ; baseDir = ../src/main
             ; resourceType = PROP
-            ; resourceFile = $$baseDir$$/resources/dbFlute_env.properties
+            ; resourceFile = $$baseDir$$/resources/dbflute_env.properties
         }
         ; outputMap = map:{
             ; templateFile = SystemConfig.vm
             ; outputDirectory = $$baseDir$$/java
-            ; package = org.dbflute.dbFlute.mylasta.direction
+            ; package = org.dbflute.intro.mylasta.direction
             ; className = DbfluteEnv
         }
         ; tableMap = map:{
@@ -26,12 +26,12 @@ map:{
         ; resourceMap = map:{
             ; baseDir = ../src/main
             ; resourceType = PROP
-            ; resourceFile = $$baseDir$$/resources/dbFlute_config.properties
+            ; resourceFile = $$baseDir$$/resources/dbflute_config.properties
         }
         ; outputMap = map:{
             ; templateFile = SystemConfig.vm
             ; outputDirectory = $$baseDir$$/java
-            ; package = org.dbflute.dbFlute.mylasta.direction
+            ; package = org.dbflute.intro.mylasta.direction
             ; className = DbfluteConfig
         }
         ; tableMap = map:{
@@ -39,9 +39,9 @@ map:{
             ; groupingKeyMap = map:{}
             ; extendsPropRequest = DbfluteEnvGen
             ; isCheckImplicitOverride = true
-            ; interfacePackage = org.dbflute.dbFlute.mylasta.direction
+            ; interfacePackage = org.dbflute.intro.mylasta.direction
             ; interfaceSimpleName = DbfluteEnv
-            ; superClassPackage = org.dbflute.dbFlute.mylasta.direction
+            ; superClassPackage = org.dbflute.intro.mylasta.direction
             ; superClassSimpleName = DbfluteEnv.SimpleImpl
         }
     }
@@ -49,12 +49,12 @@ map:{
         ; resourceMap = map:{
             ; baseDir = ../src/main
             ; resourceType = PROP
-            ; resourceFile = $$baseDir$$/resources/dbFlute_message.properties
+            ; resourceFile = $$baseDir$$/resources/dbflute_message.properties
         }
         ; outputMap = map:{
             ; templateFile = UserMessages.vm
             ; outputDirectory = $$baseDir$$/java
-            ; package = org.dbflute.dbFlute.mylasta.action
+            ; package = org.dbflute.intro.mylasta.action
             ; className = DbfluteMessages
         }
         ; tableMap = map:{
@@ -64,9 +64,9 @@ map:{
     }
 
     # ==========================================================================
-    #                                                                   DbFluteIntro
+    #                                                                   DbfluteIntro
     #                                                                   ========
-    ; DbFluteIntroConfigGen = map:{
+    ; DbfluteIntroConfigGen = map:{
         ; resourceMap = map:{
             ; baseDir = ../../dbflute-intro/src/main
             ; resourceType = PROP
@@ -75,21 +75,21 @@ map:{
         ; outputMap = map:{
             ; templateFile = SystemConfig.vm
             ; outputDirectory = $$baseDir$$/java
-            ; package = org.dbflute.dbFlute.mylasta.direction
-            ; className = DbFluteIntroConfig
+            ; package = org.dbflute.intro.mylasta.direction
+            ; className = DbfluteIntroConfig
         }
         ; tableMap = map:{
             ; exceptKeyList = list:{}
             ; groupingKeyMap = map:{}
             ; extendsPropRequest = DbfluteConfigGen
             ; isCheckImplicitOverride = true
-            ; interfacePackage = org.dbflute.dbFlute.mylasta.direction
+            ; interfacePackage = org.dbflute.intro.mylasta.direction
             ; interfaceSimpleName = DbfluteConfig
-            ; superClassPackage = org.dbflute.dbFlute.mylasta.direction
+            ; superClassPackage = org.dbflute.intro.mylasta.direction
             ; superClassSimpleName = DbfluteConfig.SimpleImpl
         }
     }
-    ; DbFluteIntroMessageGen = map:{
+    ; DbfluteIntroMessageGen = map:{
         ; resourceMap = map:{
             ; baseDir = ../../dbflute-intro/src/main
             ; resourceType = PROP
@@ -98,15 +98,15 @@ map:{
         ; outputMap = map:{
             ; templateFile = UserMessages.vm
             ; outputDirectory = $$baseDir$$/java
-            ; package = org.dbflute.dbFlute.mylasta.action
-            ; className = DbFluteIntroMessages
+            ; package = org.dbflute.intro.mylasta.action
+            ; className = DbfluteIntroMessages
         }
         ; tableMap = map:{
             ; extendsPropRequest = DbfluteMessageGen
             ; isCheckImplicitOverride = true
             ; isUseNonNumberVariable = true
             ; groupingKeyMap = map:{ label = prefix:labels. }
-            ; superClassPackage = org.dbflute.dbFlute.mylasta.action
+            ; superClassPackage = org.dbflute.intro.mylasta.action
             ; superClassSimpleName = DbfluteMessages
         }
     }

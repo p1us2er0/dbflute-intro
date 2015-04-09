@@ -12,13 +12,13 @@ public class DbfluteIntroMessages extends DbfluteMessages {
     /** The serial version UID for object serialization. (Default) */
     private static final long serialVersionUID = 1L;
 
-    /** The key of the message: 例: 290-9753 */
+    /** The key of the message: e.g. 290-9753 */
     public static final String MESSAGES_ZIP_CODE_INPUT_EXAMPLE = "messages.zipCode.input.example";
 
     /**
      * Add the created action message for the key 'errors.empty.login' with parameters.
      * <pre>
-     * message: メールアドレスまたはパスワードをないがしろにしています
+     * message: Mail Address and Password is very poor
      * comment: @Override ----------------
      * </pre>
      * @param property The property name for the message. (NotNull)
@@ -32,9 +32,25 @@ public class DbfluteIntroMessages extends DbfluteMessages {
     }
 
     /**
+     * Add the created action message for the key 'errors.not.login' with parameters.
+     * <pre>
+     * message: Mail Address and Password is very fun
+     * comment: @Override
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @return this. (NotNull)
+     */
+    @Override
+    public DbfluteIntroMessages addErrorsNotLogin(String property) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(ERRORS_NOT_LOGIN, (Object[])null));
+        return this;
+    }
+
+    /**
      * Add the created action message for the key 'messages.zipCode.input.example' with parameters.
      * <pre>
-     * message: 例: 290-9753
+     * message: e.g. 290-9753
      * comment: ----------
      * </pre>
      * @param property The property name for the message. (NotNull)
@@ -52,7 +68,7 @@ public class DbfluteIntroMessages extends DbfluteMessages {
      */
     public static interface LabelKey extends DbfluteMessages.LabelKey {
 
-        /** The key of the label: 郵便番号 */
+        /** The key of the label: ZIP CODE */
         String LABELS_ZIP_CODE = "labels.zipCode";
     }
 }

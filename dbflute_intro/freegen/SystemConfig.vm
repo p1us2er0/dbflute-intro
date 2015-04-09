@@ -39,8 +39,8 @@ public interface ${request.className} {
 #if (!$column.isExtends)
 
     /**
-     * Get the value for the key '${column.propertyKey}'. <br />
-     * The value is, e.g. ${column.propertyValueHtmlEncoded} <br />
+     * Get the value for the key '${column.propertyKey}'. <br>
+     * The value is, e.g. ${column.propertyValueHtmlEncoded} <br>
 #if ($column.hasComment)
      * comment: ${column.commentHtmlEncoded}
 #end
@@ -50,8 +50,8 @@ public interface ${request.className} {
 #if ($column.mayBeIntegerProperty)
 
     /**
-     * Get the value for the key '${column.propertyKey}' as {@link Integer}. <br />
-     * The value is, e.g. ${column.propertyValueHtmlEncoded} <br />
+     * Get the value for the key '${column.propertyKey}' as {@link Integer}. <br>
+     * The value is, e.g. ${column.propertyValueHtmlEncoded} <br>
 #if ($column.hasComment)
      * comment: ${column.commentHtmlEncoded}
 #end
@@ -63,8 +63,8 @@ public interface ${request.className} {
 #if ($column.mayBeLongProperty)
 
     /**
-     * Get the value for the key '${column.propertyKey}' as {@link Long}. <br />
-     * The value is, e.g. ${column.propertyValueHtmlEncoded} <br />
+     * Get the value for the key '${column.propertyKey}' as {@link Long}. <br>
+     * The value is, e.g. ${column.propertyValueHtmlEncoded} <br>
 #if ($column.hasComment)
      * comment: ${column.commentHtmlEncoded}
 #end
@@ -76,8 +76,8 @@ public interface ${request.className} {
 #if ($column.mayBeDecimalProperty)
 
     /**
-     * Get the value for the key '${column.propertyKey}' as {@link java.math.BigDecimal}. <br />
-     * The value is, e.g. ${column.propertyValueHtmlEncoded} <br />
+     * Get the value for the key '${column.propertyKey}' as {@link java.math.BigDecimal}. <br>
+     * The value is, e.g. ${column.propertyValueHtmlEncoded} <br>
 #if ($column.hasComment)
      * comment: ${column.commentHtmlEncoded}
 #end
@@ -89,8 +89,8 @@ public interface ${request.className} {
 #if ($column.mayBeDateProperty)
 
     /**
-     * Get the value for the key '${column.propertyKey}' as {@link java.util.Date}. <br />
-     * The value is, e.g. ${column.propertyValueHtmlEncoded} <br />
+     * Get the value for the key '${column.propertyKey}' as {@link java.util.Date}. <br>
+     * The value is, e.g. ${column.propertyValueHtmlEncoded} <br>
 #if ($column.hasComment)
      * comment: ${column.commentHtmlEncoded}
 #end
@@ -101,8 +101,8 @@ public interface ${request.className} {
 #if ($column.mayBeBooleanProperty)
 
     /**
-     * Is the property for the key '${column.propertyKey}' true? <br />
-     * The value is, e.g. ${column.propertyValueHtmlEncoded} <br />
+     * Is the property for the key '${column.propertyKey}' true? <br>
+     * The value is, e.g. ${column.propertyValueHtmlEncoded} <br>
 #if ($column.hasComment)
      * comment: ${column.commentHtmlEncoded}
 #end
