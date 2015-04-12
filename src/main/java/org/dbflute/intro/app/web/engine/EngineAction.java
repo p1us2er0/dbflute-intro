@@ -15,6 +15,11 @@ public class EngineAction extends DbfluteIntroBaseAction {
     protected DbFluteEngineLogic dbFluteEngineLogic;
 
     @Execute
+    public JsonResponse publicProperties() {
+        return asJson(dbFluteEngineLogic.getPublicProperties());
+    }
+
+    @Execute
     public JsonResponse versions() {
         List<String> dbFluteVersionList = dbFluteEngineLogic.getExistedVersionList();
         return asJson(dbFluteVersionList);

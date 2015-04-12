@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.dbflute.intro.mylasta.util.ZipUtil;
@@ -15,6 +16,26 @@ import org.dbflute.intro.mylasta.util.ZipUtil;
  */
 public class DbFluteEngineLogic {
 
+    private Properties publicProperties;
+
+    public Properties getPublicProperties() {
+
+        if (publicProperties != null) {
+            return publicProperties;
+        }
+
+        publicProperties = new Properties();
+        try {
+            // TODO
+            URL url = new URL("http://dbflute.org/meta/public.properties");
+            publicProperties.load(url.openStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return publicProperties;
+    }
+
     public void download(String dbfluteVersion) {
 
         final String downloadVersion = dbfluteVersion;
@@ -24,9 +45,7 @@ public class DbFluteEngineLogic {
 
         final String downloadUrl;
         {
-            // TODO
-            DbFluteIntroLogic dbFluteIntroLogic = new DbFluteIntroLogic();
-            downloadUrl = dbFluteIntroLogic.getPublicProperties().getProperty("dbflute.engine.download.url").replace("$$version$$", downloadVersion);
+            downloadUrl = getPublicProperties().getProperty("dbflute.engine.download.url").replace("$$version$$", downloadVersion);
         }
 
         final File mydbfluteDir = new File(String.format(DbFluteIntroLogic.MY_DBFLUTE_PATH, downloadVersion));

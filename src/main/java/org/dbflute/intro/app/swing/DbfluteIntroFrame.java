@@ -74,10 +74,6 @@ public class DbfluteIntroFrame {
      * Launch the application.
      */
     public static void main(String[] args) {
-
-//        SingletonLaContainerFactory.setConfigPath("app_swing.xml");
-//        SingletonLaContainerFactory.init();
-//        DbfluteIntroFrame dbfluteIntroFrame = SingletonLaContainerFactory.getContainer().getComponent("dbfluteIntroFrame");
         DbfluteIntroFrame dbfluteIntroFrame = new DbfluteIntroFrame();
 
         EventQueue.invokeLater(new Runnable() {
@@ -235,7 +231,7 @@ public class DbfluteIntroFrame {
         Properties publicProperties = null;
 
         try {
-            publicProperties = dbFluteIntroLogic.getPublicProperties();
+            publicProperties = dbFluteEngineLogic.getPublicProperties();
         } catch (IllegalStateException e) {
             JOptionPane.showMessageDialog(frame, MSG_NETWORK_ERROR);
             viewProxySettings();

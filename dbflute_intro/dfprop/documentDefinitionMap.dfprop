@@ -205,21 +205,59 @@ map:{
     #   o extendsPropRequest: other request name of exnteds-properties (NotRequired)
     #   o isCheckImplicitOverride: does it check implicit override? (NotRequired)
     #
-    #; propertiesHtmlMap = map:{
-    #    ; ApplicationProperties = map:{
-    #        ; baseDir = ../src
-    #        ; rootFile = $$baseDir$$/main/resources/application_ja.properties
-    #        ; environmentMap = map:{
-    #            ; integration = $$baseDir$$/integration/resources
-    #            ; production = $$baseDir$$/production/resources
-    #        }
-    #        ; diffIgnoredKeyList = list:{}
-    #        ; maskedKeyList = list:{}
-    #        ; isEnvOnlyFloatLeft = false
-    #        ; extendsPropRequest = null
-    #        ; isCheckImplicitOverride = false
-    #    }
-    #}
+    ; propertiesHtmlMap = map:{
+        ; df:header = map:{
+            ; title = Properties for Dbflute Intro
+        }
+        # env properties should be before config properties
+        # because config exnteds env (extended should be before)
+        # ----------------------------------------------------------
+        #                                                    Dbflute
+        #                                                    -------
+        ; Dbflute_EnvProperties = map:{
+            ; baseDir = ../src
+            ; rootFile = $$baseDir$$/main/resources/dbflute_env.properties
+            ; environmentMap = map:{ integration = $$baseDir$$/integration/resources ; production = $$baseDir$$/production/resources }
+        }
+        ; Dbflute_ConfigProperties = map:{
+            ; baseDir = ../src
+            ; rootFile = $$baseDir$$/main/resources/dbflute_config.properties
+            ; environmentMap = map:{ integration = $$baseDir$$/integration/resources ; production = $$baseDir$$/production/resources }
+            ; extendsPropRequest = Dbflute_EnvProperties ; isCheckImplicitOverride = true
+        }
+        ; Dbflute_LabelProperties = map:{
+            ; baseDir = ../src
+            ; rootFile = $$baseDir$$/main/resources/dbflute_label.properties
+            ; environmentMap = map:{ integration = $$baseDir$$/integration/resources ; production = $$baseDir$$/production/resources }
+        }
+        ; Dbflute_MessageProperties = map:{
+            ; baseDir = ../src
+            ; rootFile = $$baseDir$$/main/resources/dbflute_message.properties
+            ; environmentMap = map:{ integration = $$baseDir$$/integration/resources ; production = $$baseDir$$/production/resources }
+            ; extendsPropRequest = Dbflute_LabelProperties ; isCheckImplicitOverride = true
+        }
+        # ----------------------------------------------------------
+        #                                              Dbflute Intro
+        #                                              -------------
+        ; DbfluteIntro_ConfigProperties = map:{
+            ; baseDir = ../src
+            ; rootFile = $$baseDir$$/main/resources/dbfluteIntro_config.properties
+            ; environmentMap = map:{ integration = $$baseDir$$/integration/resources ; production = $$baseDir$$/production/resources }
+            ; extendsPropRequest = Dbflute_ConfigProperties ; isCheckImplicitOverride = true
+        }
+        ; DbfluteIntro_LabelProperties = map:{
+            ; baseDir = ../src
+            ; rootFile = $$baseDir$$/main/resources/dbfluteIntro_label.properties
+            ; environmentMap = map:{ integration = $$baseDir$$/integration/resources ; production = $$baseDir$$/production/resources }
+            ; extendsPropRequest = Dbflute_MessageProperties ; isCheckImplicitOverride = true
+        }
+        ; DbfluteIntro_MessageProperties = map:{
+            ; baseDir = ../src
+            ; rootFile = $$baseDir$$/main/resources/dbfluteIntro_message.properties
+            ; environmentMap = map:{ integration = $$baseDir$$/integration/resources ; production = $$baseDir$$/production/resources }
+            ; extendsPropRequest = DbfluteIntro_LabelProperties ; isCheckImplicitOverride = true
+        }
+    }
     # - - - - - - - - - -/
 }
 # ----------------/

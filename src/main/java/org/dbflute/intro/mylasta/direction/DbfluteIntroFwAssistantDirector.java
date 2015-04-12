@@ -15,6 +15,8 @@
  */
 package org.dbflute.intro.mylasta.direction;
 
+import java.util.List;
+
 
 /**
  * @author jflute
@@ -27,7 +29,8 @@ public class DbfluteIntroFwAssistantDirector extends DbfluteFwAssistantDirector 
     }
 
     @Override
-    protected String getDomainMessageName() {
-        return "dbfluteIntro_message";
+    protected void setupDomainMessage(List<String> nameList) {
+        nameList.add("dbfluteIntro_message"); // concrete name
+        nameList.add("dbfluteIntro_label");
     }
 }

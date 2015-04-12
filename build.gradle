@@ -14,10 +14,10 @@ ext {
             gradle : '2.3',
 
             junit : '4.11',
-            utflute : '0.4.8',
+            utflute : '0.6.0-SNAPSHOT',
 
             lastaflute : '0.6.0-SNAPSHOT',
-            dbflute : '1.1-sp1'
+            dbflute : '1.1-sp2'
         ]
 }
 
@@ -83,7 +83,6 @@ war {
     }
 
     from fileTree(dir: file(classesDir), include: '**/org/dbflute/boot/*Main.class')
-    from sourceSets.main.resources.srcDirs
     from fileTree(dir: file('static/dist'), include: '**/**')
 
     includeEmptyDirs = false

@@ -1,13 +1,13 @@
 package org.dbflute.intro.mylasta.action;
 
-import org.dbflute.lastaflute.web.ruts.message.ActionMessages;
+import org.dbflute.intro.mylasta.action.DbfluteLabels;
 import org.dbflute.lastaflute.web.ruts.message.ActionMessage;
 
 /**
  * The keys for message.
  * @author FreeGen
  */
-public class DbfluteMessages extends ActionMessages {
+public class DbfluteMessages extends DbfluteLabels {
 
     /** The serial version UID for object serialization. (Default) */
     private static final long serialVersionUID = 1L;
@@ -24,56 +24,89 @@ public class DbfluteMessages extends ActionMessages {
     /** The key of the message: </li> */
     public static final String ERRORS_SUFFIX = "errors.suffix";
 
-    /** The key of the message: {0} is invalid. */
-    public static final String ERRORS_INVALID = "errors.invalid";
+    /** The key of the message: must be false */
+    public static final String CONSTRAINTS_AssertFalse_MESSAGE = "constraints.AssertFalse.message";
 
-    /** The key of the message: {0} can not be greater than {1} characters. */
-    public static final String ERRORS_MAXLENGTH = "errors.maxlength";
+    /** The key of the message: must be true */
+    public static final String CONSTRAINTS_AssertTrue_MESSAGE = "constraints.AssertTrue.message";
 
-    /** The key of the message: {0} can not be less than {1} characters. */
-    public static final String ERRORS_MINLENGTH = "errors.minlength";
+    /** The key of the message: must be less than ${inclusive == true ? 'or equal to ' : ''}{value} */
+    public static final String CONSTRAINTS_DecimalMax_MESSAGE = "constraints.DecimalMax.message";
 
-    /** The key of the message: {0} can not be greater than {1} bytes. */
-    public static final String ERRORS_MAXBYTELENGTH = "errors.maxbytelength";
+    /** The key of the message: must be greater than ${inclusive == true ? 'or equal to ' : ''}{value} */
+    public static final String CONSTRAINTS_DecimalMin_MESSAGE = "constraints.DecimalMin.message";
 
-    /** The key of the message: {0} can not be less than {1} bytes. */
-    public static final String ERRORS_MINBYTELENGTH = "errors.minbytelength";
+    /** The key of the message: numeric value out of bounds (<{integer} digits>.<{fraction} digits> expected) */
+    public static final String CONSTRAINTS_Digits_MESSAGE = "constraints.Digits.message";
 
-    /** The key of the message: {0} is not in the range {1} through {2}. */
-    public static final String ERRORS_RANGE = "errors.range";
+    /** The key of the message: must be in the future */
+    public static final String CONSTRAINTS_Future_MESSAGE = "constraints.Future.message";
 
-    /** The key of the message: {0} is required. */
-    public static final String ERRORS_REQUIRED = "errors.required";
+    /** The key of the message: must be less than or equal to {value} */
+    public static final String CONSTRAINTS_Max_MESSAGE = "constraints.Max.message";
 
-    /** The key of the message: {0} must be an byte. */
-    public static final String ERRORS_BYTE = "errors.byte";
+    /** The key of the message: must be greater than or equal to {value} */
+    public static final String CONSTRAINTS_Min_MESSAGE = "constraints.Min.message";
 
-    /** The key of the message: {0} is not a date. */
-    public static final String ERRORS_DATE = "errors.date";
+    /** The key of the message: may not be null */
+    public static final String CONSTRAINTS_NotNull_MESSAGE = "constraints.NotNull.message";
 
-    /** The key of the message: {0} must be an double. */
-    public static final String ERRORS_DOUBLE = "errors.double";
+    /** The key of the message: must be null */
+    public static final String CONSTRAINTS_Null_MESSAGE = "constraints.Null.message";
 
-    /** The key of the message: {0} must be an float. */
-    public static final String ERRORS_FLOAT = "errors.float";
+    /** The key of the message: must be in the past */
+    public static final String CONSTRAINTS_Past_MESSAGE = "constraints.Past.message";
 
-    /** The key of the message: {0} must be an integer. */
-    public static final String ERRORS_INTEGER = "errors.integer";
+    /** The key of the message: must match "{regexp}" */
+    public static final String CONSTRAINTS_Pattern_MESSAGE = "constraints.Pattern.message";
 
-    /** The key of the message: {0} must be an long. */
-    public static final String ERRORS_LONG = "errors.long";
+    /** The key of the message: size must be between {min} and {max} */
+    public static final String CONSTRAINTS_Size_MESSAGE = "constraints.Size.message";
 
-    /** The key of the message: {0} must be an short. */
-    public static final String ERRORS_SHORT = "errors.short";
+    /** The key of the message: invalid credit card number */
+    public static final String CONSTRAINTS_CreditCardNumber_MESSAGE = "constraints.CreditCardNumber.message";
 
-    /** The key of the message: {0} is not a valid credit card number. */
-    public static final String ERRORS_CREDITCARD = "errors.creditcard";
+    /** The key of the message: invalid {type} barcode */
+    public static final String CONSTRAINTS_EAN_MESSAGE = "constraints.EAN.message";
 
-    /** The key of the message: {0} is an invalid e-mail address. */
-    public static final String ERRORS_EMAIL = "errors.email";
+    /** The key of the message: not a well-formed email address */
+    public static final String CONSTRAINTS_Email_MESSAGE = "constraints.Email.message";
 
-    /** The key of the message: {0} is an invalid url (web address). */
-    public static final String ERRORS_URL = "errors.url";
+    /** The key of the message: length must be between {min} and {max} */
+    public static final String CONSTRAINTS_Length_MESSAGE = "constraints.Length.message";
+
+    /** The key of the message: The check digit for ${value} is invalid, Luhn Modulo 10 checksum failed */
+    public static final String CONSTRAINTS_LuhnCheck_MESSAGE = "constraints.LuhnCheck.message";
+
+    /** The key of the message: The check digit for ${value} is invalid, Modulo 10 checksum failed */
+    public static final String CONSTRAINTS_Mod10Check_MESSAGE = "constraints.Mod10Check.message";
+
+    /** The key of the message: The check digit for ${value} is invalid, Modulo 11 checksum failed */
+    public static final String CONSTRAINTS_Mod11Check_MESSAGE = "constraints.Mod11Check.message";
+
+    /** The key of the message: The check digit for ${value} is invalid, ${modType} checksum failed */
+    public static final String CONSTRAINTS_ModCheck_MESSAGE = "constraints.ModCheck.message";
+
+    /** The key of the message: may not be empty */
+    public static final String CONSTRAINTS_NotBlank_MESSAGE = "constraints.NotBlank.message";
+
+    /** The key of the message: may not be empty */
+    public static final String CONSTRAINTS_NotEmpty_MESSAGE = "constraints.NotEmpty.message";
+
+    /** The key of the message: script expression "{script}" didn't evaluate to true */
+    public static final String CONSTRAINTS_ParametersScriptAssert_MESSAGE = "constraints.ParametersScriptAssert.message";
+
+    /** The key of the message: must be between {min} and {max} */
+    public static final String CONSTRAINTS_Range_MESSAGE = "constraints.Range.message";
+
+    /** The key of the message: may have unsafe html content */
+    public static final String CONSTRAINTS_SafeHtml_MESSAGE = "constraints.SafeHtml.message";
+
+    /** The key of the message: script expression "{script}" didn't evaluate to true */
+    public static final String CONSTRAINTS_ScriptAssert_MESSAGE = "constraints.ScriptAssert.message";
+
+    /** The key of the message: must be a valid URL */
+    public static final String CONSTRAINTS_URL_MESSAGE = "constraints.URL.message";
 
     /** The key of the message: input number for {0} */
     public static final String ERRORS_NUMBER = "errors.number";
@@ -117,25 +150,11 @@ public class DbfluteMessages extends ActionMessages {
     /** The key of the message: already existing data, so retry */
     public static final String ERRORS_APP_ALREADY_EXISTS = "errors.app.already.exists";
 
-    /** The key of the message: Input keyword to search  */
-    public static final String MESSAGES_INPUT_NOTE_KEYWORD = "messages.input.note.keyword";
-
-    /** The key of the message: Input your E-mail address */
-    public static final String MESSAGES_INPUT_NOTE_EMAIL = "messages.input.note.email";
-
-    /** The key of the message: Input your E-mail or account */
-    public static final String MESSAGES_INPUT_NOTE_EMAIL_OR_ACCOUNT = "messages.input.note.emailOrAccount";
-
-    /** The key of the message: Input your password */
-    public static final String MESSAGES_INPUT_NOTE_PASSWORD = "messages.input.note.password";
-
-    /** The key of the message: e.g. 153-0051 */
-    public static final String MESSAGES_INPUT_NOTE_ZIP_CODE = "messages.input.note.zipCode";
-
     /**
      * Add the created action message for the key 'errors.header' with parameters.
      * <pre>
      * message: <font color="red"><ul>
+     * comment: ------------
      * </pre>
      * @param property The property name for the message. (NotNull)
      * @return this. (NotNull)
@@ -189,263 +208,417 @@ public class DbfluteMessages extends ActionMessages {
     }
 
     /**
-     * Add the created action message for the key 'errors.invalid' with parameters.
+     * Add the created action message for the key 'constraints.AssertFalse.message' with parameters.
      * <pre>
-     * message: {0} is invalid.
+     * message: must be false
+     * comment: ---------------
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsInvalid(String property, String arg0) {
+    public DbfluteMessages addConstraintsAssertFalseMessage(String property) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_INVALID, arg0));
+        add(property, new ActionMessage(CONSTRAINTS_AssertFalse_MESSAGE, (Object[])null));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.maxlength' with parameters.
+     * Add the created action message for the key 'constraints.AssertTrue.message' with parameters.
      * <pre>
-     * message: {0} can not be greater than {1} characters.
+     * message: must be true
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
-     * @param arg1 The parameter arg1 for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsMaxlength(String property, String arg0, String arg1) {
+    public DbfluteMessages addConstraintsAssertTrueMessage(String property) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_MAXLENGTH, arg0, arg1));
+        add(property, new ActionMessage(CONSTRAINTS_AssertTrue_MESSAGE, (Object[])null));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.minlength' with parameters.
+     * Add the created action message for the key 'constraints.DecimalMax.message' with parameters.
      * <pre>
-     * message: {0} can not be less than {1} characters.
+     * message: must be less than ${inclusive == true ? 'or equal to ' : ''}{value}
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
-     * @param arg1 The parameter arg1 for message. (NotNull)
+     * @param value The parameter value for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsMinlength(String property, String arg0, String arg1) {
+    public DbfluteMessages addConstraintsDecimalMaxMessage(String property, String value) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_MINLENGTH, arg0, arg1));
+        add(property, new ActionMessage(CONSTRAINTS_DecimalMax_MESSAGE, value));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.maxbytelength' with parameters.
+     * Add the created action message for the key 'constraints.DecimalMin.message' with parameters.
      * <pre>
-     * message: {0} can not be greater than {1} bytes.
+     * message: must be greater than ${inclusive == true ? 'or equal to ' : ''}{value}
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
-     * @param arg1 The parameter arg1 for message. (NotNull)
+     * @param value The parameter value for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsMaxbytelength(String property, String arg0, String arg1) {
+    public DbfluteMessages addConstraintsDecimalMinMessage(String property, String value) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_MAXBYTELENGTH, arg0, arg1));
+        add(property, new ActionMessage(CONSTRAINTS_DecimalMin_MESSAGE, value));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.minbytelength' with parameters.
+     * Add the created action message for the key 'constraints.Digits.message' with parameters.
      * <pre>
-     * message: {0} can not be less than {1} bytes.
+     * message: numeric value out of bounds (<{integer} digits>.<{fraction} digits> expected)
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
-     * @param arg1 The parameter arg1 for message. (NotNull)
+     * @param integer The parameter integer for message. (NotNull)
+     * @param fraction The parameter fraction for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsMinbytelength(String property, String arg0, String arg1) {
+    public DbfluteMessages addConstraintsDigitsMessage(String property, String integer, String fraction) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_MINBYTELENGTH, arg0, arg1));
+        add(property, new ActionMessage(CONSTRAINTS_Digits_MESSAGE, integer, fraction));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.range' with parameters.
+     * Add the created action message for the key 'constraints.Future.message' with parameters.
      * <pre>
-     * message: {0} is not in the range {1} through {2}.
+     * message: must be in the future
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
-     * @param arg1 The parameter arg1 for message. (NotNull)
-     * @param arg2 The parameter arg2 for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsRange(String property, String arg0, String arg1, String arg2) {
+    public DbfluteMessages addConstraintsFutureMessage(String property) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_RANGE, arg0, arg1, arg2));
+        add(property, new ActionMessage(CONSTRAINTS_Future_MESSAGE, (Object[])null));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.required' with parameters.
+     * Add the created action message for the key 'constraints.Max.message' with parameters.
      * <pre>
-     * message: {0} is required.
+     * message: must be less than or equal to {value}
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
+     * @param value The parameter value for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsRequired(String property, String arg0) {
+    public DbfluteMessages addConstraintsMaxMessage(String property, String value) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_REQUIRED, arg0));
+        add(property, new ActionMessage(CONSTRAINTS_Max_MESSAGE, value));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.byte' with parameters.
+     * Add the created action message for the key 'constraints.Min.message' with parameters.
      * <pre>
-     * message: {0} must be an byte.
+     * message: must be greater than or equal to {value}
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
+     * @param value The parameter value for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsByte(String property, String arg0) {
+    public DbfluteMessages addConstraintsMinMessage(String property, String value) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_BYTE, arg0));
+        add(property, new ActionMessage(CONSTRAINTS_Min_MESSAGE, value));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.date' with parameters.
+     * Add the created action message for the key 'constraints.NotNull.message' with parameters.
      * <pre>
-     * message: {0} is not a date.
+     * message: may not be null
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsDate(String property, String arg0) {
+    public DbfluteMessages addConstraintsNotNullMessage(String property) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_DATE, arg0));
+        add(property, new ActionMessage(CONSTRAINTS_NotNull_MESSAGE, (Object[])null));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.double' with parameters.
+     * Add the created action message for the key 'constraints.Null.message' with parameters.
      * <pre>
-     * message: {0} must be an double.
+     * message: must be null
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsDouble(String property, String arg0) {
+    public DbfluteMessages addConstraintsNullMessage(String property) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_DOUBLE, arg0));
+        add(property, new ActionMessage(CONSTRAINTS_Null_MESSAGE, (Object[])null));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.float' with parameters.
+     * Add the created action message for the key 'constraints.Past.message' with parameters.
      * <pre>
-     * message: {0} must be an float.
+     * message: must be in the past
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsFloat(String property, String arg0) {
+    public DbfluteMessages addConstraintsPastMessage(String property) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_FLOAT, arg0));
+        add(property, new ActionMessage(CONSTRAINTS_Past_MESSAGE, (Object[])null));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.integer' with parameters.
+     * Add the created action message for the key 'constraints.Pattern.message' with parameters.
      * <pre>
-     * message: {0} must be an integer.
+     * message: must match "{regexp}"
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
+     * @param regexp The parameter regexp for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsInteger(String property, String arg0) {
+    public DbfluteMessages addConstraintsPatternMessage(String property, String regexp) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_INTEGER, arg0));
+        add(property, new ActionMessage(CONSTRAINTS_Pattern_MESSAGE, regexp));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.long' with parameters.
+     * Add the created action message for the key 'constraints.Size.message' with parameters.
      * <pre>
-     * message: {0} must be an long.
+     * message: size must be between {min} and {max}
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
+     * @param min The parameter min for message. (NotNull)
+     * @param max The parameter max for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsLong(String property, String arg0) {
+    public DbfluteMessages addConstraintsSizeMessage(String property, String min, String max) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_LONG, arg0));
+        add(property, new ActionMessage(CONSTRAINTS_Size_MESSAGE, min, max));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.short' with parameters.
+     * Add the created action message for the key 'constraints.CreditCardNumber.message' with parameters.
      * <pre>
-     * message: {0} must be an short.
+     * message: invalid credit card number
+     * comment: -------------------
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsShort(String property, String arg0) {
+    public DbfluteMessages addConstraintsCreditCardNumberMessage(String property) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_SHORT, arg0));
+        add(property, new ActionMessage(CONSTRAINTS_CreditCardNumber_MESSAGE, (Object[])null));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.creditcard' with parameters.
+     * Add the created action message for the key 'constraints.EAN.message' with parameters.
      * <pre>
-     * message: {0} is not a valid credit card number.
+     * message: invalid {type} barcode
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
+     * @param type The parameter type for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsCreditcard(String property, String arg0) {
+    public DbfluteMessages addConstraintsEanMessage(String property, String type) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_CREDITCARD, arg0));
+        add(property, new ActionMessage(CONSTRAINTS_EAN_MESSAGE, type));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.email' with parameters.
+     * Add the created action message for the key 'constraints.Email.message' with parameters.
      * <pre>
-     * message: {0} is an invalid e-mail address.
+     * message: not a well-formed email address
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsEmail(String property, String arg0) {
+    public DbfluteMessages addConstraintsEmailMessage(String property) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_EMAIL, arg0));
+        add(property, new ActionMessage(CONSTRAINTS_Email_MESSAGE, (Object[])null));
         return this;
     }
 
     /**
-     * Add the created action message for the key 'errors.url' with parameters.
+     * Add the created action message for the key 'constraints.Length.message' with parameters.
      * <pre>
-     * message: {0} is an invalid url (web address).
+     * message: length must be between {min} and {max}
      * </pre>
      * @param property The property name for the message. (NotNull)
-     * @param arg0 The parameter arg0 for message. (NotNull)
+     * @param min The parameter min for message. (NotNull)
+     * @param max The parameter max for message. (NotNull)
      * @return this. (NotNull)
      */
-    public DbfluteMessages addErrorsUrl(String property, String arg0) {
+    public DbfluteMessages addConstraintsLengthMessage(String property, String min, String max) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(ERRORS_URL, arg0));
+        add(property, new ActionMessage(CONSTRAINTS_Length_MESSAGE, min, max));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'constraints.LuhnCheck.message' with parameters.
+     * <pre>
+     * message: The check digit for ${value} is invalid, Luhn Modulo 10 checksum failed
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @param value The parameter value for message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addConstraintsLuhnCheckMessage(String property, String value) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(CONSTRAINTS_LuhnCheck_MESSAGE, value));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'constraints.Mod10Check.message' with parameters.
+     * <pre>
+     * message: The check digit for ${value} is invalid, Modulo 10 checksum failed
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @param value The parameter value for message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addConstraintsMod10CheckMessage(String property, String value) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(CONSTRAINTS_Mod10Check_MESSAGE, value));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'constraints.Mod11Check.message' with parameters.
+     * <pre>
+     * message: The check digit for ${value} is invalid, Modulo 11 checksum failed
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @param value The parameter value for message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addConstraintsMod11CheckMessage(String property, String value) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(CONSTRAINTS_Mod11Check_MESSAGE, value));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'constraints.ModCheck.message' with parameters.
+     * <pre>
+     * message: The check digit for ${value} is invalid, ${modType} checksum failed
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @param value The parameter value for message. (NotNull)
+     * @param modType The parameter modType for message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addConstraintsModCheckMessage(String property, String value, String modType) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(CONSTRAINTS_ModCheck_MESSAGE, value, modType));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'constraints.NotBlank.message' with parameters.
+     * <pre>
+     * message: may not be empty
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addConstraintsNotBlankMessage(String property) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(CONSTRAINTS_NotBlank_MESSAGE, (Object[])null));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'constraints.NotEmpty.message' with parameters.
+     * <pre>
+     * message: may not be empty
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addConstraintsNotEmptyMessage(String property) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(CONSTRAINTS_NotEmpty_MESSAGE, (Object[])null));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'constraints.ParametersScriptAssert.message' with parameters.
+     * <pre>
+     * message: script expression "{script}" didn't evaluate to true
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @param script The parameter script for message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addConstraintsParametersScriptAssertMessage(String property, String script) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(CONSTRAINTS_ParametersScriptAssert_MESSAGE, script));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'constraints.Range.message' with parameters.
+     * <pre>
+     * message: must be between {min} and {max}
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @param min The parameter min for message. (NotNull)
+     * @param max The parameter max for message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addConstraintsRangeMessage(String property, String min, String max) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(CONSTRAINTS_Range_MESSAGE, min, max));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'constraints.SafeHtml.message' with parameters.
+     * <pre>
+     * message: may have unsafe html content
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addConstraintsSafeHtmlMessage(String property) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(CONSTRAINTS_SafeHtml_MESSAGE, (Object[])null));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'constraints.ScriptAssert.message' with parameters.
+     * <pre>
+     * message: script expression "{script}" didn't evaluate to true
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @param script The parameter script for message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addConstraintsScriptAssertMessage(String property, String script) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(CONSTRAINTS_ScriptAssert_MESSAGE, script));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'constraints.URL.message' with parameters.
+     * <pre>
+     * message: must be a valid URL
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addConstraintsUrlMessage(String property) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(CONSTRAINTS_URL_MESSAGE, (Object[])null));
         return this;
     }
 
@@ -660,142 +833,9 @@ public class DbfluteMessages extends ActionMessages {
     }
 
     /**
-     * Add the created action message for the key 'messages.input.note.keyword' with parameters.
-     * <pre>
-     * message: Input keyword to search 
-     * comment: ----------
-     * </pre>
-     * @param property The property name for the message. (NotNull)
-     * @return this. (NotNull)
-     */
-    public DbfluteMessages addMessagesInputNoteKeyword(String property) {
-        assertPropertyNotNull(property);
-        add(property, new ActionMessage(MESSAGES_INPUT_NOTE_KEYWORD, (Object[])null));
-        return this;
-    }
-
-    /**
-     * Add the created action message for the key 'messages.input.note.email' with parameters.
-     * <pre>
-     * message: Input your E-mail address
-     * </pre>
-     * @param property The property name for the message. (NotNull)
-     * @return this. (NotNull)
-     */
-    public DbfluteMessages addMessagesInputNoteEmail(String property) {
-        assertPropertyNotNull(property);
-        add(property, new ActionMessage(MESSAGES_INPUT_NOTE_EMAIL, (Object[])null));
-        return this;
-    }
-
-    /**
-     * Add the created action message for the key 'messages.input.note.emailOrAccount' with parameters.
-     * <pre>
-     * message: Input your E-mail or account
-     * </pre>
-     * @param property The property name for the message. (NotNull)
-     * @return this. (NotNull)
-     */
-    public DbfluteMessages addMessagesInputNoteEmailOrAccount(String property) {
-        assertPropertyNotNull(property);
-        add(property, new ActionMessage(MESSAGES_INPUT_NOTE_EMAIL_OR_ACCOUNT, (Object[])null));
-        return this;
-    }
-
-    /**
-     * Add the created action message for the key 'messages.input.note.password' with parameters.
-     * <pre>
-     * message: Input your password
-     * </pre>
-     * @param property The property name for the message. (NotNull)
-     * @return this. (NotNull)
-     */
-    public DbfluteMessages addMessagesInputNotePassword(String property) {
-        assertPropertyNotNull(property);
-        add(property, new ActionMessage(MESSAGES_INPUT_NOTE_PASSWORD, (Object[])null));
-        return this;
-    }
-
-    /**
-     * Add the created action message for the key 'messages.input.note.zipCode' with parameters.
-     * <pre>
-     * message: e.g. 153-0051
-     * </pre>
-     * @param property The property name for the message. (NotNull)
-     * @return this. (NotNull)
-     */
-    public DbfluteMessages addMessagesInputNoteZipCode(String property) {
-        assertPropertyNotNull(property);
-        add(property, new ActionMessage(MESSAGES_INPUT_NOTE_ZIP_CODE, (Object[])null));
-        return this;
-    }
-
-    /**
-     * Assert the property is not null.
-     * @param property The value of the property. (NotNull)
-     */
-    protected void assertPropertyNotNull(String property) {
-        if (property == null) {
-            String msg = "The argument 'property' for message should not be null.";
-            throw new IllegalArgumentException(msg);
-        }
-    }
-
-    /**
      * The definition of keys for labels.
      * @author FreeGen
      */
-    public static interface LabelKey {
-
-        /** The key of the label: Member */
-        String LABELS_MEMBER = "labels.member";
-
-        /** The key of the label: Member ID */
-        String LABELS_MEMBER_ID = "labels.memberId";
-
-        /** The key of the label: Member Name */
-        String LABELS_MEMBER_NAME = "labels.memberName";
-
-        /** The key of the label: Mail Address */
-        String LABELS_EMAIL = "labels.email";
-
-        /** The key of the label: Mail or Account */
-        String LABELS_EMAIL_OR_ACCOUNT = "labels.emailOrAccount";
-
-        /** The key of the label: Password */
-        String LABELS_PASSWORD = "labels.password";
-
-        /** The key of the label: Version No */
-        String LABELS_VERSION_NO = "labels.versionNo";
-
-        /** The key of the label: List */
-        String LABELS_LIST = "labels.list";
-
-        /** The key of the label: Edit */
-        String LABELS_EDIT = "labels.edit";
-
-        /** The key of the label: Add */
-        String LABELS_ADD = "labels.add";
-
-        /** The key of the label: Search */
-        String LABELS_SEARCH = "labels.search";
-
-        /** The key of the label: Register */
-        String LABELS_REGISTER = "labels.register";
-
-        /** The key of the label: Update */
-        String LABELS_UPDATE = "labels.update";
-
-        /** The key of the label: @[labels.list] of @[labels.member] */
-        String LABELS_MEMBER_LIST = "labels.member.list";
-
-        /** The key of the label: @[labels.add] @[labels.member] */
-        String LABELS_MEMBER_ADD = "labels.member.add";
-
-        /** The key of the label: @[labels.edit] @[labels.member] */
-        String LABELS_MEMBER_EDIT = "labels.member.edit";
-
-        /** The key of the label: Notice */
-        String LABELS_HEADER_TITLE_ERROR_MESSAGE = "labels.header.title.error.message";
+    public static interface LabelKey extends DbfluteLabels.LabelKey {
     }
 }

@@ -10,14 +10,14 @@ public interface DbfluteEnv {
     /** The key of the configuration. e.g. true */
     String DEVELOPMENT_HERE = "development.here";
 
-    /** The key of the configuration. e.g. hot */
-    String lasta_di_SMART_DEPLOY_MODE = "lasta_di.smart.deploy.mode";
-
     /** The key of the configuration. e.g. Local Development */
     String ENVIRONMENT_TITLE = "environment.title";
 
     /** The key of the configuration. e.g. false */
     String FRAMEWORK_DEBUG = "framework.debug";
+
+    /** The key of the configuration. e.g. hot */
+    String lasta_di_SMART_DEPLOY_MODE = "lasta_di.smart.deploy.mode";
 
     /** The key of the configuration. e.g. 0 */
     String TIME_ADJUST_TIME_MILLIS = "time.adjust.time.millis";
@@ -74,14 +74,6 @@ public interface DbfluteEnv {
     boolean isDevelopmentHere();
 
     /**
-     * Get the value for the key 'lasta_di.smart.deploy.mode'. <br>
-     * The value is, e.g. hot <br>
-     * comment: The mode of Lasta Di's smart-deploy, should be cool in production (e.g. hot, cool, warm)
-     * @return The value of found property. (NullAllowed: if null, not found)
-     */
-    String getLastaDiSmartDeployMode();
-
-    /**
      * Get the value for the key 'environment.title'. <br>
      * The value is, e.g. Local Development <br>
      * comment: The title of environment (e.g. local or integartion or production)
@@ -104,6 +96,14 @@ public interface DbfluteEnv {
      * @return The determination, true or false. (if the property can be true, returns true)
      */
     boolean isFrameworkDebug();
+
+    /**
+     * Get the value for the key 'lasta_di.smart.deploy.mode'. <br>
+     * The value is, e.g. hot <br>
+     * comment: The mode of Lasta Di's smart-deploy, should be cool in production (e.g. hot, cool, warm)
+     * @return The value of found property. (NullAllowed: if null, not found)
+     */
+    String getLastaDiSmartDeployMode();
 
     /**
      * Get the value for the key 'time.adjust.time.millis'. <br>
@@ -212,10 +212,6 @@ public interface DbfluteEnv {
             return is(DbfluteEnv.DEVELOPMENT_HERE);
         }
 
-        public String getLastaDiSmartDeployMode() {
-            return get(DbfluteEnv.lasta_di_SMART_DEPLOY_MODE);
-        }
-
         public String getEnvironmentTitle() {
             return get(DbfluteEnv.ENVIRONMENT_TITLE);
         }
@@ -226,6 +222,10 @@ public interface DbfluteEnv {
 
         public boolean isFrameworkDebug() {
             return is(DbfluteEnv.FRAMEWORK_DEBUG);
+        }
+
+        public String getLastaDiSmartDeployMode() {
+            return get(DbfluteEnv.lasta_di_SMART_DEPLOY_MODE);
         }
 
         public String getTimeAdjustTimeMillis() {

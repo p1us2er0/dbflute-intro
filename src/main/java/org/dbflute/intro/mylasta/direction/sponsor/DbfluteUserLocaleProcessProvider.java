@@ -35,7 +35,7 @@ public class DbfluteUserLocaleProcessProvider implements UserLocaleProcessProvid
 
     @Override
     public Locale findBusinessLocale(ActionRuntimeMeta executeMeta, RequestManager requestManager) {
-        return centralLocale;
+        return null;
     }
 
     @Override

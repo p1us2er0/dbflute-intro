@@ -40,7 +40,7 @@ public class DbfluteUserTimeZoneProcessProvider implements UserTimeZoneProcessPr
 
     @Override
     public TimeZone findBusinessTimeZone(ActionRuntimeMeta executeMeta, RequestManager requestManager) {
-        return centralTimeZone;
+        return null;
     }
 
     @Override

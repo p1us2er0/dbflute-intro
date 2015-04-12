@@ -16,9 +16,4 @@ public class IntroAction extends DbfluteIntroBaseAction {
     public JsonResponse manifest() {
         return asJson(dbFluteIntroLogic.getManifestMap());
     }
-
-    @Execute
-    public JsonResponse publicProperties() {
-        return asJson(dbFluteIntroLogic.getPublicProperties());
-    }
 }

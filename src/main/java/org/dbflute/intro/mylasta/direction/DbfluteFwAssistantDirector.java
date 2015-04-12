@@ -15,6 +15,10 @@
  */
 package org.dbflute.intro.mylasta.direction;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteActionAdjustmentProvider;
@@ -42,6 +46,7 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
     //                                                                          ==========
     public static final String DBFLUTE_CONFIG_FILE = "dbflute_config.properties";
     public static final String DBFLUTE_ENV_FILE = "dbflute_env.properties";
+    public static final String DBFLUTE_LABEL_NAME = "dbflute_label";
     public static final String DBFLUTE_MESSAGE_NAME = "dbflute_message";
 
     // ===================================================================================
@@ -196,12 +201,15 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
     }
 
     protected void prepareMessage(OptionalWebDirection direction) {
-        direction.directMessage(getDomainMessageName(), getExtendsMessageNames());
+        final List<String> nameList = new ArrayList<String>();
+        setupDomainMessage(nameList);
+        nameList.addAll(Arrays.asList(getExtendsMessageNames()));
+        direction.directMessage(nameList.remove(0), nameList.toArray(new String[0]));
     }
 
-    protected abstract String getDomainMessageName();
+    protected abstract void setupDomainMessage(List<String> nameList);
 
     protected String[] getExtendsMessageNames() {
-        return new String[] { DBFLUTE_MESSAGE_NAME };
+        return new String[] { DBFLUTE_LABEL_NAME, DBFLUTE_MESSAGE_NAME };
     }
 }

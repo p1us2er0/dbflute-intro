@@ -41,26 +41,6 @@ public class DbFluteIntroLogic {
 
     protected static final String MY_DBFLUTE_PATH = BASE_DIR_PATH + "/mydbflute/dbflute-%1$s";
 
-    private Properties publicProperties;
-
-    public Properties getPublicProperties() {
-
-        if (publicProperties != null) {
-            return publicProperties;
-        }
-
-        publicProperties = new Properties();
-        try {
-            // TODO
-            URL url = new URL("http://dbflute.org/meta/public.properties");
-            publicProperties.load(url.openStream());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return publicProperties;
-    }
-
     public boolean upgrade() {
 
         File jarPathFile = new File("./dbflute-intro.jar");
