@@ -82,7 +82,7 @@ war {
         }
     }
 
-    from fileTree(dir: file(classesDir), include: '**/org/dbflute/boot/*Main.class')
+    from fileTree(dir: file(classesDir), include: '**/org/dbflute/boot/*Boot.class')
     from fileTree(dir: file('static/dist'), include: '**/**')
 
     includeEmptyDirs = false
@@ -96,7 +96,7 @@ war {
         attributes 'SCM-Revision': 'TODO'
         attributes 'Build-Timestamp': 'TODO'
         attributes 'Jenkins-Build-Number': 'TODO'
-        attributes 'Main-Class' : 'org.dbflute.boot.DbfluteIntroMain'
+        attributes 'Main-Class' : 'org.dbflute.boot.DbfluteIntroBoot'
     }
 }
 

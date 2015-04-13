@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.dbflute.intro.app.base;
+package org.dbflute.intro.app.web.base;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -96,7 +96,7 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     protected AccessContextArranger newAccessContextArranger() { // for framework
         return resource -> {
             final AccessContext context = new AccessContext();
-            context.setAccessLocalDateTimeProvider(() -> timeManager.getCurrentLocalDateTime());
+            context.setAccessLocalDateTimeProvider(() -> timeManager.getCurrentDateTime());
             context.setAccessUserProvider(() -> buildAccessUserTrace(resource));
             return context;
         };

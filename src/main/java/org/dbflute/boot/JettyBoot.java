@@ -18,14 +18,19 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebInfConfiguration;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
 
-public class JettyMain {
+public class JettyBoot {
 
     private static final int PORT = 9000;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
-        URL warLocation = JettyMain.class.getProtectionDomain().getCodeSource().getLocation();
-        String path = warLocation.toURI().getPath();
+        URL warLocation = JettyBoot.class.getProtectionDomain().getCodeSource().getLocation();
+        String path;
+        try {
+            path = warLocation.toURI().getPath();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
 
         WebAppContext context = new WebAppContext();
         if (path.endsWith(".war")) {
@@ -49,13 +54,23 @@ public class JettyMain {
 
         Server server = new Server(PORT);
         server.setHandler(context);
-        server.start();
+        try {
+            server.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         Desktop desktop = Desktop.getDesktop();
         try {
             desktop.browse(new URI("http://localhost:" + PORT + context.getContextPath()));
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
-        server.join();
+
+        try {
+            server.join();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -20,13 +20,13 @@ import java.util.Locale;
 import org.dbflute.lastaflute.web.callback.ActionRuntimeMeta;
 import org.dbflute.lastaflute.web.servlet.request.RequestManager;
 import org.dbflute.lastaflute.web.servlet.request.UserLocaleProcessProvider;
+import org.dbflute.optional.OptionalObject;
+import org.dbflute.optional.OptionalThing;
 
 /**
  * @author jflute
  */
 public class DbfluteUserLocaleProcessProvider implements UserLocaleProcessProvider {
-
-    public static final Locale centralLocale = Locale.getDefault(); // you can change it if you like
 
     @Override
     public boolean isAcceptCookieLocale() {
@@ -34,22 +34,17 @@ public class DbfluteUserLocaleProcessProvider implements UserLocaleProcessProvid
     }
 
     @Override
-    public Locale findBusinessLocale(ActionRuntimeMeta executeMeta, RequestManager requestManager) {
-        return null;
+    public OptionalThing<Locale> findBusinessLocale(ActionRuntimeMeta runtimeMeta, RequestManager requestManager) {
+        return OptionalObject.empty(); // to next determination
     }
 
     @Override
-    public Locale getRequestedLocale(RequestManager requestManager) {
-        return null; // null means browser default
-    }
-
-    @Override
-    public Locale getFallbackLocale() {
-        return centralLocale;
+    public OptionalThing<Locale> getRequestedLocale(RequestManager requestManager) {
+        return OptionalObject.empty(); // means browser default
     }
 
     @Override
     public String toString() {
-        return "{acceptCookieLocale=" + isAcceptCookieLocale() + ", fallbackLocale=" + getFallbackLocale() + "}";
+        return "{acceptCookieLocale=" + isAcceptCookieLocale() + "}";
     }
 }

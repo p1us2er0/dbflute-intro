@@ -20,13 +20,15 @@ import java.util.TimeZone;
 import org.dbflute.lastaflute.web.callback.ActionRuntimeMeta;
 import org.dbflute.lastaflute.web.servlet.request.RequestManager;
 import org.dbflute.lastaflute.web.servlet.request.UserTimeZoneProcessProvider;
+import org.dbflute.optional.OptionalObject;
+import org.dbflute.optional.OptionalThing;
 
 /**
  * @author jflute
  */
 public class DbfluteUserTimeZoneProcessProvider implements UserTimeZoneProcessProvider {
 
-    public static final TimeZone centralTimeZone = TimeZone.getDefault(); // you can change it if you like
+    public static final TimeZone centralTimeZone = TimeZone.getDefault();
 
     @Override
     public boolean isUseTimeZoneHandling() {
@@ -39,18 +41,13 @@ public class DbfluteUserTimeZoneProcessProvider implements UserTimeZoneProcessPr
     }
 
     @Override
-    public TimeZone findBusinessTimeZone(ActionRuntimeMeta executeMeta, RequestManager requestManager) {
-        return null;
+    public OptionalThing<TimeZone> findBusinessTimeZone(ActionRuntimeMeta runtimeMeta, RequestManager requestManager) {
+        return OptionalObject.empty();
     }
 
     @Override
-    public TimeZone getRequestedTimeZone(RequestManager requestManager) {
-        return centralTimeZone; // same as fall-back
-    }
-
-    @Override
-    public TimeZone getFallbackTimeZone() {
-        return centralTimeZone;
+    public TimeZone getRequestedTimeZone(RequestManager requestManager) { // not null
+        return centralTimeZone; // you can change it if you like
     }
 
     @Override
@@ -58,7 +55,6 @@ public class DbfluteUserTimeZoneProcessProvider implements UserTimeZoneProcessPr
         final StringBuilder sb = new StringBuilder();
         sb.append("{useTimeZoneHandling=").append(isUseTimeZoneHandling());
         sb.append(", acceptCookieTimeZone=").append(isAcceptCookieTimeZone());
-        sb.append(", fallbackTimeZone=").append(getFallbackTimeZone());
         sb.append("}");
         return sb.toString();
     }

@@ -15,7 +15,6 @@
  */
 package org.dbflute.intro.app.web.base;
 
-import org.dbflute.intro.app.base.DbfluteBaseAction;
 import org.dbflute.intro.mylasta.action.DbfluteIntroMessages;
 import org.dbflute.lastaflute.web.callback.ActionRuntimeMeta;
 import org.dbflute.lastaflute.web.login.UserBean;
