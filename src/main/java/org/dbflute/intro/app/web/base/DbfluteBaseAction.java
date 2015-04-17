@@ -27,6 +27,7 @@ import org.dbflute.helper.HandyDate;
 import org.dbflute.hook.AccessContext;
 import org.dbflute.intro.mylasta.direction.DbfluteConfig;
 import org.dbflute.intro.mylasta.paging.PagingNavi;
+import org.dbflute.lastaflute.core.time.TimeManager;
 import org.dbflute.lastaflute.db.dbflute.accesscontext.AccessContextArranger;
 import org.dbflute.lastaflute.db.dbflute.accesscontext.AccessContextResource;
 import org.dbflute.lastaflute.web.TypicalAction;
@@ -34,6 +35,7 @@ import org.dbflute.lastaflute.web.callback.ActionRuntimeMeta;
 import org.dbflute.lastaflute.web.login.LoginManager;
 import org.dbflute.lastaflute.web.response.ActionResponse;
 import org.dbflute.lastaflute.web.response.render.RenderData;
+import org.dbflute.lastaflute.web.servlet.request.RequestManager;
 import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
 
@@ -48,7 +50,15 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     //                                                                           Attribute
     //                                                                           =========
     @Resource
-    protected DbfluteConfig dbfluteConfig;
+    private DbfluteConfig dbfluteConfig;
+
+    /** The manager of time. (NotNull) */
+    @Resource
+    private TimeManager timeManager;
+
+    /** The manager of request. (NotNull) */
+    @Resource
+    private RequestManager requestManager;
 
     // ===================================================================================
     //                                                                            Callback

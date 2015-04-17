@@ -20,6 +20,7 @@ import org.dbflute.lastaflute.web.Execute;
 import org.dbflute.lastaflute.web.response.ActionResponse;
 import org.dbflute.lastaflute.web.response.JsonResponse;
 import org.dbflute.lastaflute.web.response.StreamResponse;
+import org.dbflute.lastaflute.web.servlet.request.ResponseManager;
 
 /**
  * @author p1us2er0
@@ -27,10 +28,14 @@ import org.dbflute.lastaflute.web.response.StreamResponse;
 public class ClientAction extends DbfluteIntroBaseAction {
 
     @Resource
-    protected DbFluteClientLogic dbFluteClientLogic;
+    private DbFluteClientLogic dbFluteClientLogic;
 
     @Resource
-    protected DbFluteTaskLogic dbFluteTaskLogic;
+    private DbFluteTaskLogic dbFluteTaskLogic;
+
+    /** The manager of response. (NotNull) */
+    @Resource
+    private ResponseManager responseManager;
 
     @Execute
     public JsonResponse list() {
