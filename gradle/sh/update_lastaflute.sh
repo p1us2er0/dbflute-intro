@@ -1,13 +1,18 @@
 #!/bin/bash
-cd ./lasta-try/lasta-jta
+cd ./lasta-try
+git pull
+cd ../utflute-lasta
+git pull
+
+cd ../lasta-try/lasta-jta
 mvn install -DskipTests=true -Dmaven.javadoc.skip=true
-cd ../lasta-try/lasta-di
+cd ../../lasta-try/lasta-di
 mvn install -DskipTests=true -Dmaven.javadoc.skip=true
-cd ../utflute-lasta/utflute-lasta-di
+cd ../../utflute-lasta/utflute-lasta-di
 mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dgpg.skip=true
-cd /lasta-try/lastaflute
+cd ../../lasta-try/lastaflute
 mvn install -DskipTests=true -Dmaven.javadoc.skip=true
-cd /utflute-lasta/utflute-lastaflute
+cd ../../utflute-lasta/utflute-lastaflute
 mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dgpg.skip=true
-cd /lasta-try/lasta-taglib
+cd ../../lasta-try/lasta-taglib
 mvn install -DskipTests=true -Dmaven.javadoc.skip=true

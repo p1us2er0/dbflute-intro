@@ -17,7 +17,7 @@ ext {
             utflute : '0.6.0-SNAPSHOT',
 
             lastaflute : '0.6.0-SNAPSHOT',
-            dbflute : '1.1-sp2'
+            dbflute : '1.1.0-sp2'
         ]
 }
 
