@@ -34,6 +34,6 @@ localap/
 # DBFlute
 mydbflute/
 latest-data.zip
-/dbflute_(?!intro)
+/dbflute_*
 /dbflute-intro.jar
 /dbflute-intro.war
