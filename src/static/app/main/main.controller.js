@@ -7,7 +7,8 @@ angular.module('static')
       $scope.publicProperties = [];
       $scope.versions = [];
       $scope.clientBeanList = [];
-      $scope.clientBean = {};
+      $scope.clientBean = null;
+      $scope.editFlg = false;
 
       $scope.manifest = function() {
           $http({
@@ -30,12 +31,22 @@ angular.module('static')
       $scope.add = function(clientBean) {
       }
 
-      $scope.edit = function(clientBean) {
+      $scope.edit = function() {
+          $scope.editFlg = true;
+      }
 
+      $scope.cancelEdit = function() {
+          $scope.editFlg = false;
       }
 
       $scope.update = function(clientBean) {
-
+          $http({
+              method : 'POST',
+              url : 'api/client/update',
+              params : {clientBean: clientBean}
+          }).success(function(data) {
+              $scope.list();
+          });
       }
 
       $scope.remove = function(clientBean) {

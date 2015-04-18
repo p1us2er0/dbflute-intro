@@ -180,16 +180,18 @@ public class DbFluteClientLogic {
             replaceMap.put("{Please write your setting! at './dfprop/databaseInfoMap.dfprop'}", "");
             fileMap.put(new File(dbfluteClientDir, "/dfprop/databaseInfoMap.dfprop"), replaceMap);
 
-            String[] schema = clientBean.getDatabaseBean().getSchema().split(",");
+            String schema = clientBean.getDatabaseBean().getSchema();
+            schema = schema == null ? "" : schema;
+            String[] schemaList = schema.split(",");
             replaceMap = new LinkedHashMap<String, Object>();
             replaceMap.put("@driver@", escapeControlMark(clientBean.getJdbcDriver()));
             replaceMap.put("@url@", escapeControlMark(clientBean.getDatabaseBean().getUrl()));
-            replaceMap.put("@schema@", escapeControlMark(schema[0].trim()));
+            replaceMap.put("@schema@", escapeControlMark(schemaList[0].trim()));
             replaceMap.put("@user@", escapeControlMark(clientBean.getDatabaseBean().getUser()));
             replaceMap.put("@password@", escapeControlMark(clientBean.getDatabaseBean().getPassword()));
             StringBuilder builder = new StringBuilder();
-            for (int i = 1; i < schema.length; i++) {
-                builder.append("            ; " + escapeControlMark(schema[i].trim())
+            for (int i = 1; i < schemaList.length; i++) {
+                builder.append("            ; " + escapeControlMark(schemaList[i].trim())
                         + " = map:{objectTypeTargetList=list:{TABLE; VIEW; SYNONYM}}\r\n");
             }
 
@@ -324,10 +326,12 @@ public class DbFluteClientLogic {
                 String text = FileUtils.readFileToString(entry.getKey(), Charsets.UTF_8);
 
                 for (Entry<String, Object> replaceEntry : entry.getValue().entrySet()) {
+                    Object value = replaceEntry.getValue();
+                    value = value == null ? "" : value;
                     if (regularExpression) {
-                        text = text.replaceAll(replaceEntry.getKey(), String.valueOf(replaceEntry.getValue()));
+                        text = text.replaceAll(replaceEntry.getKey(), String.valueOf(value));
                     } else {
-                        text = text.replace(replaceEntry.getKey(), String.valueOf(replaceEntry.getValue()));
+                        text = text.replace(replaceEntry.getKey(), String.valueOf(value));
                     }
                 }
 
