@@ -196,4 +196,56 @@ dbflute-intro-demo/dbflute-intro/dbflute_exampledb/schema
 
 「差分チェック結果を開く」を押下して、 「it」を選択して、htmlを確認。
 
+## developer
+
+```
+## init
+# git clone
+git clone https://github.com/p1us2er0/dbflute-intro.git
+
+# run only once
+cd dbflute-intro/gradle/sh
+sh git_clone_lasta.sh
+
+## refresh
+# refresh library (git pull & maven install)
+cd dbflute-intro/gradle/sh
+sh update_lastaflute.sh
+
+# refresh app
+cd dbflute-intro
+./gradlew cleanEclipse eclipse npmInstall bowerInstall
+
+## run
+# build
+cd dbflute-intro
+./gradlew build
+
+# run
+cd dbflute-intro
+java -jar build/libs/dbflute-intro.war
+
+## during development
+cd dbflute-intro
+./gradlew run
+./gradlew gulp_serve
+```
+
+## URL list
+
+```
+api/client/list
+api/client/detail/{project}
+api/client/add
+api/client/remove/{project}
+api/client/update
+api/client/task/{project}/{task}
+api/client/schemahtml
+api/client/historyhtml
+api/engine/publicProperties
+api/engine/versions
+api/engine/download/{version}
+api/intro/manifest
+```
+
 end.
