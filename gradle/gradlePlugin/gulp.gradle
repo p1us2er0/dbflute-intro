@@ -1,0 +1,19 @@
+node {
+    version = '0.12.2'
+    download = true
+}
+
+task bowerInstall(type: NodeTask) {
+    script = project.file('node_modules/bower/bin/bower')
+    args = ['install']
+}
+
+['clean' : 'gulp_clean', 'classes' : 'gulp_build'].each {
+    if (!tasks.findByName(it.key)) {
+        task(it.key) {
+
+        }
+    }
+
+    tasks[it.key].dependsOn(it.value)
+}

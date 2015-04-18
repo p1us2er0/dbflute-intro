@@ -1,5 +1,16 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
+
+plugins {
+    id "com.moowork.node" version "0.9"
+    id "com.moowork.gulp" version "0.9"
+}
+
 apply plugin: 'java'
-apply plugin:'application'
+apply plugin: 'application'
 apply plugin: 'war'
 apply plugin: 'project-report'
 
@@ -14,7 +25,7 @@ ext {
             jdk : '1.8',
             gradle : '2.3',
 
-            junit : '4.11',
+            junit : '4.12',
             utflute : '0.6.0-SNAPSHOT',
 
             lastaflute : '0.6.0-SNAPSHOT',
@@ -46,37 +57,7 @@ dependencies {
     providedCompile 'org.eclipse.jetty:jetty-annotations:9.2.10.v20150310'
 }
 
-eclipse {
-    classpath {
-        defaultOutputDir = file(classesDir)
-        downloadSources = true
-        downloadJavadoc = false
-
-        file.whenMerged { cp ->
-            cp.entries.findAll {
-                it.path.contains('JRE_CONTAINER')
-            }*.path = "org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-${versions.jdk}"
-        }
-    }
-}
-
-javadoc {
-    failOnError = false
-}
-
-tasks['classes'].dependsOn(['gulpBuild'])
-task gulpBuild (type: Exec) {
-    workingDir file('static')
-    commandLine 'gulp', 'build'
-}
-
-tasks['clean'].dependsOn(['gulpClean'])
-task gulpClean (type: Exec) {
-    workingDir file('static')
-    commandLine 'gulp', 'clean'
-}
-
-mainClassName = 'org/dbflute/boot/DbfluteIntroBoot'
+mainClassName = 'org.dbflute.boot.DbfluteIntroBoot'
 
 war {
     from {
@@ -99,12 +80,6 @@ war {
         attributes 'SCM-Revision': 'TODO'
         attributes 'Build-Timestamp': 'TODO'
         attributes 'Jenkins-Build-Number': 'TODO'
-        attributes 'Main-Class' : 'org.dbflute.boot.DbfluteIntroBoot'
-    }
-}
-
-build {
-    doLast {
-        tasks.runLaunch4j.execute()
+        attributes 'Main-Class' : mainClassName
     }
 }

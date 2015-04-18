@@ -37,3 +37,10 @@ latest-data.zip
 /dbflute_*
 /dbflute-intro.jar
 /dbflute-intro.war
+
+# node
+node_modules/
+bower_components/
+.sass-cache/
+.tmp/
+dist/
