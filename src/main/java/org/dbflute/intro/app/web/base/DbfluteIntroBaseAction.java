@@ -42,11 +42,6 @@ public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction {
     //                                          DI Component
     //                                          ------------
 
-    // -----------------------------------------------------
-    //                                          Display Data
-    //                                          ------------
-    public DbfluteIntroUserWebBean userWebBean;
-
     // ===================================================================================
     //                                                                    Application Info
     //                                                                    ================

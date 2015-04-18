@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ import org.dbflute.lastaflute.web.response.ActionResponse;
 import org.dbflute.lastaflute.web.response.JsonResponse;
 import org.dbflute.lastaflute.web.response.StreamResponse;
 import org.dbflute.lastaflute.web.servlet.request.ResponseManager;
+import org.dbflute.util.DfStringUtil;
 
 /**
  * @author p1us2er0
@@ -40,7 +42,11 @@ public class ClientAction extends DbfluteIntroBaseAction {
     @Execute
     public JsonResponse list() {
         List<String> projectList = dbFluteClientLogic.getProjectList();
-        return asJson(projectList);
+        List<ClientBean> clientBeanList = projectList.stream().map(project -> {
+            return dbFluteClientLogic.convClientBeanFromDfprop(project);
+        }).collect(Collectors.toList());
+
+        return asJson(clientBeanList);
     }
 
     @Execute
@@ -54,7 +60,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
         ClientBean clientBean = clientForm.clientBean;
         Map<String, DatabaseBean> schemaSyncCheckMap = clientForm.schemaSyncCheckMap;
         dbFluteClientLogic.createNewClient(clientBean, schemaSyncCheckMap);
-        return asJson(clientBean);
+        return JsonResponse.empty();
     }
 
     @Execute
@@ -68,11 +74,11 @@ public class ClientAction extends DbfluteIntroBaseAction {
         ClientBean clientBean = clientForm.clientBean;
         Map<String, DatabaseBean> schemaSyncCheckMap = clientForm.schemaSyncCheckMap;
         dbFluteClientLogic.createNewClient(clientBean, schemaSyncCheckMap);
-        return asJson(clientBean);
+        return JsonResponse.empty();
     }
 
     @Execute
-    public ActionResponse task(String project, String task) {
+    public JsonResponse task(String project, String task, String env) {
 
         HttpServletResponse response = responseManager.getResponse();
         response.setContentType("text/plain; charset=UTF-8");
@@ -91,16 +97,16 @@ public class ClientAction extends DbfluteIntroBaseAction {
             Map<String, String> environment = processBuilder.environment();
             environment.put("pause_at_end", "n");
             environment.put("answer", "y");
-//            if (getValue(NAME).toString().equals(LABEL_SYNC_CHECK)) {
-//                environment.put("DBFLUTE_ENVIRONMENT_TYPE", "schemaSyncCheck_" + env);
-//            }
+            if (DfStringUtil.is_NotNull_and_NotEmpty(env)) {
+                environment.put("DBFLUTE_ENVIRONMENT_TYPE", "schemaSyncCheck_" + env);
+            }
 
             processBuilder.directory(new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project));
 
             int result = dbFluteTaskLogic.executeCommand(processBuilder, outputStream);
         }
 
-        return ActionResponse.empty();
+        return JsonResponse.empty();
     }
 
     @Execute
