@@ -4,7 +4,10 @@ angular.module('static')
   .controller('MainCtrl', function ($scope, $http, $window) {
 
       $scope.manifest = {};
-      $scope.projectList = [];
+      $scope.publicProperties = [];
+      $scope.versions = [];
+      $scope.clientBeanList = [];
+      $scope.clientBean = {};
 
       $scope.manifest = function() {
           $http({
@@ -20,42 +23,83 @@ angular.module('static')
               method : 'POST',
               url : 'api/client/list'
           }).success(function(data) {
-              $scope.projectList = data;
+              $scope.clientBeanList = data;
           });
       }
 
-      $scope.add = function(project) {
+      $scope.add = function(clientBean) {
       }
 
-      $scope.edit = function(project) {
-
-      }
-
-      $scope.update = function(project) {
+      $scope.edit = function(clientBean) {
 
       }
 
-      $scope.remove = function(project) {
+      $scope.update = function(clientBean) {
+
+      }
+
+      $scope.remove = function(clientBean) {
           $http({
               method : 'POST',
-              url : 'api/client/remove/' + project
+              url : 'api/client/remove/' + clientBean.project
           }).success(function(data) {
               $scope.list();
           });
       }
 
-      $scope.openSchemaHTML = function(project) {
-          $window.open('api/client/schemahtml/' + project);
+      $scope.openSchemaHTML = function(clientBean) {
+          $window.open('api/client/schemahtml/' + clientBean.project);
       }
 
-      $scope.openHistoryHTML = function(project) {
-          $window.open('api/client/historyhtml/' + project);
+      $scope.openHistoryHTML = function(clientBean) {
+          $window.open('api/client/historyhtml/' + clientBean.project);
       }
 
-      $scope.task = function(project, task) {
-          $window.open('api/client/task/' + project + '/' + task);
+      $scope.task = function(clientBean, task) {
+          $window.open('api/client/task/' + clientBean.project + '/' + task);
+      }
+
+      $scope.downloadEngine = function(version) {
+          $http({
+              method : 'POST',
+              url : 'api/engine/download/' + version
+          }).success(function(data) {
+          });
+      }
+
+      $scope.engineVersions = function(version) {
+          $http({
+              method : 'POST',
+              url : 'api/engine/versions'
+          }).success(function(data) {
+              $scope.versions = data;
+          });
+      }
+
+      $scope.publicProperties = function(version) {
+          $http({
+              method : 'POST',
+              url : 'api/engine/publicProperties'
+          }).success(function(data) {
+              $scope.publicProperties = data;
+          });
+      }
+
+      $scope.engineVersions = function(version) {
+          $http({
+              method : 'POST',
+              url : 'api/engine/versions'
+          }).success(function(data) {
+              $scope.versions = data;
+          });
+      }
+
+      $scope.setCurrentProject = function(clientBean) {
+          $scope.clientBean = clientBean;
       }
 
       $scope.manifest();
+      $scope.publicProperties();
+      $scope.engineVersions();
       $scope.list();
 });

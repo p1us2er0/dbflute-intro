@@ -6,12 +6,48 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-sm-6 col-md-4" ng-repeat="project in projectList">
-       <h1><span>{{project}}</span></h1>
-       <a href="" ng-click="edit(project)">編集</a> | <a href="" ng-click="remove(project)">削除</a>
-       <p><a href="" ng-click="openSchemaHTML(project)">テーブル定義を開く</a>(SchemaHTML)</p>
-       <p><a href="" ng-click="openHistoryHTML(project)">DB変更履歴を開く</a>(HistoryHTML)</p>
-       <p><input type="button" class="btn btn-primary" ng-click="task(project, 'doc')" value="ドキュメント自動生成" /></p>
+    <div class="col-sm-12">
+        DBFluteバージョン <input type="input" ng-model="dbfluteEngine.version" />
+        <input type="button" class="btn btn-primary" ng-click="downloadEngine(dbfluteEngine.version)" value="ダウンロード" />
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+        DBFluteダウンロード済
+        {{versions}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-2">
+        DBFlute最新情報
+    </div>
+    <div class="col-sm-12">
+        1.1系 = {{publicProperties['dbflute.latest.release.version']}}
+        1.1系SNAPSHOT = {{publicProperties['dbflute.latest.snapshot.version']}}
+    </div>
+    <div class="col-sm-12">
+        1.0系 = {{publicProperties['compatible10x.dbflute.latest.release.version']}}
+        1.0系SNAPSHOT = {{publicProperties['compatible10x.dbflute.latest.snapshot.version']}}
+    </div>
+  </div>
+  <div class="row">
+    プロジェクトリスト
+    <div ng-repeat="clientBean in clientBeanList">
+       <a href="" ng-click="setCurrentProject(clientBean)">{{clientBean.project}}</a>
+    </div>
+  </div>
+  <div class="row">
+    カレントプロジェクト
+    <div class="col-sm-12">
+        {{clientBean.project}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <a href="" ng-click="edit(project)">編集</a> | <a href="" ng-click="remove(clientBean)">削除</a>
+      <p><a href="" ng-click="openSchemaHTML(clientBean)">テーブル定義を開く</a>(SchemaHTML)</p>
+      <p><a href="" ng-click="openHistoryHTML(clientBean)">DB変更履歴を開く</a>(HistoryHTML)</p>
+      <p><input type="button" class="btn btn-primary" ng-click="task(clientBean, 'doc')" value="ドキュメント自動生成" /></p>
     </div>
   </div>
 </div>

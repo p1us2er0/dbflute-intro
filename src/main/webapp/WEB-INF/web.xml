@@ -39,52 +39,12 @@
     <!-- ================================================================================= -->
     <!--                                                                      Welcome File -->
     <!--                                                                      ============ -->
-    <!--
-    <welcome-file-list>
-    </welcome-file-list>
-    -->
 
     <!-- ================================================================================= -->
     <!--                                                                        JSP Config -->
     <!--                                                                        ========== -->
-    <!-- #migration change taglib definition -->
-    <!--
-    <jsp-config>
-        <taglib>
-            <taglib-uri>http://dbflute.org/lastaflute/latags</taglib-uri>
-            <taglib-location>/META-INF/lasta-latag.tld</taglib-location>
-        </taglib>
-        <taglib>
-            <taglib-uri>http://dbflute.org/lastaflute/functions</taglib-uri>
-            <taglib-location>/META-INF/lasta-function.tld</taglib-location>
-        </taglib>
-        <jsp-property-group>
-            <url-pattern>*.jsp</url-pattern>
-            <el-ignored>false</el-ignored>
-            <page-encoding>UTF-8</page-encoding>
-            <scripting-invalid>false</scripting-invalid>
-            <include-prelude>/WEB-INF/view/common/common.jsp</include-prelude>
-        </jsp-property-group>
-    </jsp-config>
-    -->
 
     <!-- ================================================================================= -->
     <!--                                                                        Error Page -->
     <!--                                                                        ========== -->
-    <error-page>
-        <error-code>403</error-code>
-        <location>/error/403.html</location>
-    </error-page>
-    <error-page>
-        <error-code>404</error-code>
-        <location>/error/404.html</location>
-    </error-page>
-    <error-page>
-        <error-code>500</error-code>
-        <location>/error/500.html</location>
-    </error-page>
-    <error-page>
-        <exception-type>java.lang.Exception</exception-type>
-        <location>/error/500.html</location>
-    </error-page>
 </web-app>
