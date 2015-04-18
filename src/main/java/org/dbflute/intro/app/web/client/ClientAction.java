@@ -71,6 +71,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
 
     @Execute
     public JsonResponse update(ClientForm clientForm) {
+        validate(clientForm, () -> JsonResponse.empty());
         ClientBean clientBean = clientForm.clientBean;
         Map<String, DatabaseBean> schemaSyncCheckMap = clientForm.schemaSyncCheckMap;
         dbFluteClientLogic.createNewClient(clientBean, schemaSyncCheckMap);

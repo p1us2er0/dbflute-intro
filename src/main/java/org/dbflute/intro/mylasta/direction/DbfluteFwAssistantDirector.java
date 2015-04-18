@@ -22,6 +22,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteActionAdjustmentProvider;
+import org.dbflute.intro.mylasta.direction.sponsor.DbfluteApiResultProvider;
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteBootProcessCallback;
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteCookieResourceProvider;
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteSecurityResourceProvider;
@@ -34,6 +35,7 @@ import org.dbflute.lastaflute.core.direction.OptionalCoreDirection;
 import org.dbflute.lastaflute.core.security.InvertibleCryptographer;
 import org.dbflute.lastaflute.core.security.OneWayCryptographer;
 import org.dbflute.lastaflute.db.direction.OptionalDbDirection;
+import org.dbflute.lastaflute.web.api.ApiResultProvider;
 import org.dbflute.lastaflute.web.direction.OptionalWebDirection;
 
 /**
@@ -158,6 +160,7 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
         prepareCookie(direction);
         prepareAdjustment(direction);
         prepareMessage(direction);
+        prepareApiCall(direction);
         return direction;
     }
 
@@ -211,5 +214,13 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
 
     protected String[] getExtendsMessageNames() {
         return new String[] { DBFLUTE_LABEL_NAME, DBFLUTE_MESSAGE_NAME };
+    }
+
+    protected void prepareApiCall(OptionalWebDirection direction) {
+        direction.directApiCall(createApiResultProvider());
+    }
+
+    protected ApiResultProvider createApiResultProvider() {
+        return new DbfluteApiResultProvider();
     }
 }

@@ -1,5 +1,7 @@
 package org.dbflute.intro.app.bean;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 /**
  * @author jflute
  * @author p1us2er0
@@ -10,15 +12,21 @@ public class ClientBean {
     // ===================================================================================
     //                                                                           Attribute
     //                                                                           =========
+    @NotBlank
     private String project;
+    @NotBlank
     private String database;
+    @NotBlank
     private String targetLanguage;
+    @NotBlank
     private String targetContainer;
+    @NotBlank
     private String packageBase;
     private String jdbcDriver;
     private DatabaseBean databaseBean;
     private DatabaseBean systemUserDatabaseBean;
     private String jdbcDriverJarPath;
+    @NotBlank
     private String dbfluteVersion;
     private OptionBean optionBean;
 
