@@ -41,9 +41,9 @@
     カレントプロジェクト
     <div class="col-sm-12">
         <div>project = <span ng-hide="editFlg">{{clientBean.project}}</span><input type="text" ng-model="clientBean.project" ng-show="editFlg" /></div>
-        <div>database = <span ng-hide="editFlg">{{clientBean.database}}</span><input type="text" ng-model="clientBean.database" ng-show="editFlg" /></div>
-        <div>targetLanguage = <span ng-hide="editFlg">{{clientBean.targetLanguage}}</span><input type="text" ng-model="clientBean.targetLanguage" ng-show="editFlg" /></div>
-        <div>targetContainer = <span ng-hide="editFlg">{{clientBean.targetContainer}}</span><input type="text" ng-model="clientBean.targetContainer" ng-show="editFlg" /></div>
+        <div>database = <span ng-hide="editFlg">{{clientBean.database}}</span><select ng-model="clientBean.database" ng-options="database.databaseName as database.databaseName for database in classificationMap.databaseInfoDefMap" ng-show="editFlg"></select></div>
+        <div>targetLanguage = <span ng-hide="editFlg">{{clientBean.targetLanguage}}</span><select ng-model="clientBean.targetLanguage" ng-options="targetLanguage for targetLanguage in classificationMap.targetLanguageMap" ng-show="editFlg"></select></div>
+        <div>targetContainer = <span ng-hide="editFlg">{{clientBean.targetContainer}}</span><select ng-model="clientBean.targetContainer" ng-options="targetContainer for targetContainer in classificationMap.targetContainerMap" ng-show="editFlg"></select></div>
         <div>packageBase = <span ng-hide="editFlg">{{clientBean.packageBase}}</span><input type="text" ng-model="clientBean.packageBase" ng-show="editFlg" /></div>
         <div>url = <span ng-hide="editFlg">{{clientBean.databaseBean.url}}</span><input type="text" ng-model="clientBean.databaseBean.url" ng-show="editFlg" /></div>
         <div>schema = <span ng-hide="editFlg">{{clientBean.databaseBean.schema}}</span><input type="text" ng-model="clientBean.databaseBean.schema" ng-show="editFlg" /></div>
@@ -56,11 +56,11 @@
         <div>user(system) = <span ng-hide="editFlg">{{clientBean.systemUserDatabaseBean.user}}</span><input type="text" ng-model="clientBean.systemUserDatabaseBean.user" ng-show="editFlg" /></div>
         <div>password(system) = <span ng-hide="editFlg">{{clientBean.systemUserDatabaseBean.password}}</span><input type="text" ng-model="clientBean.systemUserDatabaseBean.password" ng-show="editFlg" /></div>
         <div>aliasDelimiterInDbComment = <span ng-hide="editFlg">{{clientBean.optionBean.aliasDelimiterInDbComment}}</span><input type="text" ng-model="clientBean.optionBean.aliasDelimiterInDbComment" ng-show="editFlg" /></div>
-        <div>checkColumnDefOrderDiff = <span ng-hide="editFlg">{{clientBean.optionBean.checkColumnDefOrderDiff}}</span><input type="text" ng-model="clientBean.optionBean.checkColumnDefOrderDiff" ng-show="editFlg" /></div>
-        <div>checkDbCommentDiff = <span ng-hide="editFlg">{{clientBean.optionBean.checkDbCommentDiff}}</span><input type="text" ng-model="clientBean.optionBean.checkDbCommentDiff" ng-show="editFlg" /></div>
-        <div>checkProcedureDiff = <span ng-hide="editFlg">{{clientBean.optionBean.checkProcedureDiff}}</span><input type="text" ng-model="clientBean.optionBean.checkProcedureDiff" ng-show="editFlg" /></div>
-        <div>dbCommentOnAliasBasis = <span ng-hide="editFlg">{{clientBean.optionBean.dbCommentOnAliasBasis}}</span><input type="text" ng-model="clientBean.optionBean.dbCommentOnAliasBasis" ng-show="editFlg" /></div>
-        <div>generateProcedureParameterBean = <span ng-hide="editFlg">{{clientBean.optionBean.generateProcedureParameterBean}}</span><input type="text" ng-model="clientBean.optionBean.generateProcedureParameterBean" ng-show="editFlg" /></div>
+        <div>checkColumnDefOrderDiff = <span ng-hide="editFlg">{{clientBean.optionBean.checkColumnDefOrderDiff}}</span><input type="checkbox" ng-model="clientBean.optionBean.checkColumnDefOrderDiff" ng-show="editFlg" /></div>
+        <div>checkDbCommentDiff = <span ng-hide="editFlg">{{clientBean.optionBean.checkDbCommentDiff}}</span><input type="checkbox" ng-model="clientBean.optionBean.checkDbCommentDiff" ng-show="editFlg" /></div>
+        <div>checkProcedureDiff = <span ng-hide="editFlg">{{clientBean.optionBean.checkProcedureDiff}}</span><input type="checkbox" ng-model="clientBean.optionBean.checkProcedureDiff" ng-show="editFlg" /></div>
+        <div>dbCommentOnAliasBasis = <span ng-hide="editFlg">{{clientBean.optionBean.dbCommentOnAliasBasis}}</span><input type="checkbox" ng-model="clientBean.optionBean.dbCommentOnAliasBasis" ng-show="editFlg" /></div>
+        <div>generateProcedureParameterBean = <span ng-hide="editFlg">{{clientBean.optionBean.generateProcedureParameterBean}}</span><input type="checkbox" ng-model="clientBean.optionBean.generateProcedureParameterBean" ng-show="editFlg" /></div>
         <div>procedureSynonymHandlingType = <span ng-hide="editFlg">{{clientBean.optionBean.procedureSynonymHandlingType}}</span><input type="text" ng-model="clientBean.optionBean.procedureSynonymHandlingType" ng-show="editFlg" /></div>
     </div>
   </div>

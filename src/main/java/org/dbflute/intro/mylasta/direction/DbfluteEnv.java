@@ -7,6 +7,12 @@ import org.dbflute.lastaflute.core.direction.ObjectiveConfig;
  */
 public interface DbfluteEnv {
 
+    /** The key of the configuration. e.g. ut */
+    String lasta_di_INJECTION_ENV = "lasta_di.injection.env";
+
+    /** The key of the configuration. e.g. hot */
+    String lasta_di_SMART_DEPLOY_MODE = "lasta_di.smart.deploy.mode";
+
     /** The key of the configuration. e.g. true */
     String DEVELOPMENT_HERE = "development.here";
 
@@ -15,9 +21,6 @@ public interface DbfluteEnv {
 
     /** The key of the configuration. e.g. false */
     String FRAMEWORK_DEBUG = "framework.debug";
-
-    /** The key of the configuration. e.g. hot */
-    String lasta_di_SMART_DEPLOY_MODE = "lasta_di.smart.deploy.mode";
 
     /** The key of the configuration. e.g. 0 */
     String TIME_ADJUST_TIME_MILLIS = "time.adjust.time.millis";
@@ -43,6 +46,9 @@ public interface DbfluteEnv {
     /** The key of the configuration. e.g. 10 */
     String JDBC_CONNECTION_POOLING_SIZE = "jdbc.connection.pooling.size";
 
+    /** The key of the configuration. e.g. http://dbflute.org/meta/public.properties */
+    String DBFLUTE_PUBLIC_PROPERTIES_URL = "dbflute.public.properties.url";
+
     /**
      * Get the value of property as {@link String}.
      * @param propertyKey The key of the property. (NotNull)
@@ -56,6 +62,22 @@ public interface DbfluteEnv {
      * @return The determination, true or false. (if the property can be true, returns true)
      */
     boolean is(String propertyKey);
+
+    /**
+     * Get the value for the key 'lasta_di.injection.env'. <br>
+     * The value is, e.g. ut <br>
+     * comment: The environment of Lasta Di's injection, should be product in production (e.g. ut, it, product)
+     * @return The value of found property. (NullAllowed: if null, not found)
+     */
+    String getLastaDiInjectionEnv();
+
+    /**
+     * Get the value for the key 'lasta_di.smart.deploy.mode'. <br>
+     * The value is, e.g. hot <br>
+     * comment: The mode of Lasta Di's smart-deploy, should be cool in production (e.g. hot, cool, warm)
+     * @return The value of found property. (NullAllowed: if null, not found)
+     */
+    String getLastaDiSmartDeployMode();
 
     /**
      * Get the value for the key 'development.here'. <br>
@@ -96,14 +118,6 @@ public interface DbfluteEnv {
      * @return The determination, true or false. (if the property can be true, returns true)
      */
     boolean isFrameworkDebug();
-
-    /**
-     * Get the value for the key 'lasta_di.smart.deploy.mode'. <br>
-     * The value is, e.g. hot <br>
-     * comment: The mode of Lasta Di's smart-deploy, should be cool in production (e.g. hot, cool, warm)
-     * @return The value of found property. (NullAllowed: if null, not found)
-     */
-    String getLastaDiSmartDeployMode();
 
     /**
      * Get the value for the key 'time.adjust.time.millis'. <br>
@@ -196,6 +210,13 @@ public interface DbfluteEnv {
     Integer getJdbcConnectionPoolingSizeAsInteger();
 
     /**
+     * Get the value for the key 'dbflute.public.properties.url'. <br>
+     * The value is, e.g. http://dbflute.org/meta/public.properties <br>
+     * @return The value of found property. (NullAllowed: if null, not found)
+     */
+    String getDbflutePublicPropertiesUrl();
+
+    /**
      * The simple implementation for configuration.
      * @author FreeGen
      */
@@ -203,6 +224,14 @@ public interface DbfluteEnv {
 
         /** The serial version UID for object serialization. (Default) */
         private static final long serialVersionUID = 1L;
+
+        public String getLastaDiInjectionEnv() {
+            return get(DbfluteEnv.lasta_di_INJECTION_ENV);
+        }
+
+        public String getLastaDiSmartDeployMode() {
+            return get(DbfluteEnv.lasta_di_SMART_DEPLOY_MODE);
+        }
 
         public String getDevelopmentHere() {
             return get(DbfluteEnv.DEVELOPMENT_HERE);
@@ -222,10 +251,6 @@ public interface DbfluteEnv {
 
         public boolean isFrameworkDebug() {
             return is(DbfluteEnv.FRAMEWORK_DEBUG);
-        }
-
-        public String getLastaDiSmartDeployMode() {
-            return get(DbfluteEnv.lasta_di_SMART_DEPLOY_MODE);
         }
 
         public String getTimeAdjustTimeMillis() {
@@ -270,6 +295,10 @@ public interface DbfluteEnv {
 
         public Integer getJdbcConnectionPoolingSizeAsInteger() {
             return getAsInteger(DbfluteEnv.JDBC_CONNECTION_POOLING_SIZE);
+        }
+
+        public String getDbflutePublicPropertiesUrl() {
+            return get(DbfluteEnv.DBFLUTE_PUBLIC_PROPERTIES_URL);
         }
     }
 }

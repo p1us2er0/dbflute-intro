@@ -31,6 +31,12 @@ public interface DbfluteConfig extends DbfluteEnv {
     /** The key of the configuration. e.g. 1930 */
     String MINIMUM_YEAR = "minimum.year";
 
+    /** The key of the configuration. e.g. java,csharp,scala */
+    String TARGET_LANGUAGE = "targetLanguage";
+
+    /** The key of the configuration. e.g. seasar,spring,guice,cdi,lasta_di */
+    String TARGET_CONTAINER = "targetContainer";
+
     /**
      * Get the value of property as {@link String}.
      * @param propertyKey The key of the property. (NotNull)
@@ -163,6 +169,22 @@ public interface DbfluteConfig extends DbfluteEnv {
     Integer getMinimumYearAsInteger();
 
     /**
+     * Get the value for the key 'targetLanguage'. <br>
+     * The value is, e.g. java,csharp,scala <br>
+     * comment: targetLanguage
+     * @return The value of found property. (NullAllowed: if null, not found)
+     */
+    String getTargetLanguage();
+
+    /**
+     * Get the value for the key 'targetContainer'. <br>
+     * The value is, e.g. seasar,spring,guice,cdi,lasta_di <br>
+     * comment: targetContainer
+     * @return The value of found property. (NullAllowed: if null, not found)
+     */
+    String getTargetContainer();
+
+    /**
      * The simple implementation for configuration.
      * @author FreeGen
      */
@@ -225,6 +247,14 @@ public interface DbfluteConfig extends DbfluteEnv {
 
         public Integer getMinimumYearAsInteger() {
             return getAsInteger(DbfluteConfig.MINIMUM_YEAR);
+        }
+
+        public String getTargetLanguage() {
+            return get(DbfluteConfig.TARGET_LANGUAGE);
+        }
+
+        public String getTargetContainer() {
+            return get(DbfluteConfig.TARGET_CONTAINER);
         }
     }
 }

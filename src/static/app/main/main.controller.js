@@ -6,6 +6,7 @@ angular.module('static')
       $scope.manifest = {};
       $scope.publicProperties = [];
       $scope.versions = [];
+      $scope.classificationMap = {};
       $scope.clientBeanList = [];
       $scope.clientBean = null;
       $scope.editFlg = false;
@@ -16,6 +17,42 @@ angular.module('static')
               url : 'api/intro/manifest'
           }).success(function(data) {
               $scope.manifest = data;
+          });
+      }
+
+      $scope.publicProperties = function(version) {
+          $http({
+              method : 'POST',
+              url : 'api/engine/publicProperties'
+          }).success(function(data) {
+              $scope.publicProperties = data;
+          });
+      }
+
+      $scope.engineVersions = function(version) {
+          $http({
+              method : 'POST',
+              url : 'api/engine/versions'
+          }).success(function(data) {
+              $scope.versions = data;
+          });
+      }
+
+      $scope.engineVersions = function(version) {
+          $http({
+              method : 'POST',
+              url : 'api/engine/versions'
+          }).success(function(data) {
+              $scope.versions = data;
+          });
+      }
+
+      $scope.classification = function() {
+          $http({
+              method : 'POST',
+              url : 'api/client/classification'
+          }).success(function(data) {
+              $scope.classificationMap = data;
           });
       }
 
@@ -78,33 +115,6 @@ angular.module('static')
           });
       }
 
-      $scope.engineVersions = function(version) {
-          $http({
-              method : 'POST',
-              url : 'api/engine/versions'
-          }).success(function(data) {
-              $scope.versions = data;
-          });
-      }
-
-      $scope.publicProperties = function(version) {
-          $http({
-              method : 'POST',
-              url : 'api/engine/publicProperties'
-          }).success(function(data) {
-              $scope.publicProperties = data;
-          });
-      }
-
-      $scope.engineVersions = function(version) {
-          $http({
-              method : 'POST',
-              url : 'api/engine/versions'
-          }).success(function(data) {
-              $scope.versions = data;
-          });
-      }
-
       $scope.setCurrentProject = function(clientBean) {
           $scope.clientBean = clientBean;
       }
@@ -112,5 +122,6 @@ angular.module('static')
       $scope.manifest();
       $scope.publicProperties();
       $scope.engineVersions();
+      $scope.classification();
       $scope.list();
 });
