@@ -1,6 +1,6 @@
 {
-  "name": "static",
-  "version": "0.0.0",
+  "name": "dbflute-intro",
+  "version": "0.0.3-SNAPSHOT",
   "dependencies": {},
   "scripts": {
     "test": "gulp test"

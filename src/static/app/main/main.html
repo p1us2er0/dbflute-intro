@@ -41,8 +41,8 @@
     カレントプロジェクト
     <div class="col-sm-12">
         <div>project = <span ng-hide="editFlg">{{clientBean.project}}</span><input type="text" ng-model="clientBean.project" ng-show="editFlg" /></div>
-        <div>database = <span ng-hide="editFlg">{{clientBean.database}}</span><select ng-model="clientBean.database" ng-options="database.databaseName as database.databaseName for database in classificationMap.databaseInfoDefMap" ng-show="editFlg"></select></div>
-        <div>targetLanguage = <span ng-hide="editFlg">{{clientBean.targetLanguage}}</span><select ng-model="clientBean.targetLanguage" ng-options="targetLanguage for targetLanguage in classificationMap.targetLanguageMap" ng-show="editFlg"></select></div>
+        <div>{{'LABEL_DATABASE' | translate:translationData}} = <span ng-hide="editFlg">{{clientBean.database}}</span><select ng-model="clientBean.database" ng-options="database.databaseName as database.databaseName for database in classificationMap.databaseInfoDefMap" ng-show="editFlg"></select></div>
+        <div>{{'LABEL_TARGET_LANGUAGE' | translate:translationData}} = <span ng-hide="editFlg">{{clientBean.targetLanguage}}</span><select ng-model="clientBean.targetLanguage" ng-options="targetLanguage for targetLanguage in classificationMap.targetLanguageMap" ng-show="editFlg"></select></div>
         <div>targetContainer = <span ng-hide="editFlg">{{clientBean.targetContainer}}</span><select ng-model="clientBean.targetContainer" ng-options="targetContainer for targetContainer in classificationMap.targetContainerMap" ng-show="editFlg"></select></div>
         <div>packageBase = <span ng-hide="editFlg">{{clientBean.packageBase}}</span><input type="text" ng-model="clientBean.packageBase" ng-show="editFlg" /></div>
         <div>url = <span ng-hide="editFlg">{{clientBean.databaseBean.url}}</span><input type="text" ng-model="clientBean.databaseBean.url" ng-show="editFlg" /></div>

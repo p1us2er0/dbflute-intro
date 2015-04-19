@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('static')
+angular.module('dbflute-intro')
   .controller('MainCtrl', function ($scope, $http, $window) {
 
       $scope.manifest = {};

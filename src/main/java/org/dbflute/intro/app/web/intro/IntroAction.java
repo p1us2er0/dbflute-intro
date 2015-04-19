@@ -1,5 +1,7 @@
 package org.dbflute.intro.app.web.intro;
 
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.dbflute.intro.app.logic.DbFluteIntroLogic;
@@ -13,7 +15,7 @@ public class IntroAction extends DbfluteIntroBaseAction {
     protected DbFluteIntroLogic dbFluteIntroLogic;
 
     @Execute
-    public JsonResponse manifest() {
+    public JsonResponse<Map<String, Object>> manifest() {
         return asJson(dbFluteIntroLogic.getManifestMap());
     }
 }

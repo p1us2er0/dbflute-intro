@@ -3,7 +3,7 @@
 describe('controllers', function(){
   var scope;
 
-  beforeEach(module('static'));
+  beforeEach(module('dbflute-intro'));
 
   beforeEach(inject(function($rootScope) {
     scope = $rootScope.$new();

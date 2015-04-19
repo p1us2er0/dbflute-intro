@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('static')
+angular.module('dbflute-intro')
   .controller('NavbarCtrl', function ($scope) {
     $scope.date = new Date();
   });

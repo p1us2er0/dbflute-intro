@@ -23,7 +23,6 @@ import org.dbflute.intro.app.logic.DbFluteTaskLogic;
 import org.dbflute.intro.app.web.base.DbfluteIntroBaseAction;
 import org.dbflute.intro.mylasta.direction.DbfluteConfig;
 import org.dbflute.lastaflute.web.Execute;
-import org.dbflute.lastaflute.web.response.ActionResponse;
 import org.dbflute.lastaflute.web.response.JsonResponse;
 import org.dbflute.lastaflute.web.response.StreamResponse;
 import org.dbflute.lastaflute.web.servlet.request.ResponseManager;
@@ -48,7 +47,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
     private ResponseManager responseManager;
 
     @Execute
-    public JsonResponse list() {
+    public JsonResponse<List<ClientBean>> list() {
         List<String> projectList = dbFluteClientLogic.getProjectList();
         List<ClientBean> clientBeanList = projectList.stream().map(project -> {
             return dbFluteClientLogic.convClientBeanFromDfprop(project);
@@ -58,13 +57,13 @@ public class ClientAction extends DbfluteIntroBaseAction {
     }
 
     @Execute
-    public JsonResponse detail(String project) {
+    public JsonResponse<ClientBean> detail(String project) {
         ClientBean clientBean = dbFluteClientLogic.convClientBeanFromDfprop(project);
         return asJson(clientBean);
     }
 
     @Execute
-    public JsonResponse classification() {
+    public JsonResponse<Map<String, Map<?, ?>>> classification() {
         Map<String, Map<?, ?>> classificationMap = new LinkedHashMap<String, Map<?, ?>>();
 
         Map<String, String> targetLanguageMap = Stream.of(dbfluteConfig.getTargetLanguage().split(",")).collect(
@@ -86,7 +85,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
     }
 
     @Execute
-    public JsonResponse add(ClientForm clientForm) {
+    public JsonResponse<Void> add(ClientForm clientForm) {
         ClientBean clientBean = clientForm.clientBean;
         Map<String, DatabaseBean> schemaSyncCheckMap = clientForm.schemaSyncCheckMap;
         dbFluteClientLogic.createNewClient(clientBean, schemaSyncCheckMap);
@@ -94,14 +93,14 @@ public class ClientAction extends DbfluteIntroBaseAction {
     }
 
     @Execute
-    public JsonResponse remove(String project) {
+    public JsonResponse<Void> remove(String project) {
         dbFluteClientLogic.deleteClient(project);
-        return asJson(true);
+        return JsonResponse.empty();
     }
 
     @Execute
-    public JsonResponse update(ClientForm clientForm) {
-        validate(clientForm, () -> JsonResponse.empty());
+    public JsonResponse<Void> update(ClientForm clientForm) {
+        validate(clientForm, () -> dispatchApiValidationError());
         ClientBean clientBean = clientForm.clientBean;
         Map<String, DatabaseBean> schemaSyncCheckMap = clientForm.schemaSyncCheckMap;
         dbFluteClientLogic.createNewClient(clientBean, schemaSyncCheckMap);
@@ -109,7 +108,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
     }
 
     @Execute
-    public JsonResponse task(String project, String task, String env) {
+    public JsonResponse<Void> task(String project, String task, String env) {
 
         HttpServletResponse response = responseManager.getResponse();
         response.setContentType("text/plain; charset=UTF-8");
@@ -141,13 +140,13 @@ public class ClientAction extends DbfluteIntroBaseAction {
     }
 
     @Execute
-    public ActionResponse schemahtml(String project) {
+    public StreamResponse schemahtml(String project) {
         String filePath = "dbflute_" + project + "/output/doc/schema-" + project + ".html";
         return createHtmlStreamResponse(filePath);
     }
 
     @Execute
-    public ActionResponse historyhtml(String project) {
+    public StreamResponse historyhtml(String project) {
         String filePath = "dbflute_" + project + "/output/doc/history-" + project + ".html";
         return createHtmlStreamResponse(filePath);
     }

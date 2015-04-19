@@ -1,6 +1,7 @@
 package org.dbflute.intro.app.web.engine;
 
 import java.util.List;
+import java.util.Properties;
 
 import javax.annotation.Resource;
 
@@ -15,19 +16,19 @@ public class EngineAction extends DbfluteIntroBaseAction {
     protected DbFluteEngineLogic dbFluteEngineLogic;
 
     @Execute
-    public JsonResponse publicProperties() {
+    public JsonResponse<Properties> publicProperties() {
         return asJson(dbFluteEngineLogic.getPublicProperties());
     }
 
     @Execute
-    public JsonResponse versions() {
+    public JsonResponse<List<String>> versions() {
         List<String> dbFluteVersionList = dbFluteEngineLogic.getExistedVersionList();
         return asJson(dbFluteVersionList);
     }
 
     @Execute
-    public JsonResponse download(String version) {
+    public JsonResponse<Void> download(String version) {
         dbFluteEngineLogic.download(version);
-        return asJson(true);
+        return JsonResponse.empty();
     }
 }
