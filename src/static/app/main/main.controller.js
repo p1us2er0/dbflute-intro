@@ -116,7 +116,7 @@ angular.module('dbflute-intro')
       }
 
       $scope.setCurrentProject = function(clientBean) {
-          $scope.clientBean = clientBean;
+          $scope.clientBean = clientBean.clientBean;
       }
 
       $scope.manifest();

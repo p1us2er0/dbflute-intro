@@ -33,7 +33,7 @@
   <div class="row">
     プロジェクトリスト
     <span ng-repeat="clientBean in clientBeanList">
-       <a href="" ng-click="setCurrentProject(clientBean)">{{clientBean.project}}</a> |
+       <a href="" ng-click="setCurrentProject(clientBean)">{{clientBean.clientBean.project}}</a> |
     </span>
   </div>
   <a href="" ng-click="add()">追加</a> | <a href="" ng-click="edit()">編集</a> | <a href="" ng-click="cancelEdit()">編集キャンセル</a> | <a href="" ng-click="update(clientBean)">更新</a> | <a href="" ng-click="remove(clientBean)">削除</a>
