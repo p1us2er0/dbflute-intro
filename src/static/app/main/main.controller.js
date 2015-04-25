@@ -65,7 +65,9 @@ angular.module('dbflute-intro')
           });
       }
 
-      $scope.add = function(clientBean) {
+      $scope.add = function() {
+          $scope.editFlg = true;
+          $scope.clientBean = {};
       }
 
       $scope.edit = function() {
@@ -74,6 +76,16 @@ angular.module('dbflute-intro')
 
       $scope.cancelEdit = function() {
           $scope.editFlg = false;
+      }
+
+      $scope.create = function(clientBean) {
+          $http({
+              method : 'POST',
+              url : 'api/client/create',
+              data : {clientBean: clientBean}
+          }).success(function(data) {
+              $scope.list();
+          });
       }
 
       $scope.update = function(clientBean) {

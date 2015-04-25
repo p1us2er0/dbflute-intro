@@ -234,6 +234,15 @@ cd dbflute-intro
 ## URL list
 
 ```
+# dbflute intro
+api/intro/manifest
+
+# dbflute engine
+api/engine/publicProperties
+api/engine/versions
+api/engine/download/{version}
+
+# dbflute client
 api/client/list
 api/client/detail/{project}
 api/client/add
@@ -242,10 +251,6 @@ api/client/update
 api/client/task/{project}/{task}
 api/client/schemahtml
 api/client/historyhtml
-api/engine/publicProperties
-api/engine/versions
-api/engine/download/{version}
-api/intro/manifest
 ```
 
 end.
