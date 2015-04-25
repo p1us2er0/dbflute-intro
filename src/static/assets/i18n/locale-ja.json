@@ -35,7 +35,7 @@
   "LABEL_JDBC_DRIVER_JAR_PATH" : "JDBCドライバのパス",
   "LABEL_FILE_CHOOSE" : "ファイル選択",
   "LABEL_DBFLUTE_VERSION" : "DBFluteバージョン",
-  "LABEL_SYSTEM_USER_DATABASE" : "システムユーザ ※DBスキーマ(再)構築 (ReplaceSchema)の初回で利用",
+  "LABEL_SYSTEM_USER_DATABASE" : "システムユーザ",
   "LABEL_JDBC_DRIVER" : "JDBC DRIVER",
   "LABEL_URL" : "URL",
   "LABEL_SCHEMA" : "スキーマ",
