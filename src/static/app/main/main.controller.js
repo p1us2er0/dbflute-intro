@@ -80,7 +80,7 @@ angular.module('dbflute-intro')
           $http({
               method : 'POST',
               url : 'api/client/update',
-              params : {clientBean: clientBean}
+              data : {clientBean: clientBean}
           }).success(function(data) {
               $scope.list();
           });

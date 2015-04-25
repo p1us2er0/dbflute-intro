@@ -17,6 +17,10 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
@@ -25,7 +29,10 @@ import org.dbflute.helper.mapstring.MapListString;
 import org.dbflute.infra.dfprop.DfPropFile;
 import org.dbflute.intro.app.bean.ClientBean;
 import org.dbflute.intro.app.bean.DatabaseBean;
+import org.dbflute.intro.app.bean.DatabaseInfoDefBean;
 import org.dbflute.intro.app.bean.OptionBean;
+import org.dbflute.intro.app.definition.DatabaseInfoDef;
+import org.dbflute.intro.mylasta.direction.DbfluteConfig;
 import org.dbflute.intro.mylasta.util.ZipUtil;
 
 /**
@@ -33,6 +40,30 @@ import org.dbflute.intro.mylasta.util.ZipUtil;
  * @author jflute
  */
 public class DbFluteClientLogic {
+
+    @Resource
+    private DbfluteConfig dbfluteConfig;
+
+    public Map<String, Map<?, ?>> getClassificationMap() {
+        Map<String, Map<?, ?>> classificationMap = new LinkedHashMap<String, Map<?, ?>>();
+
+        Map<String, String> targetLanguageMap = Stream.of(dbfluteConfig.getTargetLanguage().split(",")).collect(
+                Collectors.toMap(targetLanguage -> targetLanguage, targetLanguage -> targetLanguage, (u, v) -> v,
+                        LinkedHashMap::new));
+        classificationMap.put("targetLanguageMap", targetLanguageMap);
+
+        Map<String, String> targetContainerMap = Stream.of(dbfluteConfig.getTargetContainer().split(",")).collect(
+                Collectors.toMap(targetContainer -> targetContainer, targetContainer -> targetContainer, (u, v) -> v,
+                        LinkedHashMap::new));
+        classificationMap.put("targetContainerMap", targetContainerMap);
+
+        Map<String, DatabaseInfoDefBean> databaseInfoDefMap = Stream.of(DatabaseInfoDef.values()).collect(
+                Collectors.toMap(databaseInfoDef -> databaseInfoDef.databaseName(), databaseInfoDef -> new DatabaseInfoDefBean(databaseInfoDef),
+                        (u, v) -> v, LinkedHashMap::new));
+        classificationMap.put("databaseInfoDefMap", databaseInfoDefMap);
+
+        return classificationMap;
+    }
 
     public List<String> getProjectList() {
 

@@ -3,11 +3,9 @@ package org.dbflute.intro.app.web.client;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -15,13 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.dbflute.intro.app.bean.ClientBean;
 import org.dbflute.intro.app.bean.DatabaseBean;
-import org.dbflute.intro.app.bean.DatabaseInfoDefBean;
-import org.dbflute.intro.app.definition.DatabaseInfoDef;
 import org.dbflute.intro.app.logic.DbFluteClientLogic;
 import org.dbflute.intro.app.logic.DbFluteIntroLogic;
 import org.dbflute.intro.app.logic.DbFluteTaskLogic;
 import org.dbflute.intro.app.web.base.DbfluteIntroBaseAction;
-import org.dbflute.intro.mylasta.direction.DbfluteConfig;
 import org.dbflute.lastaflute.web.Execute;
 import org.dbflute.lastaflute.web.response.JsonResponse;
 import org.dbflute.lastaflute.web.response.StreamResponse;
@@ -32,9 +27,6 @@ import org.dbflute.util.DfStringUtil;
  * @author p1us2er0
  */
 public class ClientAction extends DbfluteIntroBaseAction {
-
-    @Resource
-    private DbfluteConfig dbfluteConfig;
 
     @Resource
     private DbFluteClientLogic dbFluteClientLogic;
@@ -64,23 +56,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
 
     @Execute
     public JsonResponse<Map<String, Map<?, ?>>> classification() {
-        Map<String, Map<?, ?>> classificationMap = new LinkedHashMap<String, Map<?, ?>>();
-
-        Map<String, String> targetLanguageMap = Stream.of(dbfluteConfig.getTargetLanguage().split(",")).collect(
-                Collectors.toMap(targetLanguage -> targetLanguage, targetLanguage -> targetLanguage, (u, v) -> v,
-                        LinkedHashMap::new));
-        classificationMap.put("targetLanguageMap", targetLanguageMap);
-
-        Map<String, String> targetContainerMap = Stream.of(dbfluteConfig.getTargetContainer().split(",")).collect(
-                Collectors.toMap(targetContainer -> targetContainer, targetContainer -> targetContainer, (u, v) -> v,
-                        LinkedHashMap::new));
-        classificationMap.put("targetContainerMap", targetContainerMap);
-
-        Map<String, DatabaseInfoDefBean> databaseInfoDefMap = Stream.of(DatabaseInfoDef.values()).collect(
-                Collectors.toMap(databaseInfoDef -> databaseInfoDef.databaseName(), databaseInfoDef -> new DatabaseInfoDefBean(databaseInfoDef),
-                        (u, v) -> v, LinkedHashMap::new));
-        classificationMap.put("databaseInfoDefMap", databaseInfoDefMap);
-
+        Map<String, Map<?, ?>> classificationMap = dbFluteClientLogic.getClassificationMap();
         return asJson(classificationMap);
     }
 

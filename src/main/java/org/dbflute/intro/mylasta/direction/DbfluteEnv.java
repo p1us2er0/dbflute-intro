@@ -7,9 +7,6 @@ import org.dbflute.lastaflute.core.direction.ObjectiveConfig;
  */
 public interface DbfluteEnv {
 
-    /** The key of the configuration. e.g. ut */
-    String lasta_di_INJECTION_ENV = "lasta_di.injection.env";
-
     /** The key of the configuration. e.g. hot */
     String lasta_di_SMART_DEPLOY_MODE = "lasta_di.smart.deploy.mode";
 
@@ -62,14 +59,6 @@ public interface DbfluteEnv {
      * @return The determination, true or false. (if the property can be true, returns true)
      */
     boolean is(String propertyKey);
-
-    /**
-     * Get the value for the key 'lasta_di.injection.env'. <br>
-     * The value is, e.g. ut <br>
-     * comment: The environment of Lasta Di's injection, should be product in production (e.g. ut, it, product)
-     * @return The value of found property. (NullAllowed: if null, not found)
-     */
-    String getLastaDiInjectionEnv();
 
     /**
      * Get the value for the key 'lasta_di.smart.deploy.mode'. <br>
@@ -224,10 +213,6 @@ public interface DbfluteEnv {
 
         /** The serial version UID for object serialization. (Default) */
         private static final long serialVersionUID = 1L;
-
-        public String getLastaDiInjectionEnv() {
-            return get(DbfluteEnv.lasta_di_INJECTION_ENV);
-        }
 
         public String getLastaDiSmartDeployMode() {
             return get(DbfluteEnv.lasta_di_SMART_DEPLOY_MODE);

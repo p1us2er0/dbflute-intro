@@ -1,6 +1,7 @@
 package org.dbflute.intro.mylasta.direction.sponsor;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -21,13 +22,13 @@ public class DbfluteApiResultProvider implements ApiResultProvider {
 
     @Override
     public ApiResponse prepareValidationError(ApiResultResource resource, ActionRuntimeMeta meta) {
-        return new JsonResponse<List<String>>(resource.getMessageList()).httpStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return new JsonResponse<Map<String, List<String>>>(resource.getPropertyMessageMap()).httpStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     @Override
     public ApiResponse prepareApplicationException(ApiResultResource resource, ActionRuntimeMeta meta,
             RuntimeException cause) {
-        return new JsonResponse<List<String>>(resource.getMessageList()).httpStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return new JsonResponse<Map<String, List<String>>>(resource.getPropertyMessageMap()).httpStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     @Override
