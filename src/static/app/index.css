@@ -1,3 +1,14 @@
+/* ======================================================
+  common.
+=======================================================*/
+body {
+  background: #fafafa;
+}
+.navbar-inverse {
+  background: #333;
+  border-bottom: 3px solid #222;
+}
+
 .browsehappy {
   margin: 0.2em 0;
   background: #ccc;
