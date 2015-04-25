@@ -4,6 +4,10 @@
 body {
   background: #fafafa;
 }
+
+button {
+  outline: none !important;
+}
 .navbar-inverse {
   background: #333;
   border-bottom: 3px solid #222;
@@ -22,4 +26,8 @@ body {
 
 .thumbnail img.pull-right {
   width: 50px;
+}
+
+button .glyphicon {
+  margin-right: 8px;
 }

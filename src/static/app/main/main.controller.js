@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('dbflute-intro')
-  .controller('MainCtrl', function ($scope, $http, $window, ApiFactory) {
+  .controller('MainCtrl', function ($scope, $window, $modal, ApiFactory) {
 
       $scope.manifest = {};
       $scope.publicProperties = [];
@@ -14,12 +14,6 @@ angular.module('dbflute-intro')
       $scope.manifest = function() {
           ApiFactory.manifest().then(function(response) {
               $scope.manifest = response.data;
-          });
-      };
-
-      $scope.publicProperties = function(version) {
-          ApiFactory.publicProperties().then(function(response) {
-              $scope.publicProperties = response.data;
           });
       };
 
@@ -84,18 +78,17 @@ angular.module('dbflute-intro')
           $window.open('api/client/task/' + clientBean.project + '/' + task);
       };
 
-      $scope.dbfluteEngine = {
-          version: null
-      };
 
-      $scope.downloadEngine = function() {
-          ApiFactory.downloadEngine($scope.dbfluteEngine).then(function(response) {
-              $scope.engineVersions();
+      $scope.downloadModal = function() {
+          $modal.open({
+              templateUrl: 'app/main/download.html',
+              controller: 'DownloadInstanceController',
+              resolve: {
+                publicProperties: function() {
+                    return ApiFactory.publicProperties();
+                }
+            }
           });
-      };
-
-      $scope.selectVersion = function(version) {
-          $scope.dbfluteEngine.version = version;
       };
 
       $scope.setCurrentProject = function(clientBean) {
@@ -103,8 +96,54 @@ angular.module('dbflute-intro')
       };
 
       $scope.manifest();
-      $scope.publicProperties();
       $scope.engineVersions();
       $scope.classification();
       $scope.clientBeanList();
+});
+
+angular.module('dbflute-intro').controller('DownloadInstanceController',
+        function($scope, $modalInstance, publicProperties, ApiFactory) {
+    'use strict';
+
+    $scope.downloading = false;
+
+    $scope.publicProperties = {};
+    $scope.publicProperties.compatible10x = [];
+    $scope.publicProperties.compatible11x = [];
+
+    $scope.currentBranch = 'compatible11x';
+
+    var publicPropertiesData = publicProperties.data;
+    var compatible10xRelease = publicPropertiesData['compatible10x.dbflute.latest.release.version'];
+    var compatible10xSnapshot = publicPropertiesData['compatible10x.dbflute.latest.snapshot.version'];
+    var compatible11xRelease = publicPropertiesData['dbflute.latest.release.version'];
+    var compatible11xSnapshot = publicPropertiesData['dbflute.latest.snapshot.version'];
+
+    $scope.publicProperties.compatible10x[0] = compatible10xRelease;
+    $scope.publicProperties.compatible11x[0] = compatible11xRelease;
+
+    if (compatible10xRelease !== compatible10xSnapshot) {
+        $scope.publicProperties.compatible10x[1] = compatible10xSnapshot;
+    }
+
+    if (compatible11xRelease !== compatible11xSnapshot) {
+        $scope.publicProperties.compatible11x[1] = compatible11xSnapshot;
+        $scope.dbfluteEngine.version = compatible11xSnapshot;
+    }
+
+    $scope.dbfluteEngine = {
+        version: $scope.publicProperties.compatible11x[0]
+    };
+
+    $scope.selectVersion = function(version) {
+        $scope.dbfluteEngine.version = version;
+    };
+
+    $scope.downloadEngine = function() {
+        $scope.downloading = true;
+        ApiFactory.downloadEngine($scope.dbfluteEngine).then(function(response) {
+            $scope.engineVersions();
+            $scope.downloading = false;
+        });
+    };
 });

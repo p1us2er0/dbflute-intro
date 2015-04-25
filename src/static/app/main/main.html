@@ -1,23 +1,24 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 <div class="container">
+
   <div class="row">
     <div class="col-sm-6 col-md-4" ng-repeat="(key, value) in manifest">
-        {{key}} = {{value}}
+      {{key}} = {{value}}
     </div>
   </div>
+
   <div class="row">
-    <div class="col-sm-12">
+    <div class="col-md-2 col-md-offset-10">
+      <button type="button" class="btn btn-primary" ng-click="downloadModal()">
+        <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>DBFluteダウンロード
+      </button>
+<!--
         DBFluteバージョン <input type="input" ng-model="dbfluteEngine.version" />
-        <input type="button" class="btn btn-primary" ng-click="downloadEngine(dbfluteEngine.version)" value="ダウンロード" />
+        <input type="button" class="btn btn-primary" ng-click="downloadEngine()" value="ダウンロード" />
+-->
     </div>
   </div>
-  <div class="row">
-    <div class="col-sm-12">
-        DBFlute最新情報
-        1.1系 = <a>{{publicProperties['dbflute.latest.release.version']}}</a> | <a>{{publicProperties['dbflute.latest.snapshot.version']}}</a> |
-        1.0系 = <a>{{publicProperties['compatible10x.dbflute.latest.release.version']}}</a> | <a>{{publicProperties['compatible10x.dbflute.latest.snapshot.version']}}</a>
-    </div>
-  </div>
+
   <div class="row">
     <div class="col-sm-12">
         DBFluteダウンロード済
