@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.dbflute.intro.app.bean.ClientBean;
-import org.dbflute.intro.app.bean.DatabaseBean;
 import org.dbflute.intro.app.logic.DbFluteClientLogic;
 import org.dbflute.intro.app.logic.DbFluteIntroLogic;
 import org.dbflute.intro.app.logic.DbFluteTaskLogic;
@@ -21,7 +20,7 @@ import org.dbflute.lastaflute.web.Execute;
 import org.dbflute.lastaflute.web.response.JsonResponse;
 import org.dbflute.lastaflute.web.response.StreamResponse;
 import org.dbflute.lastaflute.web.servlet.request.ResponseManager;
-import org.dbflute.util.DfStringUtil;
+import org.dbflute.optional.OptionalObject;
 
 /**
  * @author p1us2er0
@@ -34,25 +33,8 @@ public class ClientAction extends DbfluteIntroBaseAction {
     @Resource
     private DbFluteTaskLogic dbFluteTaskLogic;
 
-    /** The manager of response. (NotNull) */
     @Resource
     private ResponseManager responseManager;
-
-    @Execute
-    public JsonResponse<List<ClientBean>> list() {
-        List<String> projectList = dbFluteClientLogic.getProjectList();
-        List<ClientBean> clientBeanList = projectList.stream().map(project -> {
-            return dbFluteClientLogic.convClientBeanFromDfprop(project);
-        }).collect(Collectors.toList());
-
-        return asJson(clientBeanList);
-    }
-
-    @Execute
-    public JsonResponse<ClientBean> detail(String project) {
-        ClientBean clientBean = dbFluteClientLogic.convClientBeanFromDfprop(project);
-        return asJson(clientBean);
-    }
 
     @Execute
     public JsonResponse<Map<String, Map<?, ?>>> classification() {
@@ -61,16 +43,41 @@ public class ClientAction extends DbfluteIntroBaseAction {
     }
 
     @Execute
-    public JsonResponse<Void> add(ClientForm clientForm) {
-        ClientBean clientBean = clientForm.clientBean;
-        Map<String, DatabaseBean> schemaSyncCheckMap = clientForm.schemaSyncCheckMap;
-        dbFluteClientLogic.createNewClient(clientBean, schemaSyncCheckMap);
-        return JsonResponse.empty();
+    public JsonResponse<List<ClientResponseBean>> list() {
+        List<String> projectList = dbFluteClientLogic.getProjectList();
+        List<ClientResponseBean> clientResponseBeanList = projectList.stream().map(project -> {
+            ClientBean clientBean = dbFluteClientLogic.convClientBeanFromDfprop(project);
+            return convertClientResponseBean(clientBean);
+        }).collect(Collectors.toList());
+
+        return asJson(clientResponseBeanList);
     }
 
     @Execute
-    public JsonResponse<Void> remove(String project) {
-        dbFluteClientLogic.deleteClient(project);
+    public JsonResponse<ClientResponseBean> detail(String project) {
+        ClientBean clientBean = dbFluteClientLogic.convClientBeanFromDfprop(project);
+        ClientResponseBean clientResponseBean = convertClientResponseBean(clientBean);
+        return asJson(clientResponseBean);
+    }
+
+    protected ClientResponseBean convertClientResponseBean(ClientBean clientBean) {
+        ClientResponseBean clientResponseBean = new ClientResponseBean();
+        clientResponseBean.setClientBean(clientBean);
+        String project = clientBean.getProject();
+        clientResponseBean.setSchemahtml(calcFile(project, "schema").exists());
+        clientResponseBean.setHistoryhtml(calcFile(project, "history").exists());
+        clientResponseBean.setReplaceSchema(dbFluteClientLogic.existReplaceSchemaFile(project));
+        return clientResponseBean;
+    }
+
+    @Execute
+    public JsonResponse<Void> create(ClientForm clientForm) {
+        validate(clientForm, () -> dispatchApiValidationError());
+        ClientBean clientBean = clientForm.clientBean;
+        if (clientForm.testConnection) {
+            dbFluteClientLogic.testConnection(clientBean);
+        }
+        dbFluteClientLogic.createClient(clientBean, clientForm.testConnection);
         return JsonResponse.empty();
     }
 
@@ -78,14 +85,20 @@ public class ClientAction extends DbfluteIntroBaseAction {
     public JsonResponse<Void> update(ClientForm clientForm) {
         validate(clientForm, () -> dispatchApiValidationError());
         ClientBean clientBean = clientForm.clientBean;
-        Map<String, DatabaseBean> schemaSyncCheckMap = clientForm.schemaSyncCheckMap;
-        dbFluteClientLogic.createNewClient(clientBean, schemaSyncCheckMap);
+        if (clientForm.testConnection) {
+            dbFluteClientLogic.testConnection(clientBean);
+        }
+        dbFluteClientLogic.updateClient(clientBean, clientForm.testConnection);
         return JsonResponse.empty();
     }
 
     @Execute
-    public JsonResponse<Void> task(String project, String task, String env) {
+    public JsonResponse<Void> delete(String project) {
+        dbFluteClientLogic.deleteClient(project);
+        return JsonResponse.empty();
+    }
 
+    public JsonResponse<Void> task(String project, String task) {
         HttpServletResponse response = responseManager.getResponse();
         response.setContentType("text/plain; charset=UTF-8");
         OutputStream outputStream;
@@ -95,46 +108,34 @@ public class ClientAction extends DbfluteIntroBaseAction {
             throw new RuntimeException(e);
         }
 
-        List<ProcessBuilder> taskList = dbFluteTaskLogic.getJdbcDocCommandList();
-        for (final ProcessBuilder processBuilder : taskList) {
+        dbFluteTaskLogic.execute(project, task, OptionalObject.empty(), outputStream);
 
-            processBuilder.directory(new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project));
-
-            Map<String, String> environment = processBuilder.environment();
-            environment.put("pause_at_end", "n");
-            environment.put("answer", "y");
-            if (DfStringUtil.is_NotNull_and_NotEmpty(env)) {
-                environment.put("DBFLUTE_ENVIRONMENT_TYPE", "schemaSyncCheck_" + env);
-            }
-
-            processBuilder.directory(new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project));
-
-            int result = dbFluteTaskLogic.executeCommand(processBuilder, outputStream);
-        }
-
-        return JsonResponse.empty();
+        return JsonResponse.skip();
     }
 
     @Execute
     public StreamResponse schemahtml(String project) {
-        String filePath = "dbflute_" + project + "/output/doc/schema-" + project + ".html";
-        return createHtmlStreamResponse(filePath);
+        return createHtmlStreamResponse(calcFile(project, "schema"));
     }
 
     @Execute
     public StreamResponse historyhtml(String project) {
-        String filePath = "dbflute_" + project + "/output/doc/history-" + project + ".html";
-        return createHtmlStreamResponse(filePath);
+        return createHtmlStreamResponse(calcFile(project, "history"));
     }
 
-    protected StreamResponse createHtmlStreamResponse(String filePath) {
-        File file = new File(DbFluteIntroLogic.BASE_DIR_PATH, filePath);
+    protected File calcFile(String project, String type) {
+        File file = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/output/doc/" + type + "-" + project + ".html");
+        return file;
+    }
+
+    protected StreamResponse createHtmlStreamResponse(File file) {
+
         StreamResponse streamResponse = new StreamResponse("");
         streamResponse.contentType("text/html; charset=UTF-8");
         try {
             streamResponse.stream(FileUtils.openInputStream(file));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            streamResponse.httpStatus(HttpServletResponse.SC_NOT_FOUND);
         }
 
         return streamResponse;

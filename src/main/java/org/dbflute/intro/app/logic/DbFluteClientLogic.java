@@ -2,6 +2,7 @@ package org.dbflute.intro.app.logic;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.ProxySelector;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -34,6 +35,7 @@ import org.dbflute.intro.app.bean.OptionBean;
 import org.dbflute.intro.app.definition.DatabaseInfoDef;
 import org.dbflute.intro.mylasta.direction.DbfluteConfig;
 import org.dbflute.intro.mylasta.util.ZipUtil;
+import org.dbflute.util.DfStringUtil;
 
 /**
  * @author p1us2er0
@@ -58,7 +60,7 @@ public class DbFluteClientLogic {
         classificationMap.put("targetContainerMap", targetContainerMap);
 
         Map<String, DatabaseInfoDefBean> databaseInfoDefMap = Stream.of(DatabaseInfoDef.values()).collect(
-                Collectors.toMap(databaseInfoDef -> databaseInfoDef.databaseName(), databaseInfoDef -> new DatabaseInfoDefBean(databaseInfoDef),
+                Collectors.toMap(databaseInfoDef -> databaseInfoDef.getDatabaseName(), databaseInfoDef -> new DatabaseInfoDefBean(databaseInfoDef),
                         (u, v) -> v, LinkedHashMap::new));
         classificationMap.put("databaseInfoDefMap", databaseInfoDefMap);
 
@@ -112,7 +114,7 @@ public class DbFluteClientLogic {
         return exist;
     }
 
-    public void testConnection(ClientBean clientBean, Map<String, DatabaseBean> schemaSyncCheckMap) {
+    public void testConnection(ClientBean clientBean) {
 
         ProxySelector proxySelector = ProxySelector.getDefault();
         ProxySelector.setDefault(null);
@@ -124,7 +126,7 @@ public class DbFluteClientLogic {
             info.put("password", clientBean.getDatabaseBean().getPassword());
 
             List<URL> urls = new ArrayList<URL>();
-            if (clientBean.getJdbcDriverJarPath() == null || clientBean.getJdbcDriverJarPath().equals("")) {
+            if (DfStringUtil.is_Null_or_Empty(clientBean.getJdbcDriverJarPath())) {
                 File mydbfluteDir = new File(String.format(DbFluteIntroLogic.MY_DBFLUTE_PATH, clientBean.getDbfluteVersion()), "lib");
                 for (File file : FileUtils.listFiles(mydbfluteDir, FileFilterUtils.suffixFileFilter(".jar"), null)) {
                     urls.add(file.toURI().toURL());
@@ -142,7 +144,8 @@ public class DbFluteClientLogic {
 
             connection = driver.connect(clientBean.getDatabaseBean().getUrl(), info);
 
-        } catch (Exception e) {
+        } catch (MalformedURLException | ClassNotFoundException | InstantiationException | IllegalAccessException
+                | SQLException e) {
             throw new RuntimeException(e);
         } finally {
             ProxySelector.setDefault(proxySelector);
@@ -156,22 +159,37 @@ public class DbFluteClientLogic {
         }
     }
 
-    public void createNewClient(ClientBean clientBean, Map<String, DatabaseBean> schemaSyncCheckMap) {
+    public void createClient(ClientBean clientBean, boolean ignoreTestConnectionFail) {
+        _createClient(clientBean, false, ignoreTestConnectionFail);
+    }
+
+    public void updateClient(ClientBean clientBean, boolean ignoreTestConnectionFail) {
+        _createClient(clientBean, true, ignoreTestConnectionFail);
+    }
+
+    private void _createClient(ClientBean clientBean, boolean update, boolean ignoreTestConnectionFail) {
 
         final File dbfluteClientDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + clientBean.getProject());
 
-        try {
-            final String dbfluteVersionExpression = "dbflute-" + clientBean.getDbfluteVersion();
+        final String dbfluteVersionExpression = "dbflute-" + clientBean.getDbfluteVersion();
 
-            final File mydbflutePureFile = new File(DbFluteIntroLogic.BASE_DIR_PATH, "/mydbflute");
-            final String extractDirectoryBase = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression;
+        final File mydbflutePureFile = new File(DbFluteIntroLogic.BASE_DIR_PATH, "/mydbflute");
 
-            if (!dbfluteClientDir.exists()) {
-                final String templateZipFileName = extractDirectoryBase + "/etc/client-template/dbflute_dfclient.zip";
-                ZipUtil.decrypt(templateZipFileName, DbFluteIntroLogic.BASE_DIR_PATH);
-                new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_dfclient").renameTo(dbfluteClientDir);
+        if (!dbfluteClientDir.exists()) {
+            if (update) {
+                throw new RuntimeException("更新するものがない");
             }
+            final String extractDirectoryBase = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression;
+            final String templateZipFileName = extractDirectoryBase + "/etc/client-template/dbflute_dfclient.zip";
+            ZipUtil.decrypt(templateZipFileName, DbFluteIntroLogic.BASE_DIR_PATH);
+            new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_dfclient").renameTo(dbfluteClientDir);
+        } else {
+            if (!update) {
+                throw new RuntimeException("すでに登録されている");
+            }
+        }
 
+        try {
             List<String> dfpropFileList = new ArrayList<String>();
             dfpropFileList.add("basicInfoMap+.dfprop");
             dfpropFileList.add("databaseInfoMap+.dfprop");
@@ -290,12 +308,12 @@ public class DbFluteClientLogic {
                 }
             }
 
-            createSchemaSyncCheck(clientBean, schemaSyncCheckMap);
+            createSchemaSyncCheck(clientBean);
 
         } catch (Exception e) {
             try {
                 FileUtils.deleteDirectory(dbfluteClientDir);
-            } catch (IOException e2) {
+            } catch (IOException ignore) {
                 // ignore
             }
 
@@ -303,12 +321,12 @@ public class DbFluteClientLogic {
         }
     }
 
-    private void createSchemaSyncCheck(ClientBean clientBean, Map<String, DatabaseBean> schemaSyncCheckMap) {
+    private void createSchemaSyncCheck(ClientBean clientBean) {
 
         final File dbfluteClientDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + clientBean.getProject());
         URL schemaSyncCheckURL = ClassLoader.getSystemResource("dfprop/documentDefinitionMap+schemaSyncCheck.dfprop");
 
-        for (Entry<String, DatabaseBean> entry : schemaSyncCheckMap.entrySet()) {
+        for (Entry<String, DatabaseBean> entry : clientBean.getSchemaSyncCheckMap().entrySet()) {
             final File dfpropEnvDir = new File(dbfluteClientDir, "dfprop/schemaSyncCheck_" + entry.getKey());
             dfpropEnvDir.mkdir();
 

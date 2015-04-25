@@ -16,17 +16,21 @@ public class DatabaseInfoDefBean {
     private String defultSchema;
     private boolean needSchema;
     private boolean needJdbcDriverJar;
+    private boolean upperSchema;
+    private boolean assistInputUser;
 
     // ===================================================================================
     //                                                                         Constructor
     //                                                                         ===========
     public DatabaseInfoDefBean(DatabaseInfoDef databaseInfoDef) {
-        this.databaseName = databaseInfoDef.databaseName();
-        this.driverName = databaseInfoDef.driverName();
+        this.databaseName = databaseInfoDef.getDatabaseName();
+        this.driverName = databaseInfoDef.getDriverName();
         this.urlTemplate = databaseInfoDef.getUrlTemplate();
         this.defultSchema = databaseInfoDef.getDefultSchema();
-        this.needSchema = databaseInfoDef.needSchema();
-        this.needJdbcDriverJar = databaseInfoDef.needJdbcDriverJar();
+        this.needSchema = databaseInfoDef.isNeedSchema();
+        this.needJdbcDriverJar = databaseInfoDef.isNeedJdbcDriverJar();
+        this.upperSchema = databaseInfoDef.isUpperSchema();
+        this.assistInputUser = databaseInfoDef.isAssistInputUser();
     }
 
     // ===================================================================================
@@ -54,5 +58,13 @@ public class DatabaseInfoDefBean {
 
     public boolean isNeedSchema() {
         return needSchema;
+    }
+
+    public boolean isUpperSchema() {
+        return upperSchema;
+    }
+
+    public boolean isAssistInputUser() {
+        return assistInputUser;
     }
 }

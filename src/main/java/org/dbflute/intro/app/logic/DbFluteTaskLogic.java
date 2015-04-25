@@ -1,6 +1,7 @@
 package org.dbflute.intro.app.logic;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,8 +9,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.dbflute.optional.OptionalThing;
 
 /**
  * @author p1us2er0
@@ -17,7 +20,39 @@ import org.apache.commons.io.IOUtils;
  */
 public class DbFluteTaskLogic {
 
-    public List<ProcessBuilder> getJdbcDocCommandList() {
+    public boolean execute(String project, String task, OptionalThing<String> env, OutputStream outputStream) {
+        List<ProcessBuilder> dbfluteTaskList;
+        if ("doc".equals(task)) {
+            dbfluteTaskList = getDocCommandList();
+        } else if ("loadDataReverse".equals(task)) {
+            dbfluteTaskList = getLoadDataReverseCommandList();
+        } else if ("schemaSyncCheck".equals(task)) {
+            dbfluteTaskList = getSchemaSyncCheckCommandList();
+        } else if ("replaceSchema".equals(task)) {
+            dbfluteTaskList = getReplaceSchemaCommandList();
+        } else {
+            throw new RuntimeException("タスク不正");
+        }
+
+        boolean result = dbfluteTaskList.stream().allMatch(processBuilder -> {
+            processBuilder.directory(new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project));
+
+            Map<String, String> environment = processBuilder.environment();
+            environment.put("pause_at_end", "n");
+            environment.put("answer", "y");
+            env.ifPresent(value -> {
+                environment.put("DBFLUTE_ENVIRONMENT_TYPE", "schemaSyncCheck_" + value);
+            });
+            processBuilder.directory(new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project));
+
+            int resultCode = executeCommand(processBuilder, outputStream);
+            return resultCode == 0;
+        });
+
+        return result;
+    }
+
+    public List<ProcessBuilder> getDocCommandList() {
 
         List<List<String>> commandList = new ArrayList<List<String>>();
         commandList.add(Arrays.asList("manage", "jdbc"));

@@ -19,8 +19,8 @@ import javax.swing.JTextField;
 import org.dbflute.intro.app.bean.ClientBean;
 import org.dbflute.intro.app.bean.DatabaseBean;
 import org.dbflute.intro.app.definition.DatabaseInfoDef;
-import org.dbflute.intro.app.logic.DbFluteIntroLogic;
 import org.dbflute.intro.app.logic.DbFluteClientLogic;
+import org.dbflute.intro.app.logic.DbFluteIntroLogic;
 
 /**
  * @author p1us2er0
@@ -124,11 +124,11 @@ public class NewClientPanel extends JPanel {
             data.put(BasicPanel.LABEL_PACKAGE_BASE, clientBean.getPackageBase());
             data.put(DatabasePanal.LABEL_URL, clientBean.getDatabaseBean().getUrl());
             DatabaseInfoDef databaseInfoDef = DatabaseInfoDef.codeOf(clientBean.getDatabase());
-            if (databaseInfoDef != null && databaseInfoDef.needSchema()) {
+            if (databaseInfoDef != null && databaseInfoDef.isNeedSchema()) {
                 data.put(DatabasePanal.LABEL_SCHEMA, clientBean.getDatabaseBean().getSchema());
             }
             data.put(DatabasePanal.LABEL_USER, clientBean.getDatabaseBean().getUser());
-            if (databaseInfoDef != null && databaseInfoDef.needJdbcDriverJar()) {
+            if (databaseInfoDef != null && databaseInfoDef.isNeedJdbcDriverJar()) {
                 data.put(BasicPanel.LABEL_JDBC_DRIVER_JAR_PATH, clientBean.getJdbcDriverJarPath());
             }
             data.put(BasicPanel.LABEL_DBFLUTE_VERSION, clientBean.getDbfluteVersion());
@@ -178,7 +178,7 @@ public class NewClientPanel extends JPanel {
 
             DbFluteClientLogic dbFluteIntroLogic = new DbFluteClientLogic();
             try {
-                dbFluteIntroLogic.testConnection(clientBean, schemaSyncCheckMap);
+                dbFluteIntroLogic.testConnection(clientBean);
             } catch (RuntimeException e) {
                 int result = JOptionPane.showConfirmDialog(frame,
                         String.format(MSG_TEST_CONNECTION_ERROR, e.getMessage()), null, JOptionPane.YES_NO_OPTION);
@@ -188,7 +188,7 @@ public class NewClientPanel extends JPanel {
             }
 
             try {
-                dbFluteIntroLogic.createNewClient(clientBean, schemaSyncCheckMap);
+                dbFluteIntroLogic.createClient(clientBean, true);
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(frame, String.format(MSG_CLIENT_CREATE_ERROR, getValue(NAME)));

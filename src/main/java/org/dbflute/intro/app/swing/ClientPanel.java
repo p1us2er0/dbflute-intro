@@ -175,7 +175,7 @@ public class ClientPanel extends JPanel {
         this.add(createHTMLLink(LABEL_SCHEMA_HTML, 55));
         this.add(createHTMLLink(LABEL_HISTORY_HTML, 80));
 
-        JButton button = new JButton(new TaskAction(LABEL_DOC, dbFluteTaskLogic.getJdbcDocCommandList()));
+        JButton button = new JButton(new TaskAction(LABEL_DOC, dbFluteTaskLogic.getDocCommandList()));
         button.setBounds(10, 105, 250, 20);
         this.add(button);
 

@@ -113,7 +113,7 @@ public class DatabasePanal extends JPanel {
     }
 
     protected void fireDatabaseSchemaLabel(DatabaseInfoDef databaseDef) {
-        boolean required = databaseDef != null && databaseDef.needSchema();
+        boolean required = databaseDef != null && databaseDef.isNeedSchema();
         databaseSchemaLabel.setText(LABEL_SCHEMA + (required ? NewClientPanel.LABEL_REQUIRED : ""));
     }
 

@@ -172,14 +172,14 @@ public class BasicPanel extends JPanel {
     }
 
     private void fireJdbcDriverJarPathLabel(DatabaseInfoDef databaseInfoDef) {
-        boolean required = databaseInfoDef != null && databaseInfoDef.needJdbcDriverJar();
+        boolean required = databaseInfoDef != null && databaseInfoDef.isNeedJdbcDriverJar();
         jdbcDriverJarPathLabel.setText(LABEL_JDBC_DRIVER_JAR_PATH + (required ? NewClientPanel.LABEL_REQUIRED : ""));
     }
 
     private void fireJdbcDriverJarPathText(DatabaseInfoDef databaseInfoDef) {
         jdbcDriverJarPathText.setText("");
 
-        if (databaseInfoDef != null && databaseInfoDef.needJdbcDriverJar()) {
+        if (databaseInfoDef != null && databaseInfoDef.isNeedJdbcDriverJar()) {
             jdbcDriverJarPathText.setEnabled(true);
             jdbcDriverJarPathText.setTransferHandler(new SwingUtil.FileTransferHandler(jdbcDriverJarPathText));
         } else {
@@ -202,11 +202,11 @@ public class BasicPanel extends JPanel {
 
     public ClientBean asResult() {
         DatabaseInfoDef databaseInfo = (DatabaseInfoDef) databaseCombo.getSelectedItem();
-        final String database = databaseInfo != null ? databaseInfo.databaseName() : null;
+        final String database = databaseInfo != null ? databaseInfo.getDatabaseName() : null;
         final String targetLanguage = (String) targetLanguageCombo.getSelectedItem();
         final String targetContainer = (String) targetContainerCombo.getSelectedItem();
         final String packageBase = packageBaseText.getText();
-        final String databaseInfoDriver = databaseInfo != null ? databaseInfo.driverName() : null;
+        final String databaseInfoDriver = databaseInfo != null ? databaseInfo.getDriverName() : null;
         final DatabaseBean databaseBean = databasePanal.asResult();
         final DatabaseBean systemUserDatabaseBean = systemUserDatabasePanal.asResult();
         final String jdbcDriverJarPath = jdbcDriverJarPathText.getText();

@@ -1,5 +1,11 @@
 package org.dbflute.intro.app.bean;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -22,13 +28,22 @@ public class ClientBean {
     private String targetContainer;
     @NotBlank
     private String packageBase;
+    @NotBlank
     private String jdbcDriver;
+    @NotNull
+    @Valid
     private DatabaseBean databaseBean;
+    @NotNull
+    @Valid
     private DatabaseBean systemUserDatabaseBean;
     private String jdbcDriverJarPath;
     @NotBlank
     private String dbfluteVersion;
+    @NotNull
+    @Valid
     private OptionBean optionBean;
+    @NotNull
+    private Map<String, DatabaseBean> schemaSyncCheckMap;
 
     // ===================================================================================
     //                                                                            Accessor
@@ -131,5 +146,17 @@ public class ClientBean {
 
     public void setOptionBean(OptionBean optionBean) {
         this.optionBean = optionBean;
+    }
+
+    public Map<String, DatabaseBean> getSchemaSyncCheckMap() {
+        if (schemaSyncCheckMap == null) {
+            schemaSyncCheckMap = new LinkedHashMap<String, DatabaseBean>();
+        }
+
+        return schemaSyncCheckMap;
+    }
+
+    public void setSchemaSyncCheckMap(Map<String, DatabaseBean> schemaSyncCheckMap) {
+        this.schemaSyncCheckMap = schemaSyncCheckMap;
     }
 }
