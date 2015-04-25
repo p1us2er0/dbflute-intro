@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.dbflute.optional.OptionalThing;
@@ -87,14 +88,7 @@ public class DbFluteTaskLogic {
     }
 
     protected List<ProcessBuilder> getCommandList(List<List<String>> commandList) {
-
-        List<ProcessBuilder> processBuilderList = new ArrayList<ProcessBuilder>();
-        for (List<String> command : commandList) {
-
-            if (command.isEmpty()) {
-                continue;
-            }
-
+        List<ProcessBuilder> processBuilderList = commandList.stream().filter(command -> !command.isEmpty()).map(command -> {
             String onName = System.getProperty("os.name").toLowerCase();
             List<String> list = new ArrayList<String>();
             if (onName.startsWith("windows")) {
@@ -110,27 +104,26 @@ public class DbFluteTaskLogic {
                 list.addAll(command.subList(1, command.size()));
             }
 
-            processBuilderList.add(new ProcessBuilder(list));
-        }
+            return new ProcessBuilder(list);
+        }).collect(Collectors.toList());
 
         return processBuilderList;
     }
 
     public int executeCommand(ProcessBuilder processBuilder, OutputStream outputStream) {
-
         processBuilder.redirectErrorStream(true);
-
-        InputStream inputStream = null;
-        InputStreamReader inputStreamReader = null;
-        BufferedReader bufferedReader = null;
         Process process;
-
-        int result = 0;
         try {
             process = processBuilder.start();
-            inputStream = process.getInputStream();
-            inputStreamReader = new InputStreamReader(inputStream);
-            bufferedReader = new BufferedReader(inputStreamReader);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        int result = 0;
+        try (InputStream inputStream = process.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)){
+
             while (true) {
                 String line = bufferedReader.readLine();
                 if (line == null) {
@@ -147,10 +140,6 @@ public class DbFluteTaskLogic {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(bufferedReader);
-            IOUtils.closeQuietly(inputStreamReader);
-            IOUtils.closeQuietly(inputStream);
         }
 
         if (result == 0) {

@@ -22,30 +22,6 @@ public interface DbfluteEnv {
     /** The key of the configuration. e.g. 0 */
     String TIME_ADJUST_TIME_MILLIS = "time.adjust.time.millis";
 
-    /** The key of the configuration. e.g. true */
-    String MAIL_SEND_MOCK = "mail.send.mock";
-
-    /** The key of the configuration. e.g. localhost:25 */
-    String MAIL_SMTP_SERVER_DEFAULT_HOST_AND_PORT = "mail.smtp.server.default.host.and.port";
-
-    /** The key of the configuration. e.g. com.mysql.jdbc.Driver */
-    String JDBC_DRIVER = "jdbc.driver";
-
-    /** The key of the configuration. e.g. jdbc:mysql://localhost:3306/maihamadb */
-    String JDBC_URL = "jdbc.url";
-
-    /** The key of the configuration. e.g. maihamadb */
-    String JDBC_USER = "jdbc.user";
-
-    /** The key of the configuration. e.g. maihamadb */
-    String JDBC_PASSWORD = "jdbc.password";
-
-    /** The key of the configuration. e.g. 10 */
-    String JDBC_CONNECTION_POOLING_SIZE = "jdbc.connection.pooling.size";
-
-    /** The key of the configuration. e.g. http://dbflute.org/meta/public.properties */
-    String DBFLUTE_PUBLIC_PROPERTIES_URL = "dbflute.public.properties.url";
-
     /**
      * Get the value of property as {@link String}.
      * @param propertyKey The key of the property. (NotNull)
@@ -126,86 +102,6 @@ public interface DbfluteEnv {
     Long getTimeAdjustTimeMillisAsLong();
 
     /**
-     * Get the value for the key 'mail.send.mock'. <br>
-     * The value is, e.g. true <br>
-     * comment: Does it send mock mail? (true: no send actually, logging only)
-     * @return The value of found property. (NullAllowed: if null, not found)
-     */
-    String getMailSendMock();
-
-    /**
-     * Is the property for the key 'mail.send.mock' true? <br>
-     * The value is, e.g. true <br>
-     * comment: Does it send mock mail? (true: no send actually, logging only)
-     * @return The determination, true or false. (if the property can be true, returns true)
-     */
-    boolean isMailSendMock();
-
-    /**
-     * Get the value for the key 'mail.smtp.server.default.host.and.port'. <br>
-     * The value is, e.g. localhost:25 <br>
-     * comment: SMTP server settings for default: host:port
-     * @return The value of found property. (NullAllowed: if null, not found)
-     */
-    String getMailSmtpServerDefaultHostAndPort();
-
-    /**
-     * Get the value for the key 'jdbc.driver'. <br>
-     * The value is, e.g. com.mysql.jdbc.Driver <br>
-     * comment: The driver FQCN to connect database for JDBC
-     * @return The value of found property. (NullAllowed: if null, not found)
-     */
-    String getJdbcDriver();
-
-    /**
-     * Get the value for the key 'jdbc.url'. <br>
-     * The value is, e.g. jdbc:mysql://localhost:3306/maihamadb <br>
-     * comment: The URL of database connection for JDBC
-     * @return The value of found property. (NullAllowed: if null, not found)
-     */
-    String getJdbcUrl();
-
-    /**
-     * Get the value for the key 'jdbc.user'. <br>
-     * The value is, e.g. maihamadb <br>
-     * comment: The user of database connection for JDBC
-     * @return The value of found property. (NullAllowed: if null, not found)
-     */
-    String getJdbcUser();
-
-    /**
-     * Get the value for the key 'jdbc.password'. <br>
-     * The value is, e.g. maihamadb <br>
-     * comment: @Secure The password of database connection for JDBC
-     * @return The value of found property. (NullAllowed: if null, not found)
-     */
-    String getJdbcPassword();
-
-    /**
-     * Get the value for the key 'jdbc.connection.pooling.size'. <br>
-     * The value is, e.g. 10 <br>
-     * comment: The (max) pooling size of Seasar's connection pool
-     * @return The value of found property. (NullAllowed: if null, not found)
-     */
-    String getJdbcConnectionPoolingSize();
-
-    /**
-     * Get the value for the key 'jdbc.connection.pooling.size' as {@link Integer}. <br>
-     * The value is, e.g. 10 <br>
-     * comment: The (max) pooling size of Seasar's connection pool
-     * @return The value of found property. (NullAllowed: if null, not found)
-     * @throws NumberFormatException When the property is not integer.
-     */
-    Integer getJdbcConnectionPoolingSizeAsInteger();
-
-    /**
-     * Get the value for the key 'dbflute.public.properties.url'. <br>
-     * The value is, e.g. http://dbflute.org/meta/public.properties <br>
-     * @return The value of found property. (NullAllowed: if null, not found)
-     */
-    String getDbflutePublicPropertiesUrl();
-
-    /**
      * The simple implementation for configuration.
      * @author FreeGen
      */
@@ -244,46 +140,6 @@ public interface DbfluteEnv {
 
         public Long getTimeAdjustTimeMillisAsLong() {
             return getAsLong(DbfluteEnv.TIME_ADJUST_TIME_MILLIS);
-        }
-
-        public String getMailSendMock() {
-            return get(DbfluteEnv.MAIL_SEND_MOCK);
-        }
-
-        public boolean isMailSendMock() {
-            return is(DbfluteEnv.MAIL_SEND_MOCK);
-        }
-
-        public String getMailSmtpServerDefaultHostAndPort() {
-            return get(DbfluteEnv.MAIL_SMTP_SERVER_DEFAULT_HOST_AND_PORT);
-        }
-
-        public String getJdbcDriver() {
-            return get(DbfluteEnv.JDBC_DRIVER);
-        }
-
-        public String getJdbcUrl() {
-            return get(DbfluteEnv.JDBC_URL);
-        }
-
-        public String getJdbcUser() {
-            return get(DbfluteEnv.JDBC_USER);
-        }
-
-        public String getJdbcPassword() {
-            return get(DbfluteEnv.JDBC_PASSWORD);
-        }
-
-        public String getJdbcConnectionPoolingSize() {
-            return get(DbfluteEnv.JDBC_CONNECTION_POOLING_SIZE);
-        }
-
-        public Integer getJdbcConnectionPoolingSizeAsInteger() {
-            return getAsInteger(DbfluteEnv.JDBC_CONNECTION_POOLING_SIZE);
-        }
-
-        public String getDbflutePublicPropertiesUrl() {
-            return get(DbfluteEnv.DBFLUTE_PUBLIC_PROPERTIES_URL);
         }
     }
 }

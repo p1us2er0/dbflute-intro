@@ -30,7 +30,7 @@ angular.module('dbflute-intro')
           });
       };
 
-      $scope.clientBeanList = function() {
+      $scope.findClientBeanList = function() {
           ApiFactory.clientBeanList().then(function(response) {
               $scope.clientBeanList = response.data;
           });
@@ -47,23 +47,26 @@ angular.module('dbflute-intro')
 
       $scope.cancelEdit = function() {
           $scope.editFlg = false;
+          if ($scope.clientBean.create) {
+              $scope.clientBean = null;
+          }
       };
 
       $scope.create = function(clientBean, testConnection) {
           ApiFactory.clientCreate(clientBean, testConnection).then(function(response) {
-              $scope.clientBeanList();
+              $scope.findClientBeanList;
           });
       };
 
       $scope.update = function(clientBean, testConnection) {
           ApiFactory.clientUpdate(clientBean, testConnection).then(function(response) {
-              $scope.clientBeanList();
+              $scope.findClientBeanList;
           });
       };
 
-      $scope.remove = function(clientBean) {
+      $scope.delete = function(clientBean) {
           ApiFactory.clientRemove(clientBean).then(function(response) {
-              $scope.clientBeanList();
+              $scope.findClientBeanList();
           });
       };
 
@@ -114,7 +117,7 @@ angular.module('dbflute-intro')
       $scope.manifest();
       $scope.engineVersions();
       $scope.classification();
-      $scope.clientBeanList();
+      $scope.findClientBeanList();
 });
 
 angular.module('dbflute-intro').controller('DownloadInstanceController',

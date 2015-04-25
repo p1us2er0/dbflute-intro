@@ -61,7 +61,7 @@ angular.module('dbflute-intro').factory('ApiFactory',
         clientRemove: function(params) {
             return $http({
                 method : 'POST',
-                url : 'api/client/remove' + params.project
+                url : 'api/client/delete/' + params.project
           }).success(function(data) {
           }).error(errorHandler);
         },

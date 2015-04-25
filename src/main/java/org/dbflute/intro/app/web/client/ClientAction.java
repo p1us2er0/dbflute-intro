@@ -21,6 +21,7 @@ import org.dbflute.lastaflute.web.response.JsonResponse;
 import org.dbflute.lastaflute.web.response.StreamResponse;
 import org.dbflute.lastaflute.web.servlet.request.ResponseManager;
 import org.dbflute.optional.OptionalObject;
+import org.dbflute.optional.OptionalThing;
 
 /**
  * @author p1us2er0
@@ -98,6 +99,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
         return JsonResponse.empty();
     }
 
+    @Execute
     public JsonResponse<Void> task(String project, String task) {
         HttpServletResponse response = responseManager.getResponse();
         response.setContentType("text/plain; charset=UTF-8");
@@ -109,7 +111,6 @@ public class ClientAction extends DbfluteIntroBaseAction {
         }
 
         dbFluteTaskLogic.execute(project, task, OptionalObject.empty(), outputStream);
-
         return JsonResponse.skip();
     }
 
@@ -139,5 +140,26 @@ public class ClientAction extends DbfluteIntroBaseAction {
         }
 
         return streamResponse;
+    }
+
+    // TODO 動作確認用。OptionalThingの動作が確認できるまで。
+    @Execute
+    public JsonResponse<String> task1(String project) {
+        return asJson("OK");
+    }
+
+    @Execute
+    public JsonResponse<String> task2(String project, String task) {
+        return asJson("OK");
+    }
+
+    @Execute
+    public JsonResponse<String> task3(String project, String task, String env) {
+        return asJson("OK");
+    }
+
+    @Execute
+    public JsonResponse<String> task4(String project, String task, OptionalThing<String> env) {
+        return asJson("OK");
     }
 }

@@ -60,8 +60,8 @@ public class DbFluteClientLogic {
         classificationMap.put("targetContainerMap", targetContainerMap);
 
         Map<String, DatabaseInfoDefBean> databaseInfoDefMap = Stream.of(DatabaseInfoDef.values()).collect(
-                Collectors.toMap(databaseInfoDef -> databaseInfoDef.getDatabaseName(), databaseInfoDef -> new DatabaseInfoDefBean(databaseInfoDef),
-                        (u, v) -> v, LinkedHashMap::new));
+                Collectors.toMap(databaseInfoDef -> databaseInfoDef.getDatabaseName(),
+                        databaseInfoDef -> new DatabaseInfoDefBean(databaseInfoDef), (u, v) -> v, LinkedHashMap::new));
         classificationMap.put("databaseInfoDefMap", databaseInfoDefMap);
 
         return classificationMap;
@@ -130,7 +130,7 @@ public class DbFluteClientLogic {
 
             List<URL> urls = new ArrayList<URL>();
             if (DfStringUtil.is_Null_or_Empty(clientBean.getJdbcDriverJarPath())) {
-                File mydbfluteDir = new File(String.format(DbFluteIntroLogic.MY_DBFLUTE_PATH, clientBean.getDbfluteVersion()), "lib");
+                File mydbfluteDir = new File(String.format(DbFluteEngineLogic.MY_DBFLUTE_PATH, clientBean.getDbfluteVersion()), "lib");
                 for (File file : FileUtils.listFiles(mydbfluteDir, FileFilterUtils.suffixFileFilter(".jar"), null)) {
                     urls.add(file.toURI().toURL());
                 }

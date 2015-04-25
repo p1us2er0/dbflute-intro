@@ -31,6 +31,9 @@ public interface DbfluteConfig extends DbfluteEnv {
     /** The key of the configuration. e.g. 1930 */
     String MINIMUM_YEAR = "minimum.year";
 
+    /** The key of the configuration. e.g. http://dbflute.org/meta/public.properties */
+    String DBFLUTE_PUBLIC_PROPERTIES_URL = "dbflute.public.properties.url";
+
     /** The key of the configuration. e.g. java,csharp,scala */
     String TARGET_LANGUAGE = "targetLanguage";
 
@@ -169,6 +172,14 @@ public interface DbfluteConfig extends DbfluteEnv {
     Integer getMinimumYearAsInteger();
 
     /**
+     * Get the value for the key 'dbflute.public.properties.url'. <br>
+     * The value is, e.g. http://dbflute.org/meta/public.properties <br>
+     * comment: Dbflute public properties url
+     * @return The value of found property. (NullAllowed: if null, not found)
+     */
+    String getDbflutePublicPropertiesUrl();
+
+    /**
      * Get the value for the key 'targetLanguage'. <br>
      * The value is, e.g. java,csharp,scala <br>
      * comment: targetLanguage
@@ -247,6 +258,10 @@ public interface DbfluteConfig extends DbfluteEnv {
 
         public Integer getMinimumYearAsInteger() {
             return getAsInteger(DbfluteConfig.MINIMUM_YEAR);
+        }
+
+        public String getDbflutePublicPropertiesUrl() {
+            return get(DbfluteConfig.DBFLUTE_PUBLIC_PROPERTIES_URL);
         }
 
         public String getTargetLanguage() {

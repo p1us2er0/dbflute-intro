@@ -39,8 +39,6 @@ public class DbFluteIntroLogic {
 
     public static final String INI_FILE_PATH = BASE_DIR_PATH + "/dbflute-intro.ini";
 
-    protected static final String MY_DBFLUTE_PATH = BASE_DIR_PATH + "/mydbflute/dbflute-%1$s";
-
     public boolean upgrade() {
 
         File jarPathFile = new File("./dbflute-intro.jar");
