@@ -123,7 +123,10 @@ public class DbFluteClientLogic {
         try {
             Properties info = new Properties();
             info.put("user", clientBean.getDatabaseBean().getUser());
-            info.put("password", clientBean.getDatabaseBean().getPassword());
+            String password = clientBean.getDatabaseBean().getPassword();
+            if (DfStringUtil.is_NotNull_and_NotEmpty(password)) {
+                info.put("password", password);
+            }
 
             List<URL> urls = new ArrayList<URL>();
             if (DfStringUtil.is_Null_or_Empty(clientBean.getJdbcDriverJarPath())) {
@@ -168,7 +171,6 @@ public class DbFluteClientLogic {
     }
 
     private void _createClient(ClientBean clientBean, boolean update, boolean ignoreTestConnectionFail) {
-
         final File dbfluteClientDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + clientBean.getProject());
 
         final String dbfluteVersionExpression = "dbflute-" + clientBean.getDbfluteVersion();
@@ -491,19 +493,19 @@ public class DbFluteClientLogic {
 
         Map<String, DatabaseBean> databaseBeanMap = new LinkedHashMap<String, DatabaseBean>();
         File dfpropDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
-        for (File file : dfpropDir.listFiles()) {
+        Stream.of(dfpropDir.listFiles()).forEach(file -> {
             if (!file.isDirectory() || !file.getName().startsWith("schemaSyncCheck_")) {
-                continue;
+                return;
             }
 
             File documentDefinitionMapFile = new File(file, "documentDefinitionMap+.dfprop");
             if (!documentDefinitionMapFile.exists() || !documentDefinitionMapFile.isFile()) {
-                continue;
+                return;
             }
 
             DfPropFile dfPropFile = new DfPropFile();
             Map<String, Object> readMap = dfPropFile.readMap(documentDefinitionMapFile.getAbsolutePath(), null);
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings("all")
             Map<String, Object> schemaSyncCheckMap = (Map<String, Object>) readMap.get("schemaSyncCheckMap");
 
             DatabaseBean databaseBean = new DatabaseBean();
@@ -512,7 +514,7 @@ public class DbFluteClientLogic {
             databaseBean.setUser((String) schemaSyncCheckMap.get("user"));
             databaseBean.setPassword((String) schemaSyncCheckMap.get("password"));
             databaseBeanMap.put(file.getName().replace("schemaSyncCheck_", ""), databaseBean);
-        }
+        });
 
         return databaseBeanMap;
     }

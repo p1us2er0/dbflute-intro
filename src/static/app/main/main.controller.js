@@ -10,6 +10,7 @@ angular.module('dbflute-intro')
       $scope.clientBeanList = [];
       $scope.clientBean = null;
       $scope.editFlg = false;
+      $scope.testConnection = true;
 
       $scope.manifest = function() {
           ApiFactory.manifest().then(function(response) {
@@ -37,7 +38,7 @@ angular.module('dbflute-intro')
 
       $scope.add = function() {
           $scope.editFlg = true;
-          $scope.clientBean = {};
+          $scope.clientBean = {create: true, databaseBean: {}, systemUserDatabaseBean: {}, schemaSyncCheckMap: {}, optionBean: {}};
       };
 
       $scope.edit = function() {
@@ -48,14 +49,14 @@ angular.module('dbflute-intro')
           $scope.editFlg = false;
       };
 
-      $scope.create = function(clientBean) {
-          ApiFactory.clientCreate(clientBean).then(function(response) {
+      $scope.create = function(clientBean, testConnection) {
+          ApiFactory.clientCreate(clientBean, testConnection).then(function(response) {
               $scope.clientBeanList();
           });
       };
 
-      $scope.update = function(clientBean) {
-          ApiFactory.clientUpdate(clientBean).then(function(response) {
+      $scope.update = function(clientBean, testConnection) {
+          ApiFactory.clientUpdate(clientBean, testConnection).then(function(response) {
               $scope.clientBeanList();
           });
       };
@@ -78,6 +79,17 @@ angular.module('dbflute-intro')
           $window.open('api/client/task/' + clientBean.project + '/' + task);
       };
 
+      $scope.changeDatabase = function(clientBean) {
+          var databaseInfoDef = $scope.classificationMap["databaseInfoDefMap"][clientBean.database];
+
+          clientBean.jdbcDriver = databaseInfoDef.driverName;
+          clientBean.databaseBean.url = databaseInfoDef.urlTemplate;
+          clientBean.databaseBean.schema =  databaseInfoDef.defultSchema;
+          // "needJdbcDriverJar": false,
+          // "needSchema": false,
+          // "upperSchema": false,
+          // "assistInputUser": false,
+      };
 
       $scope.downloadModal = function() {
           var downloadInstance = $modal.open({

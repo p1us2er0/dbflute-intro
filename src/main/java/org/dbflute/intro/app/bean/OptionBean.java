@@ -10,23 +10,23 @@ public class OptionBean {
     // ===================================================================================
     //                                                                           Attribute
     //                                                                           =========
-    private boolean isDbCommentOnAliasBasis = true;
+    private boolean dbCommentOnAliasBasis = true;
     private String aliasDelimiterInDbComment = ":";
-    private boolean isCheckColumnDefOrderDiff = true;
-    private boolean isCheckDbCommentDiff = true;
-    private boolean isCheckProcedureDiff = true;
-    private boolean isGenerateProcedureParameterBean = true;
+    private boolean checkColumnDefOrderDiff = true;
+    private boolean checkDbCommentDiff = true;
+    private boolean checkProcedureDiff = true;
+    private boolean generateProcedureParameterBean = true;
     private String procedureSynonymHandlingType = "INCLUDE";
 
     // ===================================================================================
     //                                                                            Accessor
     //                                                                            ========
     public boolean isDbCommentOnAliasBasis() {
-        return isDbCommentOnAliasBasis;
+        return dbCommentOnAliasBasis;
     }
 
     public void setDbCommentOnAliasBasis(boolean isDbCommentOnAliasBasis) {
-        this.isDbCommentOnAliasBasis = isDbCommentOnAliasBasis;
+        this.dbCommentOnAliasBasis = isDbCommentOnAliasBasis;
     }
 
     public String getAliasDelimiterInDbComment() {
@@ -38,35 +38,35 @@ public class OptionBean {
     }
 
     public boolean isCheckColumnDefOrderDiff() {
-        return isCheckColumnDefOrderDiff;
+        return checkColumnDefOrderDiff;
     }
 
     public void setCheckColumnDefOrderDiff(boolean isCheckColumnDefOrderDiff) {
-        this.isCheckColumnDefOrderDiff = isCheckColumnDefOrderDiff;
+        this.checkColumnDefOrderDiff = isCheckColumnDefOrderDiff;
     }
 
     public boolean isCheckDbCommentDiff() {
-        return isCheckDbCommentDiff;
+        return checkDbCommentDiff;
     }
 
     public void setCheckDbCommentDiff(boolean isCheckDbCommentDiff) {
-        this.isCheckDbCommentDiff = isCheckDbCommentDiff;
+        this.checkDbCommentDiff = isCheckDbCommentDiff;
     }
 
     public boolean isCheckProcedureDiff() {
-        return isCheckProcedureDiff;
+        return checkProcedureDiff;
     }
 
     public void setCheckProcedureDiff(boolean isCheckProcedureDiff) {
-        this.isCheckProcedureDiff = isCheckProcedureDiff;
+        this.checkProcedureDiff = isCheckProcedureDiff;
     }
 
     public boolean isGenerateProcedureParameterBean() {
-        return isGenerateProcedureParameterBean;
+        return generateProcedureParameterBean;
     }
 
     public void setGenerateProcedureParameterBean(boolean isGenerateProcedureParameterBean) {
-        this.isGenerateProcedureParameterBean = isGenerateProcedureParameterBean;
+        this.generateProcedureParameterBean = isGenerateProcedureParameterBean;
     }
 
     public String getProcedureSynonymHandlingType() {

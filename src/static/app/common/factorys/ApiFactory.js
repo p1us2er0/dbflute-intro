@@ -42,19 +42,19 @@ angular.module('dbflute-intro').factory('ApiFactory',
           }).success(function(data) {
           }).error(errorHandler);
         },
-        clientCreate: function(params) {
+        clientCreate: function(clientBean, testConnection) {
             return $http({
                 method : 'POST',
                 url : 'api/client/create',
-                data : {clientBean: params}
+                data : {clientBean: clientBean, testConnection: testConnection}
           }).success(function(data) {
           }).error(errorHandler);
         },
-        clientUpdate: function(params) {
+        clientUpdate: function(clientBean, testConnection) {
             return $http({
                 method : 'POST',
                 url : 'api/client/update',
-                data : {clientBean: params}
+                data : {clientBean: clientBean, testConnection: testConnection}
           }).success(function(data) {
           }).error(errorHandler);
         },
