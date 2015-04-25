@@ -80,7 +80,7 @@ angular.module('dbflute-intro')
 
 
       $scope.downloadModal = function() {
-          $modal.open({
+          var downloadInstance = $modal.open({
               templateUrl: 'app/main/download.html',
               controller: 'DownloadInstanceController',
               resolve: {
@@ -88,6 +88,10 @@ angular.module('dbflute-intro')
                     return ApiFactory.publicProperties();
                 }
             }
+          });
+
+          downloadInstance.result.then(function(versions) {
+              $scope.versions = versions;
           });
       };
 
@@ -139,11 +143,20 @@ angular.module('dbflute-intro').controller('DownloadInstanceController',
         $scope.dbfluteEngine.version = version;
     };
 
+    $scope.version = null;
+
     $scope.downloadEngine = function() {
         $scope.downloading = true;
+
+        if ($scope.version !== null) {
+            $scope.dbfluteEngine.version = $scope.version;
+        }
         ApiFactory.downloadEngine($scope.dbfluteEngine).then(function(response) {
-            $scope.engineVersions();
             $scope.downloading = false;
+
+            ApiFactory.engineVersions().then(function(response) {
+                $modalInstance.close(response.data);
+            });
         });
     };
 });
