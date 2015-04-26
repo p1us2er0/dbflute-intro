@@ -216,6 +216,40 @@
                 </div>
               </form>
             </tab>
+            <tab heading="{{'LABEL_SCHEMA_SYNC_CHECK' | translate:translationData}}">
+              <tabset>
+                <tab heading="{{key}}" ng-repeat="(key, databaseBean) in clientBean.schemaSyncCheckMap">
+                  <form class="form-horizontal">
+                    <div class="form-group">
+                      <label class="col-sm-4 control-label">{{'LABEL_URL' | translate:translationData}}</label>
+                      <div class="col-sm-8">
+                        <span ng-hide="editFlg">{{databaseBean.url}}</span>
+                        <input type="text" class="form-control" ng-model="databaseBean.url" ng-show="editFlg" />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-4 control-label">{{'LABEL_SCHEMA' | translate:translationData}}</label>
+                      <div class="col-sm-8">
+                        <span ng-hide="editFlg">{{databaseBean.schema}}</span>
+                        <input type="text" class="form-control" ng-model="databaseBean.schema" ng-show="editFlg" />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-4 control-label">{{'LABEL_USER' | translate:translationData}}</label>
+                      <div class="col-sm-8">
+                        <span ng-hide="editFlg">{{databaseBean.user}}</span>
+                        <input type="text" class="form-control" ng-model="databaseBean.user" ng-show="editFlg" />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-4 control-label">{{'LABEL_PASSWORD' | translate:translationData}}</label>
+                      <div class="col-sm-8">
+                        <span ng-hide="editFlg">{{databaseBean.password}}</span>
+                        <input type="password" class="form-control" ng-model="databaseBean.password" ng-show="editFlg" />
+                      </div>
+                    </div>
+                  </form>
+            </tab>
           </tabset>
         </div>
       </div>

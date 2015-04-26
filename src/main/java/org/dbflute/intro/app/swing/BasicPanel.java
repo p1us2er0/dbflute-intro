@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -226,7 +225,7 @@ public class BasicPanel extends JPanel {
         return clientBean;
     }
 
-    protected void reflect(ClientBean clientBean, Map<String, DatabaseBean> envDatabaseBeanMap) {
+    protected void reflect(ClientBean clientBean) {
         databaseCombo.setSelectedItem(DatabaseInfoDef.codeOf(clientBean.getDatabase()));
         targetLanguageCombo.setSelectedItem(clientBean.getTargetLanguage());
         targetContainerCombo.setSelectedItem(clientBean.getTargetContainer());

@@ -154,7 +154,7 @@ public class OptionPanel extends JPanel {
         return optionBean;
     }
 
-    protected void reflect(ClientBean clientBean, Map<String, DatabaseBean> envDatabaseBeanMap) {
+    protected void reflect(ClientBean clientBean) {
 
         OptionBean optionBean = clientBean.getOptionBean();
 
@@ -166,14 +166,13 @@ public class OptionPanel extends JPanel {
                 optionBean.isGenerateProcedureParameterBean());
         aliasDelimiterInDbCommentText.setText(optionBean.getAliasDelimiterInDbComment());
 
-        if (schemaSyncCheckTabPanel == null && !envDatabaseBeanMap.isEmpty()) {
+        if (schemaSyncCheckTabPanel == null && !clientBean.getSchemaSyncCheckMap().isEmpty()) {
             schemaSyncCheckTabPanel = new JTabbedPane();
             schemaSyncCheckTabPanel.setBounds(0, 360, 480, 160);
             add(schemaSyncCheckTabPanel);
         }
 
-        for (Entry<String, DatabaseBean> entry : envDatabaseBeanMap.entrySet()) {
-
+        for (Entry<String, DatabaseBean> entry : clientBean.getSchemaSyncCheckMap().entrySet()) {
             DatabasePanal schemaSyncCheckPanal = new DatabasePanal(false);
             schemaSyncCheckPanal.reflect(entry.getValue());
             schemaSyncCheckTabPanel.addTab(entry.getKey(), schemaSyncCheckPanal);

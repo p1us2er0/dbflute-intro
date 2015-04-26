@@ -234,11 +234,11 @@ public class NewClientPanel extends JPanel {
     }
 
 
-    protected void reflect(ClientBean clientBean, Map<String, DatabaseBean> envDatabaseBeanMap) {
+    protected void reflect(ClientBean clientBean) {
 
         projectText.setText(clientBean.getProject());
-        basicPanel.reflect(clientBean, envDatabaseBeanMap);
-        optionPanel.reflect(clientBean, envDatabaseBeanMap);
+        basicPanel.reflect(clientBean);
+        optionPanel.reflect(clientBean);
 
         projectText.setEnabled(false);
         clientCreateButton.setVisible(false);

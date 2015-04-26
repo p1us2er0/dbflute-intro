@@ -486,10 +486,13 @@ public class DbFluteClientLogic {
         optionBean.setGenerateProcedureParameterBean(Boolean.toString(true).equals(
                 map.get("outsideSqlDefinitionMap.dfprop").get("isGenerateProcedureParameterBean")));
 
+        Map<String, DatabaseBean> schemaSyncCheckMap = clientBean.getSchemaSyncCheckMap();
+        schemaSyncCheckMap.putAll(convDatabaseBeanMapFromDfprop(project));
+
         return clientBean;
     }
 
-    public Map<String, DatabaseBean> convDatabaseBeanMapFromDfprop(String project) {
+    protected Map<String, DatabaseBean> convDatabaseBeanMapFromDfprop(String project) {
 
         Map<String, DatabaseBean> databaseBeanMap = new LinkedHashMap<String, DatabaseBean>();
         File dfpropDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");

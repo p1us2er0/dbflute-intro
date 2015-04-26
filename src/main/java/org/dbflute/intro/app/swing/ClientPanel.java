@@ -32,7 +32,6 @@ import javax.swing.event.HyperlinkListener;
 
 import org.apache.commons.io.IOUtils;
 import org.dbflute.intro.app.bean.ClientBean;
-import org.dbflute.intro.app.bean.DatabaseBean;
 import org.dbflute.intro.app.logic.DbFluteClientLogic;
 import org.dbflute.intro.app.logic.DbFluteIntroLogic;
 import org.dbflute.intro.app.logic.DbFluteTaskLogic;
@@ -142,9 +141,8 @@ public class ClientPanel extends JPanel {
                 tabPanel.setSelectedComponent(newClientPanel);
 
                 ClientBean clientBean = dbFluteClientLogic.convClientBeanFromDfprop(project);
-                Map<String, DatabaseBean> databaseBeanMap = dbFluteClientLogic.convDatabaseBeanMapFromDfprop(project);
 
-                newClientPanel.reflect(clientBean, databaseBeanMap);
+                newClientPanel.reflect(clientBean);
             }
         });
 
