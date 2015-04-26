@@ -1,123 +1,123 @@
 'use strict';
 
 angular.module('dbflute-intro')
-  .controller('MainCtrl', function ($scope, $window, $modal, ApiFactory) {
+        .controller('MainCtrl', function ($scope, $window, $modal, ApiFactory) {
 
-      $scope.manifest = {};
-      $scope.publicProperties = [];
-      $scope.versions = [];
-      $scope.classificationMap = {};
-      $scope.clientBeanList = [];
-      $scope.clientBean = null;
-      $scope.editFlg = false;
-      $scope.testConnection = true;
+    $scope.manifest = {};
+    $scope.publicProperties = [];
+    $scope.versions = [];
+    $scope.classificationMap = {};
+    $scope.clientBeanList = [];
+    $scope.clientBean = null;
+    $scope.editFlg = false;
+    $scope.testConnection = true;
 
-      $scope.manifest = function() {
-          ApiFactory.manifest().then(function(response) {
-              $scope.manifest = response.data;
-          });
-      };
+    $scope.manifest = function() {
+        ApiFactory.manifest().then(function(response) {
+            $scope.manifest = response.data;
+        });
+    };
 
-      $scope.engineVersions = function(version) {
-          ApiFactory.engineVersions().then(function(response) {
-              $scope.versions = response.data;
-          });
-      };
+    $scope.engineVersions = function(version) {
+        ApiFactory.engineVersions().then(function(response) {
+            $scope.versions = response.data;
+        });
+    };
 
-      $scope.classification = function() {
-          ApiFactory.classification().then(function(response) {
-              $scope.classificationMap = response.data;
-          });
-      };
+    $scope.classification = function() {
+        ApiFactory.classification().then(function(response) {
+            $scope.classificationMap = response.data;
+        });
+    };
 
-      $scope.findClientBeanList = function() {
-          ApiFactory.clientBeanList().then(function(response) {
-              $scope.clientBeanList = response.data;
-          });
-      };
+    $scope.findClientBeanList = function() {
+        ApiFactory.clientBeanList().then(function(response) {
+            $scope.clientBeanList = response.data;
+        });
+     };
 
-      $scope.add = function() {
-          $scope.editFlg = true;
-          $scope.clientBean = {create: true, databaseBean: {}, systemUserDatabaseBean: {}, schemaSyncCheckMap: {}, optionBean: {}};
-      };
+    $scope.add = function() {
+        $scope.editFlg = true;
+        $scope.clientBean = {create: true, databaseBean: {}, systemUserDatabaseBean: {}, schemaSyncCheckMap: {}, optionBean: {}};
+    };
 
-      $scope.edit = function() {
-          $scope.editFlg = true;
-      };
+    $scope.edit = function() {
+        $scope.editFlg = true;
+    };
 
-      $scope.cancelEdit = function() {
-          $scope.editFlg = false;
-          if ($scope.clientBean.create) {
-              $scope.clientBean = null;
+    $scope.cancelEdit = function() {
+        $scope.editFlg = false;
+        if ($scope.clientBean.create) {
+            $scope.clientBean = null;
+        }
+    };
+
+    $scope.create = function(clientBean, testConnection) {
+        ApiFactory.clientCreate(clientBean, testConnection).then(function(response) {
+            $scope.findClientBeanList;
+        });
+    };
+
+    $scope.update = function(clientBean, testConnection) {
+        ApiFactory.clientUpdate(clientBean, testConnection).then(function(response) {
+            $scope.findClientBeanList;
+        });
+    };
+
+    $scope.delete = function(clientBean) {
+        ApiFactory.clientRemove(clientBean).then(function(response) {
+            $scope.findClientBeanList();
+        });
+    };
+
+    $scope.openSchemaHTML = function(clientBean) {
+        $window.open('api/client/schemahtml/' + clientBean.project);
+    };
+
+    $scope.openHistoryHTML = function(clientBean) {
+        $window.open('api/client/historyhtml/' + clientBean.project);
+    };
+
+    $scope.task = function(clientBean, task) {
+        $window.open('api/client/task/' + clientBean.project + '/' + task);
+    };
+
+    $scope.changeDatabase = function(clientBean) {
+        var databaseInfoDef = $scope.classificationMap["databaseInfoDefMap"][clientBean.database];
+
+        clientBean.jdbcDriver = databaseInfoDef.driverName;
+        clientBean.databaseBean.url = databaseInfoDef.urlTemplate;
+        clientBean.databaseBean.schema =  databaseInfoDef.defultSchema;
+        // "needJdbcDriverJar": false,
+        // "needSchema": false,
+        // "upperSchema": false,
+        // "assistInputUser": false,
+    };
+
+    $scope.downloadModal = function() {
+        var downloadInstance = $modal.open({
+            templateUrl: 'app/main/download.html',
+            controller: 'DownloadInstanceController',
+            resolve: {
+              publicProperties: function() {
+                  return ApiFactory.publicProperties();
+              }
           }
-      };
+        });
 
-      $scope.create = function(clientBean, testConnection) {
-          ApiFactory.clientCreate(clientBean, testConnection).then(function(response) {
-              $scope.findClientBeanList;
-          });
-      };
+        downloadInstance.result.then(function(versions) {
+            $scope.versions = versions;
+        });
+    };
 
-      $scope.update = function(clientBean, testConnection) {
-          ApiFactory.clientUpdate(clientBean, testConnection).then(function(response) {
-              $scope.findClientBeanList;
-          });
-      };
+    $scope.setCurrentProject = function(clientBean) {
+        $scope.clientBean = clientBean.clientBean;
+    };
 
-      $scope.delete = function(clientBean) {
-          ApiFactory.clientRemove(clientBean).then(function(response) {
-              $scope.findClientBeanList();
-          });
-      };
-
-      $scope.openSchemaHTML = function(clientBean) {
-          $window.open('api/client/schemahtml/' + clientBean.project);
-      };
-
-      $scope.openHistoryHTML = function(clientBean) {
-          $window.open('api/client/historyhtml/' + clientBean.project);
-      };
-
-      $scope.task = function(clientBean, task) {
-          $window.open('api/client/task/' + clientBean.project + '/' + task);
-      };
-
-      $scope.changeDatabase = function(clientBean) {
-          var databaseInfoDef = $scope.classificationMap["databaseInfoDefMap"][clientBean.database];
-
-          clientBean.jdbcDriver = databaseInfoDef.driverName;
-          clientBean.databaseBean.url = databaseInfoDef.urlTemplate;
-          clientBean.databaseBean.schema =  databaseInfoDef.defultSchema;
-          // "needJdbcDriverJar": false,
-          // "needSchema": false,
-          // "upperSchema": false,
-          // "assistInputUser": false,
-      };
-
-      $scope.downloadModal = function() {
-          var downloadInstance = $modal.open({
-              templateUrl: 'app/main/download.html',
-              controller: 'DownloadInstanceController',
-              resolve: {
-                publicProperties: function() {
-                    return ApiFactory.publicProperties();
-                }
-            }
-          });
-
-          downloadInstance.result.then(function(versions) {
-              $scope.versions = versions;
-          });
-      };
-
-      $scope.setCurrentProject = function(clientBean) {
-          $scope.clientBean = clientBean.clientBean;
-      };
-
-      $scope.manifest();
-      $scope.engineVersions();
-      $scope.classification();
-      $scope.findClientBeanList();
+    $scope.manifest();
+    $scope.engineVersions();
+    $scope.classification();
+    $scope.findClientBeanList();
 });
 
 angular.module('dbflute-intro').controller('DownloadInstanceController',

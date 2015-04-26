@@ -1,4 +1,7 @@
 {
+  "BUTTON_LANG_JA" : "日本語",
+  "BUTTON_LANG_EN" : "英語",
+
   "LABEL_TITLE" : "DBFlute Intro",
   "LABEL_SETTING" : "設定",
   "LABEL_DOWNLOAD" : "ダウンロード",
