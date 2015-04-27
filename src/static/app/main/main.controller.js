@@ -49,6 +49,14 @@ angular.module('dbflute-intro')
         $scope.editFlg = false;
         if ($scope.clientBean.create) {
             $scope.clientBean = null;
+        } else {
+            for (var index in $scope.clientBeanList) {
+                var clientBean = $scope.clientBeanList[index].clientBean;
+                if ($scope.clientBean.project == clientBean.project) {
+                    $scope.clientBean = clientBean;
+                    break;
+                }
+            }
         }
     };
 
@@ -111,7 +119,7 @@ angular.module('dbflute-intro')
     };
 
     $scope.setCurrentProject = function(clientBean) {
-        $scope.clientBean = clientBean.clientBean;
+        $scope.clientBean = angular.copy(clientBean.clientBean);
     };
 
     $scope.manifest();

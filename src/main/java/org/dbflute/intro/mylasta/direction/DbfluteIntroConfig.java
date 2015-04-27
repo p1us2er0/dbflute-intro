@@ -1,11 +1,11 @@
 package org.dbflute.intro.mylasta.direction;
 
-import org.dbflute.intro.mylasta.direction.DbfluteConfig;
+import org.dbflute.intro.mylasta.direction.DbfluteIntroEnv;
 
 /**
  * @author FreeGen
  */
-public interface DbfluteIntroConfig extends DbfluteConfig {
+public interface DbfluteIntroConfig extends DbfluteIntroEnv {
 
     /** The key of the configuration. e.g. DbfluteIntro */
     String DOMAIN_TITLE = "domain.title";
@@ -47,7 +47,7 @@ public interface DbfluteIntroConfig extends DbfluteConfig {
      * The simple implementation for configuration.
      * @author FreeGen
      */
-    public static class SimpleImpl extends DbfluteConfig.SimpleImpl implements DbfluteIntroConfig {
+    public static class SimpleImpl extends DbfluteIntroEnv.SimpleImpl implements DbfluteIntroConfig {
 
         /** The serial version UID for object serialization. (Default) */
         private static final long serialVersionUID = 1L;
