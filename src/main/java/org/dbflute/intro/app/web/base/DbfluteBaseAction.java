@@ -27,7 +27,6 @@ import org.dbflute.helper.HandyDate;
 import org.dbflute.hook.AccessContext;
 import org.dbflute.intro.mylasta.direction.DbfluteConfig;
 import org.dbflute.intro.mylasta.paging.PagingNavi;
-import org.dbflute.lastaflute.core.time.TimeManager;
 import org.dbflute.lastaflute.db.dbflute.accesscontext.AccessContextArranger;
 import org.dbflute.lastaflute.db.dbflute.accesscontext.AccessContextResource;
 import org.dbflute.lastaflute.web.TypicalAction;
@@ -49,16 +48,12 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     // ===================================================================================
     //                                                                           Attribute
     //                                                                           =========
-    @Resource
-    private DbfluteConfig dbfluteConfig;
-
-    /** The manager of time. (NotNull) */
-    @Resource
-    private TimeManager timeManager;
-
     /** The manager of request. (NotNull) */
     @Resource
     private RequestManager requestManager;
+
+    @Resource
+    private DbfluteConfig dbfluteConfig;
 
     // ===================================================================================
     //                                                                            Callback
@@ -106,7 +101,7 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     protected AccessContextArranger newAccessContextArranger() { // for framework
         return resource -> {
             final AccessContext context = new AccessContext();
-            context.setAccessLocalDateTimeProvider(() -> timeManager.getCurrentDateTime());
+            context.setAccessLocalDateTimeProvider(() -> getCurrentDateTime());
             context.setAccessUserProvider(() -> buildAccessUserTrace(resource));
             return context;
         };

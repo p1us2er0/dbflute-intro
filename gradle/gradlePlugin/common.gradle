@@ -3,5 +3,8 @@ task wrapper(type: Wrapper) {
 }
 
 tasks.withType(SourceTask) each {
-    it.options.encoding = encoding
+    try {
+        it.options.encoding = encoding
+    } catch (ignore) {
+    }
 }

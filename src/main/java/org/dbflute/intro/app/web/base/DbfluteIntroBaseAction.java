@@ -32,53 +32,42 @@ public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction {
     /** The application type for DbfluteIntro, e.g. used by access context. */
     protected static final String APP_TYPE = "DbfluteIntro";
 
-    /** The user type for Member, e.g. used by access context. */
-    protected static final String USER_TYPE = "M";
-
     // ===================================================================================
     //                                                                           Attribute
     //                                                                           =========
-    // -----------------------------------------------------
-    //                                          DI Component
-    //                                          ------------
+    @Override
+    public final void godHandFinally(ActionRuntimeMeta runtimeMeta) {
+        super.godHandFinally(runtimeMeta);
+    }
 
     // ===================================================================================
-    //                                                                    Application Info
-    //                                                                    ================
+    //                                                                            Callback
+    //                                                                            ========
+    // #app_customize you can customize the god-hand callback
+
+    // ===================================================================================
+    //                                                                         My Resource
+    //                                                                         ===========
     @Override
-    protected String myAppType() {
+    protected String myAppType() { // for framework
         return APP_TYPE;
     }
 
-    // ===================================================================================
-    //                                                                      Login Handling
-    //                                                                      ==============
     @Override
-    protected OptionalThing<UserBean> myUserBean() { // for interface handling
-        return OptionalObject.empty();
+    protected OptionalThing<UserBean> myUserBean() { // for framework
+        return OptionalObject.empty(); // #app_customize return empty if login is unused
     }
 
     @Override
-    protected OptionalThing<String> myUserType() {
-        return OptionalObject.of(USER_TYPE);
+    protected OptionalThing<String> myUserType() { // for framework
+        return OptionalObject.empty(); // #app_customize return empty if login is unused
     }
 
     // ===================================================================================
     //                                                                             Message
     //                                                                             =======
     @Override
-    protected DbfluteIntroMessages createMessages() {
-        return new DbfluteIntroMessages();
-    }
-
-    // ===================================================================================
-    //                                                                            Callback
-    //                                                                            ========
-    // -----------------------------------------------------
-    //                                      God Hand Finally
-    //                                      ----------------
-    @Override
-    public void godHandFinally(ActionRuntimeMeta runtimeMeta) {
-        super.godHandFinally(runtimeMeta);
+    protected DbfluteIntroMessages createMessages() { // application may call
+        return new DbfluteIntroMessages(); // overriding to change return type to concrete-class
     }
 }

@@ -7,6 +7,7 @@ buildscript {
 plugins {
     id "com.moowork.node" version "0.9"
     id "com.moowork.gulp" version "0.9"
+    id "com.github.hierynomus.license" version "0.11.0"
 }
 
 apply plugin: 'java'
@@ -88,5 +89,13 @@ war {
         attributes 'Build-Timestamp': 'TODO'
         attributes 'Jenkins-Build-Number': 'TODO'
         attributes 'Main-Class' : mainClassName
+    }
+}
+
+license {
+    strictCheck true
+    include "**/*.java"
+    mapping {
+        java='SLASHSTAR_STYLE'
     }
 }
