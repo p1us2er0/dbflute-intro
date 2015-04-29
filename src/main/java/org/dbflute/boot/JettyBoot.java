@@ -17,9 +17,12 @@ package org.dbflute.boot;
 
 import java.awt.Desktop;
 import java.io.IOException;
-import java.net.URI;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Properties;
 
 import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.plus.webapp.EnvConfiguration;
@@ -35,8 +38,10 @@ import org.eclipse.jetty.webapp.WebXmlConfiguration;
 
 public class JettyBoot {
 
-    private static final int PORT = 9000;
-
+    /**
+     * Jettyを起動します。
+     * @param args プログラム引数
+     */
     public static void main(String[] args) {
 
         URL warLocation = JettyBoot.class.getProtectionDomain().getCodeSource().getLocation();
@@ -67,7 +72,26 @@ public class JettyBoot {
 
         context.setConfigurations(configurations);
 
-        Server server = new Server(PORT);
+        String port = System.getProperty("port");
+
+        if (port == null) {
+            for (String app : Arrays.asList("dbfluteIntro", "dbflute")) {
+                String conf = app + "_config.properties";
+                try (InputStream inputStream = JettyBoot.class.getClassLoader().getResourceAsStream(conf)) {
+                    if (inputStream == null) {
+                        continue;
+                    }
+                    Properties properties = new Properties();
+                    properties.load(inputStream);
+                    port = properties.getProperty("server.port");
+                    break;
+                } catch (IOException ignore) {
+                    continue;
+                }
+            }
+        }
+
+        Server server = new Server(new InetSocketAddress("localhost", toInt(port, 0)));
         server.setHandler(context);
         try {
             server.start();
@@ -77,8 +101,8 @@ public class JettyBoot {
 
         Desktop desktop = Desktop.getDesktop();
         try {
-            desktop.browse(new URI("http://localhost:" + PORT + context.getContextPath()));
-        } catch (URISyntaxException | IOException e) {
+            desktop.browse(server.getURI());
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -86,6 +110,24 @@ public class JettyBoot {
             server.join();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 数字に変換します。
+     * @param str 文字列
+     * @param defaultValue デフォルト値
+     * @return 数字
+     */
+    private static int toInt(final String str, final int defaultValue) {
+        if (str == null) {
+            return defaultValue;
+        }
+
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            return defaultValue;
         }
     }
 }
