@@ -3,7 +3,7 @@
 #
 # The database information for the tasks of DBFlute.
 # You should specify before your first generating.
-#
+# 
 # o driver   -- The class name of JDBC-Driver.
 # o url      -- The URL for connecting database.
 # o schema   -- The schema name.
@@ -15,16 +15,16 @@
 # *The line that starts with '#' means comment-out.
 #
 map:{
-    ; driver   = @driver@
-    ; url      = @url@
-    ; schema   = @schema@
-    ; user     = @user@
-    ; password = @password@
+    ; driver   = com.mysql.jdbc.Driver
+    ; url      = jdbc:mysql://localhost:3306/dummy
+    ; schema   = 
+    ; user     = dummy
+    ; password = dummy
 
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # o propertiesMap: (NotRequired - Default map:{})
     #  The properties that depends on the database.
-    #
+    # 
     ; propertiesMap = map:{
         # If you use Oracle and its Synonym, specify this property.
         #; includeSynonyms=true
@@ -34,7 +34,7 @@ map:{
     # /- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # o variousMap: (NotRequired - Default map:{})
     #  The various settings about JDBC task mainly.
-    #
+    # 
     ; variousMap = map:{
         # o objectTypeTargetList: (NotRequired - Default list:{TABLE;VIEW})
         #  If you want to include other object types in generating target,
@@ -58,7 +58,7 @@ map:{
         #  But you can specify the '@gen' suffix that means generate-only except.
         #  A table with the mark can be treated as documents but no generating classes.
         #
-        #; tableExceptList = list:{FOO_TABLE@gen ; prefix:FOO_@gen ; suffix:_FOO ; contain:_FOO_}
+        #; tableExceptList = list:{suffix:TABLE_EXCEPT_GEN_ONLY@gen ; WHITE_TABLE_EXCEPT_NOMETA}
 
         # o tableTargetList: (NotRequired - Default list:{})
         #  If you want to include some tables in generating target expressly,
@@ -76,7 +76,8 @@ map:{
         #  This is only for the main schema. Additional schemas are unconcerned.
         #
         #; columnExceptMap = map:{
-        #    ; FOO_TABLE = list:{FOO_COLUMN ; prefix:FOO_ ; suffix:_FOO ; contain:_FOO_}
+        #    ; VENDOR_CHECK = list:{COLUMN_EXCEPT_TEST}
+        #    ; WHITE_COLUMN_EXCEPT_GEN_ONLY = list:{suffix:GEN_ONLY@gen}
         #}
 
         # o additionalSchemaMap: (NotRequired - Default map:{})
@@ -87,7 +88,7 @@ map:{
         #  tableTargetList, and columnExceptMap.
         #  They have the same specification as ones of the main schema.
         #  Elements of this map are as below: 
-        #    o objectTypeTargetList: (NotRequired - Default 'map:{TABLE;VIEW}')
+        #    o objectTypeTargetList: (NotRequired - Default map:{TABLE;VIEW})
         #    o tableExceptList: (NotRequired - Default list:{})
         #    o tableTargetList: (NotRequired - Default list:{})
         #    o columnExceptMap: (NotRequired - Default map:{})
@@ -95,18 +96,58 @@ map:{
         #    o isSuppressProcedure: (NotRequired - Default false)
         #
         #; additionalSchemaMap = map:{
-        #    ; NEXTEXAMPLEDB = map:{
+        #    ; nextexampledb.$$NoNameSchema$$ = map:{
         #        ; objectTypeTargetList=list:{TABLE ; VIEW}
-        #        ; tableExceptList=list:{FOO_TABLE ; prefix:FOO_ ; suffix:_FOO ; contain:_FOO_}
-        #        ; tableTargetList=list:{FOO_TABLE ; prefix:FOO_ ; suffix:_FOO ; contain:_FOO_}
+        #        ; tableExceptList=list:{}
+        #        ; tableTargetList=list:{}
         #        ; columnExceptMap=map:{
-        #            ; FOO_TABLE = list:{FOO_COLUMN ; prefix:FOO_ ; suffix:_FOO ; contain:_FOO_}
+        #            ; NEXT_SCHEMA_PRODUCT = list:{
+        #                ; COLUMN_EXCEPT_TEST
+        #                ; COLUMN_EXCEPT_GEN_ONLY_TEST@gen
+        #            }
         #        }
-        #        ; isSuppressCommonColumn=false
-        #        ; isSuppressProcedure=false
+        #        ; isSuppressCommonColumn=true
+        #        ; isSuppressProcedure=true
         #    }
+        #}
+
+        # o typeMappingMap: (NotRequired - Default map:{NUMERIC=$$AutoMapping$$ ; DECIMAL=$$AutoMapping$$})
+        #  If you want to change mappings from default mappings, you can specify your original mappings.
+        #  But it is possible that unanticipated problems occurs, so be careful!
+        #; typeMappingMap = map:{
+        #    # AutoMapping for Numeric and Decimal, (1-9,0): INTEGER, (10-18,0): BIGINT, else: NUMERIC
+        #    ; NUMERIC = $$AutoMapping$$ ; DECIMAL = $$AutoMapping$$
         #}
     }
     # - - - - - - - - - -/
 }
 # ----------------/
+#
+# Default mapping as follows:
+# --------------------------------------------------------
+# | JDBC Type     | Java Native          | CSharp Native |
+# | ------------------------------------------------------
+# | CHAR          | java.lang.String     | String        |
+# | VARCHAR       | java.lang.String     | String        |
+# | LONGVARCHAR   | java.lang.String     | String        |
+# | NUMERIC       | java.math.BigDecimal | decimal?      |
+# | DECIMAL       | java.math.BigDecimal | decimal?      |
+# | TINYINT       | java.lang.Integer    | int?          |
+# | SMALLINT      | java.lang.Integer    | int?          |
+# | INTEGER       | java.lang.Integer    | int?          |
+# | BIGINT        | java.lang.Long       | long?         |
+# | REAL          | java.math.BigDecimal | decimal?      |
+# | FLOAT         | java.math.BigDecimal | decimal?      |
+# | DOUBLE        | java.math.BigDecimal | decimal?      |
+# | DATE          | java.util.Date       | DateTime?     |
+# | TIME          | java.sql.Time        | DateTime?     |
+# | TIMESTAMP     | java.sql.Timestamp   | DateTime?     |
+# | BIT           | java.lang.Boolean    | bool?         |
+# | BOOLEAN       | java.lang.Boolean    | bool?         |
+# | BINARY        | byte[]               | byte[]        |
+# | VARBINARY     | byte[]               | byte[]        |
+# | LONGVARBINARY | byte[]               | byte[]        |
+# | BLOB          | byte[]               | byte[]        |
+# | ARRAY         | *Unsupported         | *Unsupported  |
+# | UUID          | java.util.UUID       | *Unsupported  |
+# --------------------------------------------------------

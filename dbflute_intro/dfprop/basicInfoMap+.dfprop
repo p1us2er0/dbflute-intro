@@ -1,6 +1,0 @@
-map:{
-    ; database = mysql
-    ; targetLanguage = java
-    ; targetContainer =seasar
-    ; packageBase = org.dbflute.info
-}
