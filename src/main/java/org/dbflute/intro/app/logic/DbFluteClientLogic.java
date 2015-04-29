@@ -414,7 +414,8 @@ public class DbFluteClientLogic {
         File dfpropDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
 
         for (File file : dfpropDir.listFiles()) {
-            if (!file.getName().endsWith(".dfprop") || file.getName().startsWith("allClassCopyright")) {
+            if (!file.getName().endsWith(".dfprop") || file.getName().startsWith("allClassCopyright")
+                    || file.getName().startsWith("sourceCopyright")) {
                 continue;
             }
 
@@ -458,14 +459,18 @@ public class DbFluteClientLogic {
         clientBean.getDatabaseBean().setSchema(schema);
         clientBean.getDatabaseBean().setUser((String) map.get("databaseInfoMap.dfprop").get("user"));
         clientBean.getDatabaseBean().setPassword((String) map.get("databaseInfoMap.dfprop").get("password"));
-        @SuppressWarnings("unchecked")
-        Map<String, Object> additionalUserMap = (Map<String, Object>) map.get("replaceSchemaDefinitionMap.dfprop").get("additionalUserMap");
-        @SuppressWarnings("unchecked")
-        Map<String, Object> systemUserDatabaseMap = (Map<String, Object>) additionalUserMap.get("system");
-        clientBean.getSystemUserDatabaseBean().setUrl((String) systemUserDatabaseMap.get("url"));
-        clientBean.getSystemUserDatabaseBean().setSchema((String) systemUserDatabaseMap.get("schema"));
-        clientBean.getSystemUserDatabaseBean().setUser((String) systemUserDatabaseMap.get("user"));
-        clientBean.getSystemUserDatabaseBean().setPassword((String) systemUserDatabaseMap.get("password"));
+        if (map.get("replaceSchemaDefinitionMap.dfprop") != null) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> additionalUserMap = (Map<String, Object>) map.get("replaceSchemaDefinitionMap.dfprop").get("additionalUserMap");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> systemUserDatabaseMap = (Map<String, Object>) additionalUserMap.get("system");
+            if (systemUserDatabaseMap != null) {
+                clientBean.getSystemUserDatabaseBean().setUrl((String) systemUserDatabaseMap.get("url"));
+                clientBean.getSystemUserDatabaseBean().setSchema((String) systemUserDatabaseMap.get("schema"));
+                clientBean.getSystemUserDatabaseBean().setUser((String) systemUserDatabaseMap.get("user"));
+                clientBean.getSystemUserDatabaseBean().setPassword((String) systemUserDatabaseMap.get("password"));
+            }
+        }
         File extlibDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/extlib");
         for (File file : extlibDir.listFiles()) {
             if (file.getName().endsWith(".jar")) {
@@ -487,19 +492,20 @@ public class DbFluteClientLogic {
             clientBean.setDbfluteVersion(matcher.group(2));
         }
 
+        Map<String, Object> documentMap = map.get("documentDefinitionMap.dfprop");
         OptionBean optionBean = clientBean.getOptionBean();
-        optionBean.setDbCommentOnAliasBasis(Boolean.toString(true).equals(
-                map.get("documentDefinitionMap.dfprop").get("isDbCommentOnAliasBasis")));
-        optionBean.setAliasDelimiterInDbComment((String) map.get("documentDefinitionMap.dfprop").get(
-                "aliasDelimiterInDbComment"));
-        optionBean.setCheckColumnDefOrderDiff(Boolean.toString(true).equals(
-                map.get("documentDefinitionMap.dfprop").get("isCheckColumnDefOrderDiff")));
-        optionBean.setCheckDbCommentDiff(Boolean.toString(true).equals(
-                map.get("documentDefinitionMap.dfprop").get("isCheckDbCommentDiff")));
-        optionBean.setCheckProcedureDiff(Boolean.toString(true).equals(
-                map.get("documentDefinitionMap.dfprop").get("isCheckProcedureDiff")));
-        optionBean.setGenerateProcedureParameterBean(Boolean.toString(true).equals(
-                map.get("outsideSqlDefinitionMap.dfprop").get("isGenerateProcedureParameterBean")));
+        if (documentMap != null) {
+            optionBean.setDbCommentOnAliasBasis(Boolean.parseBoolean((String) documentMap.get("isDbCommentOnAliasBasis")));
+            optionBean.setAliasDelimiterInDbComment((String) documentMap.get("aliasDelimiterInDbComment"));
+            optionBean.setCheckColumnDefOrderDiff(Boolean.parseBoolean((String) documentMap.get("isCheckColumnDefOrderDiff")));
+            optionBean.setCheckDbCommentDiff(Boolean.parseBoolean((String) documentMap.get("isCheckDbCommentDiff")));
+            optionBean.setCheckProcedureDiff(Boolean.parseBoolean((String) documentMap.get("isCheckProcedureDiff")));
+        }
+
+        Map<String, Object> outsideSqlMap = map.get("outsideSqlDefinitionMap.dfprop");
+        if (outsideSqlMap != null) {
+            optionBean.setGenerateProcedureParameterBean(Boolean.parseBoolean((String) outsideSqlMap.get("isGenerateProcedureParameterBean")));
+        }
 
         Map<String, DatabaseBean> schemaSyncCheckMap = clientBean.getSchemaSyncCheckMap();
         schemaSyncCheckMap.putAll(convDatabaseBeanMapFromDfprop(project));

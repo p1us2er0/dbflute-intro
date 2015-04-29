@@ -25,7 +25,7 @@ public interface DbfluteIntroConfig extends DbfluteIntroEnv {
     /** The key of the configuration. e.g. DbfluteIntro */
     String DOMAIN_TITLE = "domain.title";
 
-    /** The key of the configuration. e.g. 9011 */
+    /** The key of the configuration. e.g. 9000 */
     String SERVER_PORT = "server.port";
 
     /** The key of the configuration. e.g. DbfluteIntro */
@@ -55,7 +55,7 @@ public interface DbfluteIntroConfig extends DbfluteIntroEnv {
 
     /**
      * Get the value for the key 'server.port'. <br>
-     * The value is, e.g. 9011 <br>
+     * The value is, e.g. 9000 <br>
      * comment: @Override Server Port
      * @return The value of found property. (NullAllowed: if null, not found)
      */
@@ -63,7 +63,7 @@ public interface DbfluteIntroConfig extends DbfluteIntroEnv {
 
     /**
      * Get the value for the key 'server.port' as {@link Integer}. <br>
-     * The value is, e.g. 9011 <br>
+     * The value is, e.g. 9000 <br>
      * comment: @Override Server Port
      * @return The value of found property. (NullAllowed: if null, not found)
      * @throws NumberFormatException When the property is not integer.

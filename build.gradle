@@ -37,10 +37,6 @@ ext {
         ]
 }
 
-def classesDir = 'src/main/webapp/WEB-INF/classes'
-sourceSets.main.output.classesDir = classesDir
-sourceSets.main.output.resourcesDir = classesDir
-
 fileTree(dir: 'gradle/gradlePlugin', includes: ['*.gradle']).each { apply from: it }
 
 repositories {
@@ -74,7 +70,7 @@ war {
         }
     }
 
-    from fileTree(dir: file(classesDir), include: '**/org/dbflute/boot/*Boot.class')
+    from fileTree(dir: sourceSets.main.output.classesDir, include: '**/org/dbflute/boot/*Boot.class')
     from fileTree(dir: file('static/dist'), include: '**/**')
 
     includeEmptyDirs = false
