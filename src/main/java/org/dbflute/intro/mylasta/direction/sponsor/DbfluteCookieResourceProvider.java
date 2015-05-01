@@ -20,7 +20,7 @@ import org.dbflute.lastaflute.core.security.InvertibleCryptographer;
 import org.dbflute.lastaflute.web.servlet.cookie.CookieResourceProvider;
 
 /**
- * @author jflute
+ * @author p1us2er0
  */
 public class DbfluteCookieResourceProvider implements CookieResourceProvider {
 

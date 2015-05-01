@@ -39,7 +39,7 @@ import org.dbflute.lastaflute.web.api.ApiResultProvider;
 import org.dbflute.lastaflute.web.direction.OptionalWebDirection;
 
 /**
- * @author jflute
+ * @author p1us2er0
  */
 public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirector {
 

@@ -18,9 +18,7 @@ package org.dbflute.intro.app.web.client;
 import org.dbflute.intro.app.bean.ClientBean;
 
 /**
- * @author jflute
  * @author p1us2er0
- * @since 0.1.0 (2007/08/11 Saturday)
  */
 public class ClientResponseBean {
 

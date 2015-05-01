@@ -20,7 +20,7 @@ import org.dbflute.lastaflute.core.security.OneWayCryptographer;
 import org.dbflute.lastaflute.core.security.SecurityResourceProvider;
 
 /**
- * @author jflute
+ * @author p1us2er0
  */
 public class DbfluteSecurityResourceProvider implements SecurityResourceProvider {
 

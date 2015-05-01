@@ -31,6 +31,7 @@ import org.dbflute.lastaflute.web.util.LaRequestUtil;
 
 /**
  * @author jflute
+ * @author p1us2er0
  */
 public class PagingNavi implements Serializable {
 

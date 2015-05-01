@@ -22,7 +22,7 @@ import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
 
 /**
- * @author jflute
+ * @author p1us2er0
  */
 public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction {
 

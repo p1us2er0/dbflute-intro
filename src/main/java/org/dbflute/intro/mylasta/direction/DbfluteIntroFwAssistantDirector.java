@@ -17,9 +17,8 @@ package org.dbflute.intro.mylasta.direction;
 
 import java.util.List;
 
-
 /**
- * @author jflute
+ * @author p1us2er0
  */
 public class DbfluteIntroFwAssistantDirector extends DbfluteFwAssistantDirector {
 

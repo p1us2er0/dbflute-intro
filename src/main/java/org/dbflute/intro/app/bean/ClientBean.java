@@ -24,9 +24,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * @author jflute
  * @author p1us2er0
- * @since 0.1.0 (2007/08/11 Saturday)
  */
 public class ClientBean {
 

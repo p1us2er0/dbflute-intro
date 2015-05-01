@@ -24,7 +24,7 @@ import org.dbflute.system.provider.DfFinalTimeZoneProvider;
 import org.dbflute.util.DfTypeUtil;
 
 /**
- * @author jflute
+ * @author p1us2er0
  */
 public class DbfluteBootProcessCallback implements BootProcessCallback {
 

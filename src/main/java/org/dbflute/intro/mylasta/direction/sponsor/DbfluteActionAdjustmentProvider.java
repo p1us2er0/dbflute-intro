@@ -26,7 +26,7 @@ import org.dbflute.util.DfStringUtil;
 import org.dbflute.util.DfTypeUtil;
 
 /**
- * @author jflute
+ * @author p1us2er0
  */
 public class DbfluteActionAdjustmentProvider implements ActionAdjustmentProvider {
 
@@ -40,11 +40,11 @@ public class DbfluteActionAdjustmentProvider implements ActionAdjustmentProvider
         return null;
     }
 
-    public String filterJspPath(String path, ActionMapping actionMappingWrapper) {
+    public String filterHtmlPath(String path, ActionMapping actionMappingWrapper) {
         return null;
     }
 
-    public List<String> prepareJspRetryWordList(String requestPath, List<String> wordList) {
+    public List<String> prepareHtmlRetryWordList(String requestPath, List<String> wordList) {
         return null;
     }
 

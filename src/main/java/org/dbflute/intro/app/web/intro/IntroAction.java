@@ -24,6 +24,9 @@ import org.dbflute.intro.app.web.base.DbfluteIntroBaseAction;
 import org.dbflute.lastaflute.web.Execute;
 import org.dbflute.lastaflute.web.response.JsonResponse;
 
+/**
+ * @author p1us2er0
+ */
 public class IntroAction extends DbfluteIntroBaseAction {
 
     @Resource

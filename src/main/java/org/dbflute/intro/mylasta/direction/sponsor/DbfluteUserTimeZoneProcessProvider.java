@@ -24,7 +24,7 @@ import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
 
 /**
- * @author jflute
+ * @author p1us2er0
  */
 public class DbfluteUserTimeZoneProcessProvider implements UserTimeZoneProcessProvider {
 

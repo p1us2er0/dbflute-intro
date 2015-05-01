@@ -15,14 +15,10 @@
  */
 package org.dbflute.boot;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Properties;
 
 import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.plus.webapp.EnvConfiguration;
@@ -35,21 +31,37 @@ import org.eclipse.jetty.webapp.MetaInfConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebInfConfiguration;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * @author p1us2er0
+ */
 public class JettyBoot {
 
+    // ===================================================================================
+    //                                                                          Definition
+    //                                                                          ==========
+    private static final Logger LOG = LoggerFactory.getLogger(JettyBoot.class);
+
+    // ===================================================================================
+    //                                                                           Attribute
+    //                                                                           =========
+    private Server server;
+
     /**
-     * Jettyを起動します。
-     * @param args プログラム引数
+     * Jettyを起動する。
+     * @param port ポート
+     * @return 起動したJettyのURI
      */
-    public static void main(String[] args) {
+    public URI start(int port) {
 
         URL warLocation = JettyBoot.class.getProtectionDomain().getCodeSource().getLocation();
         String path;
         try {
             path = warLocation.toURI().getPath();
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("server start failed.", e);
         }
 
         WebAppContext context = new WebAppContext();
@@ -72,62 +84,47 @@ public class JettyBoot {
 
         context.setConfigurations(configurations);
 
-        String port = System.getProperty("port");
-
-        if (port == null) {
-            for (String app : Arrays.asList("dbfluteIntro", "dbflute")) {
-                String conf = app + "_config.properties";
-                try (InputStream inputStream = JettyBoot.class.getClassLoader().getResourceAsStream(conf)) {
-                    if (inputStream == null) {
-                        continue;
-                    }
-                    Properties properties = new Properties();
-                    properties.load(inputStream);
-                    port = properties.getProperty("server.port");
-                    break;
-                } catch (IOException ignore) {
-                    continue;
-                }
-            }
-        }
-
-        Server server = new Server(new InetSocketAddress("localhost", toInt(port, 0)));
+        server = new Server(new InetSocketAddress("localhost", port));
         server.setHandler(context);
         try {
             server.start();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("server start failed.", e);
         }
 
-        Desktop desktop = Desktop.getDesktop();
-        try {
-            desktop.browse(server.getURI());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        URI uri = server.getURI();
+        LOG.debug("uri={}", uri);
+
+        return uri;
+    }
+
+    /**
+     * Jettyにジョインする。
+     */
+    public void join() {
+        if (server == null) {
+            throw new RuntimeException("server has not been started.");
         }
 
         try {
             server.join();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("server join failed.", e);
         }
     }
 
     /**
-     * 数字に変換します。
-     * @param str 文字列
-     * @param defaultValue デフォルト値
-     * @return 数字
+     * Jettyを停止する。
      */
-    private static int toInt(final String str, final int defaultValue) {
-        if (str == null) {
-            return defaultValue;
+    public void stop() {
+        if (server == null) {
+            throw new RuntimeException("server has not been started.");
         }
 
         try {
-            return Integer.parseInt(str);
-        } catch (NumberFormatException e) {
-            return defaultValue;
+            server.stop();
+        } catch (Exception e) {
+            throw new RuntimeException("server stop failed.", e);
         }
     }
 }

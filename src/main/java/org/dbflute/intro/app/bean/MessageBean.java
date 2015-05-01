@@ -18,6 +18,10 @@ package org.dbflute.intro.app.bean;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author p1us2er0
+ */
 public interface MessageBean {
+
     Map<String, List<String>> getMessages();
 }

@@ -15,9 +15,58 @@
  */
 package org.dbflute.boot;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Properties;
+
+/**
+ * @author p1us2er0
+ */
 public class DbfluteIntroBoot {
 
     public static void main(String[] args) {
-        JettyBoot.main(args);
+        JettyBoot jettyBoot = new JettyBoot();
+        URI uri = jettyBoot.start(getPort());
+
+        Desktop desktop = Desktop.getDesktop();
+        try {
+            desktop.browse(uri);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        jettyBoot.join();
+    }
+
+    private static int getPort() {
+        String port = System.getProperty("port");
+
+        if (port == null) {
+            for (String app : Arrays.asList("dbfluteIntro", "dbflute")) {
+                String conf = app + "_config.properties";
+                try (InputStream inputStream = JettyBoot.class.getClassLoader().getResourceAsStream(conf)) {
+                    if (inputStream != null) {
+                        Properties properties = new Properties();
+                        properties.load(inputStream);
+                        port = properties.getProperty("server.port");
+                    }
+                    break;
+                } catch (IOException ignore) {
+                    continue;
+                }
+            }
+        }
+
+        if (port != null) {
+            try {
+                return Integer.parseInt(port);
+            } catch (NumberFormatException ignore) {
+            }
+        }
+
+        return 0;
     }
 }

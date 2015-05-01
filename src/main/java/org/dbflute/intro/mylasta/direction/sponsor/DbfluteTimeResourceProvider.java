@@ -25,7 +25,7 @@ import org.dbflute.lastaflute.core.time.TimeResourceProvider;
 import org.dbflute.lastaflute.core.time.TypicalBusinessTimeHandler;
 
 /**
- * @author jflute
+ * @author p1us2er0
  */
 public class DbfluteTimeResourceProvider implements TimeResourceProvider {
 

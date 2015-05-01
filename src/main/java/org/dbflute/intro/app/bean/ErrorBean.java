@@ -18,6 +18,9 @@ package org.dbflute.intro.app.bean;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author p1us2er0
+ */
 public class ErrorBean implements MessageBean {
 
     private Map<String, List<String>> messages;
