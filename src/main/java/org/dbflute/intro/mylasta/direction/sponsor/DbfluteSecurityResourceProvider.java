@@ -15,9 +15,9 @@
  */
 package org.dbflute.intro.mylasta.direction.sponsor;
 
-import org.dbflute.lastaflute.core.security.InvertibleCryptographer;
-import org.dbflute.lastaflute.core.security.OneWayCryptographer;
-import org.dbflute.lastaflute.core.security.SecurityResourceProvider;
+import org.lastaflute.core.security.InvertibleCryptographer;
+import org.lastaflute.core.security.OneWayCryptographer;
+import org.lastaflute.core.security.SecurityResourceProvider;
 
 /**
  * @author p1us2er0

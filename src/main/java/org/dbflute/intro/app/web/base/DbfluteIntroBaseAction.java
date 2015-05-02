@@ -16,10 +16,10 @@
 package org.dbflute.intro.app.web.base;
 
 import org.dbflute.intro.app.web.base.messages.DbfluteIntroMessages;
-import org.dbflute.lastaflute.web.callback.ActionRuntimeMeta;
-import org.dbflute.lastaflute.web.login.UserBean;
 import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
+import org.lastaflute.web.callback.ActionRuntimeMeta;
+import org.lastaflute.web.login.UserBean;
 
 /**
  * @author p1us2er0

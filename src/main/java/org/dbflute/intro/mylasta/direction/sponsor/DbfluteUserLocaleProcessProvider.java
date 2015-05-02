@@ -17,11 +17,11 @@ package org.dbflute.intro.mylasta.direction.sponsor;
 
 import java.util.Locale;
 
-import org.dbflute.lastaflute.web.callback.ActionRuntimeMeta;
-import org.dbflute.lastaflute.web.servlet.request.RequestManager;
-import org.dbflute.lastaflute.web.servlet.request.UserLocaleProcessProvider;
 import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
+import org.lastaflute.web.callback.ActionRuntimeMeta;
+import org.lastaflute.web.servlet.request.RequestManager;
+import org.lastaflute.web.servlet.request.UserLocaleProcessProvider;
 
 /**
  * @author p1us2er0

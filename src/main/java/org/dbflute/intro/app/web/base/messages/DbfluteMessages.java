@@ -15,8 +15,7 @@
  */
 package org.dbflute.intro.app.web.base.messages;
 
-import org.dbflute.intro.app.web.base.messages.DbfluteLabels;
-import org.dbflute.lastaflute.web.ruts.message.ActionMessage;
+import org.lastaflute.web.ruts.message.ActionMessage;
 
 /**
  * The keys for message.

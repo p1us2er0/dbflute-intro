@@ -24,10 +24,10 @@ import java.util.function.Consumer;
 import org.dbflute.cbean.paging.numberlink.PageNumberLink;
 import org.dbflute.cbean.paging.numberlink.range.PageRangeOption;
 import org.dbflute.cbean.result.PagingResultBean;
-import org.dbflute.lasta.di.helper.beans.BeanDesc;
-import org.dbflute.lasta.di.helper.beans.PropertyDesc;
-import org.dbflute.lasta.di.helper.beans.factory.BeanDescFactory;
-import org.dbflute.lastaflute.web.util.LaRequestUtil;
+import org.lastaflute.di.helper.beans.BeanDesc;
+import org.lastaflute.di.helper.beans.PropertyDesc;
+import org.lastaflute.di.helper.beans.factory.BeanDescFactory;
+import org.lastaflute.web.util.LaRequestUtil;
 
 /**
  * @author jflute

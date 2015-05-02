@@ -9,7 +9,7 @@
     <!--                                                                    ============== -->
     <filter>
         <filter-name>lastaFilter</filter-name>
-        <filter-class>org.dbflute.lastaflute.web.LastaFilter</filter-class>
+        <filter-class>org.lastaflute.web.LastaFilter</filter-class>
     </filter>
 
     <!-- ================================================================================= -->

@@ -21,8 +21,8 @@ import javax.annotation.Resource;
 
 import org.dbflute.intro.app.logic.DbFluteIntroLogic;
 import org.dbflute.intro.app.web.base.DbfluteIntroBaseAction;
-import org.dbflute.lastaflute.web.Execute;
-import org.dbflute.lastaflute.web.response.JsonResponse;
+import org.lastaflute.web.Execute;
+import org.lastaflute.web.response.JsonResponse;
 
 /**
  * @author p1us2er0

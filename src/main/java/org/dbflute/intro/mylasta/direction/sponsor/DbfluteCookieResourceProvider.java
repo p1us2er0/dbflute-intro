@@ -16,8 +16,8 @@
 package org.dbflute.intro.mylasta.direction.sponsor;
 
 import org.dbflute.intro.mylasta.direction.DbfluteConfig;
-import org.dbflute.lastaflute.core.security.InvertibleCryptographer;
-import org.dbflute.lastaflute.web.servlet.cookie.CookieResourceProvider;
+import org.lastaflute.core.security.InvertibleCryptographer;
+import org.lastaflute.web.servlet.cookie.CookieResourceProvider;
 
 /**
  * @author p1us2er0

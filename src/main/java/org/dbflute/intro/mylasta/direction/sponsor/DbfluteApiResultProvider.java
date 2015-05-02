@@ -21,14 +21,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.dbflute.intro.app.bean.ErrorBean;
-import org.dbflute.lastaflute.web.api.ApiResultProvider;
-import org.dbflute.lastaflute.web.api.ApiResultResource;
-import org.dbflute.lastaflute.web.callback.ActionRuntimeMeta;
-import org.dbflute.lastaflute.web.response.ApiResponse;
-import org.dbflute.lastaflute.web.response.JsonResponse;
 import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
 import org.dbflute.util.DfCollectionUtil;
+import org.lastaflute.web.api.ApiResultProvider;
+import org.lastaflute.web.api.ApiResultResource;
+import org.lastaflute.web.callback.ActionRuntimeMeta;
+import org.lastaflute.web.response.ApiResponse;
+import org.lastaflute.web.response.JsonResponse;
 
 /**
  * @author p1us2er0

@@ -31,11 +31,11 @@ import org.dbflute.intro.app.logic.DbFluteClientLogic;
 import org.dbflute.intro.app.logic.DbFluteIntroLogic;
 import org.dbflute.intro.app.logic.DbFluteTaskLogic;
 import org.dbflute.intro.app.web.base.DbfluteIntroBaseAction;
-import org.dbflute.lastaflute.web.Execute;
-import org.dbflute.lastaflute.web.response.JsonResponse;
-import org.dbflute.lastaflute.web.response.StreamResponse;
-import org.dbflute.lastaflute.web.servlet.request.ResponseManager;
 import org.dbflute.optional.OptionalThing;
+import org.lastaflute.web.Execute;
+import org.lastaflute.web.response.JsonResponse;
+import org.lastaflute.web.response.StreamResponse;
+import org.lastaflute.web.servlet.request.ResponseManager;
 
 /**
  * @author p1us2er0
