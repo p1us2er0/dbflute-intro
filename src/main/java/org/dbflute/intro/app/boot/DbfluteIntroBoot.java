@@ -27,6 +27,8 @@ import org.lastaflute.jetty.JettyBoot;
  */
 public class DbfluteIntroBoot {
 
+    protected static final int DEFAULT_PORT = 9000;
+
     public static void main(String[] args) {
         JettyBoot jettyBoot = new JettyBoot(getPort());
         jettyBoot.asDevelopment();
@@ -62,6 +64,6 @@ public class DbfluteIntroBoot {
             }
         }
 
-        return 0;
+        return DEFAULT_PORT;
     }
 }

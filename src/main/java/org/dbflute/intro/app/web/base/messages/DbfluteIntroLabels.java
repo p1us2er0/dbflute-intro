@@ -15,6 +15,7 @@
  */
 package org.dbflute.intro.app.web.base.messages;
 
+import org.dbflute.intro.app.web.base.messages.DbfluteMessages;
 
 /**
  * The keys for message.

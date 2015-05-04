@@ -74,7 +74,7 @@ war {
     }
 
     from fileTree(dir: sourceSets.main.output.classesDir, includes: ["${mainClassName.replace('.', '/')}.class", 'org/lastaflute/jetty/JettyBoot.class'])
-    from fileTree(dir: file('static/dist'), include: '**/**')
+    from fileTree(dir: file('dist'), include: '**/**')
 
     includeEmptyDirs = false
 

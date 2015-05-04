@@ -15,6 +15,7 @@
  */
 package org.dbflute.intro.mylasta.direction;
 
+import org.dbflute.intro.mylasta.direction.DbfluteEnv;
 
 /**
  * @author FreeGen
@@ -23,9 +24,6 @@ public interface DbfluteConfig extends DbfluteEnv {
 
     /** The key of the configuration. e.g. should be overridden by each domain */
     String DOMAIN_TITLE = "domain.title";
-
-    /** The key of the configuration. e.g. 0 */
-    String SERVER_PORT = "server.port";
 
     /** The key of the configuration. e.g. / */
     String COOKIE_DEFAULT_PATH = "cookie.default.path";
@@ -78,23 +76,6 @@ public interface DbfluteConfig extends DbfluteEnv {
      * @return The value of found property. (NullAllowed: if null, not found)
      */
     String getDomainTitle();
-
-    /**
-     * Get the value for the key 'server.port'. <br>
-     * The value is, e.g. 0 <br>
-     * comment: Server Port
-     * @return The value of found property. (NullAllowed: if null, not found)
-     */
-    String getServerPort();
-
-    /**
-     * Get the value for the key 'server.port' as {@link Integer}. <br>
-     * The value is, e.g. 0 <br>
-     * comment: Server Port
-     * @return The value of found property. (NullAllowed: if null, not found)
-     * @throws NumberFormatException When the property is not integer.
-     */
-    Integer getServerPortAsInteger();
 
     /**
      * Get the value for the key 'cookie.default.path'. <br>
@@ -240,14 +221,6 @@ public interface DbfluteConfig extends DbfluteEnv {
 
         public String getDomainTitle() {
             return get(DbfluteConfig.DOMAIN_TITLE);
-        }
-
-        public String getServerPort() {
-            return get(DbfluteConfig.SERVER_PORT);
-        }
-
-        public Integer getServerPortAsInteger() {
-            return getAsInteger(DbfluteConfig.SERVER_PORT);
         }
 
         public String getCookieDefaultPath() {

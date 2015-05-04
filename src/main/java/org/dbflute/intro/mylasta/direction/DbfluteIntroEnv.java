@@ -15,6 +15,7 @@
  */
 package org.dbflute.intro.mylasta.direction;
 
+import org.dbflute.intro.mylasta.direction.DbfluteConfig;
 
 /**
  * @author FreeGen

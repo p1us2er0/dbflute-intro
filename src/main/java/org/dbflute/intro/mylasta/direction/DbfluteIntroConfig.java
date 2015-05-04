@@ -15,6 +15,7 @@
  */
 package org.dbflute.intro.mylasta.direction;
 
+import org.dbflute.intro.mylasta.direction.DbfluteIntroEnv;
 
 /**
  * @author FreeGen
@@ -23,9 +24,6 @@ public interface DbfluteIntroConfig extends DbfluteIntroEnv {
 
     /** The key of the configuration. e.g. DbfluteIntro */
     String DOMAIN_TITLE = "domain.title";
-
-    /** The key of the configuration. e.g. 9000 */
-    String SERVER_PORT = "server.port";
 
     /** The key of the configuration. e.g. DbfluteIntro */
     String COOKIE_AUTO_LOGIN_DOCKSIDE_KEY = "cookie.auto.login.dockside.key";
@@ -53,23 +51,6 @@ public interface DbfluteIntroConfig extends DbfluteIntroEnv {
     String getDomainTitle();
 
     /**
-     * Get the value for the key 'server.port'. <br>
-     * The value is, e.g. 9000 <br>
-     * comment: @Override Server Port
-     * @return The value of found property. (NullAllowed: if null, not found)
-     */
-    String getServerPort();
-
-    /**
-     * Get the value for the key 'server.port' as {@link Integer}. <br>
-     * The value is, e.g. 9000 <br>
-     * comment: @Override Server Port
-     * @return The value of found property. (NullAllowed: if null, not found)
-     * @throws NumberFormatException When the property is not integer.
-     */
-    Integer getServerPortAsInteger();
-
-    /**
      * Get the value for the key 'cookie.auto.login.dockside.key'. <br>
      * The value is, e.g. DbfluteIntro <br>
      * comment: The cookie key of auto-login for Dockside
@@ -89,16 +70,6 @@ public interface DbfluteIntroConfig extends DbfluteIntroEnv {
         @Override
         public String getDomainTitle() {
             return get(DbfluteIntroConfig.DOMAIN_TITLE);
-        }
-
-        @Override
-        public String getServerPort() {
-            return get(DbfluteIntroConfig.SERVER_PORT);
-        }
-
-        @Override
-        public Integer getServerPortAsInteger() {
-            return getAsInteger(DbfluteIntroConfig.SERVER_PORT);
         }
 
         public String getCookieAutoLoginDocksideKey() {

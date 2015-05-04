@@ -24,12 +24,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.eclipse.jetty.annotations.AnnotationConfiguration;
-import org.eclipse.jetty.plus.webapp.EnvConfiguration;
-import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.Configuration;
-import org.eclipse.jetty.webapp.FragmentConfiguration;
 import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
 import org.eclipse.jetty.webapp.MetaInfConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -133,9 +129,8 @@ public class JettyBoot {
         } else {
             context.setResourceBase("./src/main/webapp/");
         }
-        final Configuration[] configurations =
-                { new AnnotationConfiguration(), new WebInfConfiguration(), new WebXmlConfiguration(), new MetaInfConfiguration(),
-                        new FragmentConfiguration(), new EnvConfiguration(), new PlusConfiguration(), new JettyWebXmlConfiguration() };
+        final Configuration[] configurations = { new WebInfConfiguration(), new WebXmlConfiguration(),
+                new MetaInfConfiguration(), new JettyWebXmlConfiguration() };
         context.setConfigurations(configurations);
         if (contextPath != null) {
             context.setContextPath(contextPath);
