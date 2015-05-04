@@ -71,6 +71,13 @@ angular.module('dbflute-intro').factory('ApiFactory',
                 url : 'api/engine/download/' + params.version
           }).success(function(data) {
           }).error(errorHandler);
+        },
+        removeEngine: function(params) {
+            return $http({
+                method : 'POST',
+                url : 'api/engine/remove/' + params.version
+          }).success(function(data) {
+          }).error(errorHandler);
         }
     };
 });

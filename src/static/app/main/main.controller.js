@@ -118,6 +118,21 @@ angular.module('dbflute-intro')
         });
     };
 
+    $scope.addSchemaSyncCheckMap = function() {
+        $scope.clientBean.schemaSyncCheckMap['dummy'] = {};
+    }
+
+    $scope.removeSchemaSyncCheckMap = function(name) {
+        delete $scope.clientBean.schemaSyncCheckMap[name];
+    }
+
+    $scope.removeEngine = function(version) {
+        var params = {version: version};
+        ApiFactory.removeEngine(params).then(function(response) {
+            $scope.engineVersions();
+        });
+    }
+
     $scope.setCurrentProject = function(clientBean) {
         $scope.clientBean = angular.copy(clientBean.clientBean);
     };
@@ -137,8 +152,8 @@ angular.module('dbflute-intro').controller('DownloadInstanceController',
     $scope.publicProperties = {};
     $scope.publicProperties.compatible10x = [];
     $scope.publicProperties.compatible11x = [];
-
     $scope.currentBranch = 'compatible11x';
+    $scope.dbfluteEngine = {version: ''};
 
     var publicPropertiesData = publicProperties.data;
     var compatible10xRelease = publicPropertiesData['compatible10x.dbflute.latest.release.version'];

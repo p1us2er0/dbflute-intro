@@ -146,8 +146,10 @@ public class DbFluteClientLogic {
             List<URL> urls = new ArrayList<URL>();
             if (DfStringUtil.is_Null_or_Empty(clientBean.getJdbcDriverJarPath())) {
                 File mydbfluteDir = new File(String.format(DbFluteEngineLogic.MY_DBFLUTE_PATH, clientBean.getDbfluteVersion()), "lib");
-                for (File file : FileUtils.listFiles(mydbfluteDir, FileFilterUtils.suffixFileFilter(".jar"), null)) {
-                    urls.add(file.toURI().toURL());
+                if (mydbfluteDir.isDirectory()) {
+                    for (File file : FileUtils.listFiles(mydbfluteDir, FileFilterUtils.suffixFileFilter(".jar"), null)) {
+                        urls.add(file.toURI().toURL());
+                    }
                 }
             } else {
                 URL fileUrl = new File(clientBean.getJdbcDriverJarPath()).toURI().toURL();

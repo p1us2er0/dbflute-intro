@@ -96,6 +96,17 @@ public class DbFluteEngineLogic {
         return getPublicProperties().getProperty(KEY_DBFLUTE_ENGINE_DOWNLOAD_URL).replace("$$version$$", dbfluteVersion);
     }
 
+    public void remove(String dbfluteVersion) {
+        final File mydbfluteDir = new File(String.format(MY_DBFLUTE_PATH, dbfluteVersion));
+        if (mydbfluteDir.exists()) {
+            try {
+                FileUtils.deleteDirectory(mydbfluteDir);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     public List<String> getExistedVersionList() {
         try {
             List<String> list = Files.list(Paths.get(DbFluteIntroLogic.BASE_DIR_PATH, "mydbflute")).filter(file -> {
