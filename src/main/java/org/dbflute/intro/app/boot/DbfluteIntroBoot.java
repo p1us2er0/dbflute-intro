@@ -13,14 +13,14 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.dbflute.boot;
+package org.dbflute.intro.app.boot;
 
-import java.awt.Desktop;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Properties;
+
+import org.lastaflute.jetty.JettyBoot;
 
 /**
  * @author p1us2er0
@@ -28,17 +28,12 @@ import java.util.Properties;
 public class DbfluteIntroBoot {
 
     public static void main(String[] args) {
-        JettyBoot jettyBoot = new JettyBoot();
-        URI uri = jettyBoot.start(getPort());
-
-        Desktop desktop = Desktop.getDesktop();
-        try {
-            desktop.browse(uri);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        JettyBoot jettyBoot = new JettyBoot(getPort());
+        jettyBoot.asDevelopment();
+        if (!Boolean.getBoolean("browseOnDesktop")) {
+            jettyBoot.suppressBrowseOnDesktop();
         }
-
-        jettyBoot.join();
+        jettyBoot.boot();
     }
 
     private static int getPort() {
