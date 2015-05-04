@@ -74,6 +74,7 @@ angular.module('dbflute-intro')
 
     $scope.delete = function(clientBean) {
         ApiFactory.clientRemove(clientBean).then(function(response) {
+            $scope.clientBean = null;
             $scope.findClientBeanList();
         });
     };

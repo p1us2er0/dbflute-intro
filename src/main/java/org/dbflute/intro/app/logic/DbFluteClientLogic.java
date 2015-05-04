@@ -136,13 +136,6 @@ public class DbFluteClientLogic {
         Connection connection = null;
 
         try {
-            Properties info = new Properties();
-            info.put("user", clientBean.getDatabaseBean().getUser());
-            String password = clientBean.getDatabaseBean().getPassword();
-            if (DfStringUtil.is_NotNull_and_NotEmpty(password)) {
-                info.put("password", password);
-            }
-
             List<URL> urls = new ArrayList<URL>();
             if (DfStringUtil.is_Null_or_Empty(clientBean.getJdbcDriverJarPath())) {
                 File mydbfluteDir = new File(String.format(DbFluteEngineLogic.MY_DBFLUTE_PATH, clientBean.getDbfluteVersion()), "lib");
@@ -162,6 +155,15 @@ public class DbFluteClientLogic {
             Class<Driver> driverClass = (Class<Driver>) loader.loadClass(clientBean.getJdbcDriver());
             Driver driver = driverClass.newInstance();
 
+            Properties info = new Properties();
+            String user = clientBean.getDatabaseBean().getUser();
+            if (DfStringUtil.is_NotNull_and_NotEmpty(user)) {
+                info.put("user", user);
+            }
+            String password = clientBean.getDatabaseBean().getPassword();
+            if (DfStringUtil.is_NotNull_and_NotEmpty(password)) {
+                info.put("password", password);
+            }
             connection = driver.connect(clientBean.getDatabaseBean().getUrl(), info);
 
         } catch (MalformedURLException | ClassNotFoundException | InstantiationException | IllegalAccessException
@@ -196,7 +198,7 @@ public class DbFluteClientLogic {
 
         if (!dbfluteClientDir.exists()) {
             if (update) {
-                throw new RuntimeException("更新するものがない");
+                throw new RuntimeException("already deleted.");
             }
             final String extractDirectoryBase = mydbflutePureFile.getAbsolutePath() + "/" + dbfluteVersionExpression;
             final String templateZipFileName = extractDirectoryBase + "/etc/client-template/dbflute_dfclient.zip";
@@ -204,23 +206,27 @@ public class DbFluteClientLogic {
             new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_dfclient").renameTo(dbfluteClientDir);
         } else {
             if (!update) {
-                throw new RuntimeException("すでに登録されている");
+                throw new RuntimeException("already exists.");
             }
         }
 
         try {
             List<String> dfpropFileList = new ArrayList<String>();
-            dfpropFileList.add("basicInfoMap+.dfprop");
-            dfpropFileList.add("databaseInfoMap+.dfprop");
-            dfpropFileList.add("documentDefinitionMap+.dfprop");
-            dfpropFileList.add("littleAdjustmentMap+.dfprop");
-            dfpropFileList.add("outsideSqlDefinitionMap+.dfprop");
-            dfpropFileList.add("replaceSchemaDefinitionMap+.dfprop");
+            dfpropFileList.add("basicInfoMap.dfprop");
+            dfpropFileList.add("databaseInfoMap.dfprop");
+            dfpropFileList.add("documentMap.dfprop");
+            dfpropFileList.add("littleAdjustmentMap.dfprop");
+            dfpropFileList.add("outsideSqlMap.dfprop");
+            dfpropFileList.add("replaceSchemaMap.dfprop");
 
             try {
                 for (String dfpropFile : dfpropFileList) {
-                    URL url = ClassLoader.getSystemResource("dfprop/" + dfpropFile);
-                    FileUtils.copyURLToFile(url, new File(dbfluteClientDir, "dfprop/" + dfpropFile));
+                    File file = new File(dbfluteClientDir, "dfprop/" + dfpropFile);
+                    if (!file.exists()) {
+                        file = new File(dbfluteClientDir, "dfprop/" + dfpropFile.replace("Map.dfprop", "DefinitionMap.dfprop"));
+                    }
+                    URL url = ClassLoader.getSystemResource("dfprop/" + dfpropFile.replace(".dfprop", "+.dfprop"));
+                    FileUtils.copyURLToFile(url, new File(dbfluteClientDir, "dfprop/" + file.getName().replace(".dfprop", "+.dfprop")));
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -274,12 +280,12 @@ public class DbFluteClientLogic {
             replaceMap.put("@isCheckColumnDefOrderDiff@", optionBean.isCheckColumnDefOrderDiff());
             replaceMap.put("@isCheckDbCommentDiff@", optionBean.isCheckDbCommentDiff());
             replaceMap.put("@isCheckProcedureDiff@", optionBean.isCheckProcedureDiff());
-            fileMap.put(new File(dbfluteClientDir, "/dfprop/documentDefinitionMap+.dfprop"), replaceMap);
+            fileMap.put(new File(dbfluteClientDir, "/dfprop/documentMap+.dfprop"), replaceMap);
 
             replaceMap = new LinkedHashMap<String, Object>();
             replaceMap.put("@isGenerateProcedureParameterBean@", optionBean.isGenerateProcedureParameterBean());
             replaceMap.put("@procedureSynonymHandlingType@", optionBean.getProcedureSynonymHandlingType());
-            fileMap.put(new File(dbfluteClientDir, "/dfprop/outsideSqlDefinitionMap+.dfprop"), replaceMap);
+            fileMap.put(new File(dbfluteClientDir, "/dfprop/outsideSqlMap+.dfprop"), replaceMap);
 
             replaceMap = new LinkedHashMap<String, Object>();
             replaceMap.put("@driver@", escapeControlMark(clientBean.getJdbcDriver()));
@@ -287,7 +293,7 @@ public class DbFluteClientLogic {
             replaceMap.put("@schema@", escapeControlMark(clientBean.getSystemUserDatabaseBean().getSchema()));
             replaceMap.put("@user@", escapeControlMark(clientBean.getSystemUserDatabaseBean().getUser()));
             replaceMap.put("@password@", escapeControlMark(clientBean.getSystemUserDatabaseBean().getPassword()));
-            fileMap.put(new File(dbfluteClientDir, "/dfprop/replaceSchemaDefinitionMap+.dfprop"), replaceMap);
+            fileMap.put(new File(dbfluteClientDir, "/dfprop/replaceSchemaMap+.dfprop"), replaceMap);
 
             replaceFile(fileMap, false);
 
@@ -343,15 +349,15 @@ public class DbFluteClientLogic {
     private void createSchemaSyncCheck(ClientBean clientBean) {
 
         final File dbfluteClientDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + clientBean.getProject());
-        URL schemaSyncCheckURL = ClassLoader.getSystemResource("dfprop/documentDefinitionMap+schemaSyncCheck.dfprop");
+        URL schemaSyncCheckURL = ClassLoader.getSystemResource("dfprop/documentMap+schemaSyncCheck.dfprop");
 
         for (Entry<String, DatabaseBean> entry : clientBean.getSchemaSyncCheckMap().entrySet()) {
             final File dfpropEnvDir = new File(dbfluteClientDir, "dfprop/schemaSyncCheck_" + entry.getKey());
             dfpropEnvDir.mkdir();
 
-            File documentDefinitionMapFile = new File(dfpropEnvDir, "documentDefinitionMap+.dfprop");
+            File documentMapFile = new File(dfpropEnvDir, "documentMap+.dfprop");
             try {
-                FileUtils.copyURLToFile(schemaSyncCheckURL, documentDefinitionMapFile);
+                FileUtils.copyURLToFile(schemaSyncCheckURL, documentMapFile);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -364,7 +370,7 @@ public class DbFluteClientLogic {
             replaceMap.put("@user@", escapeControlMark(entry.getValue().getUser()));
             replaceMap.put("@password@", escapeControlMark(entry.getValue().getPassword()));
             replaceMap.put("@env@", escapeControlMark(entry.getKey()));
-            fileMap.put(documentDefinitionMapFile, replaceMap);
+            fileMap.put(documentMapFile, replaceMap);
 
             replaceFile(fileMap, false);
         }
@@ -391,7 +397,12 @@ public class DbFluteClientLogic {
         try {
             for (Entry<File, Map<String, Object>> entry : fileMap.entrySet()) {
 
-                String text = FileUtils.readFileToString(entry.getKey(), Charsets.UTF_8);
+                File file = entry.getKey();
+                if (!file.exists()) {
+                    file = new File(file.getParentFile(), file.getName().replace("Map+.dfprop", "DefinitionMap+.dfprop"));
+                }
+
+                String text = FileUtils.readFileToString(file, Charsets.UTF_8);
 
                 for (Entry<String, Object> replaceEntry : entry.getValue().entrySet()) {
                     Object value = replaceEntry.getValue();
@@ -403,7 +414,7 @@ public class DbFluteClientLogic {
                     }
                 }
 
-                FileUtils.write(entry.getKey(), text, Charsets.UTF_8);
+                FileUtils.write(file, text, Charsets.UTF_8);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -415,29 +426,30 @@ public class DbFluteClientLogic {
         Map<String, Map<String, Object>> map = new LinkedHashMap<String, Map<String, Object>>();
         File dfpropDir = new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project + "/dfprop");
 
-        for (File file : dfpropDir.listFiles()) {
-            if (!file.getName().endsWith(".dfprop") || file.getName().startsWith("allClassCopyright")
-                    || file.getName().startsWith("sourceCopyright")) {
-                continue;
+        Stream.of(dfpropDir.listFiles()).forEach(file -> {
+            if (!file.getName().endsWith("Map.dfprop")) {
+                return;
             }
 
+            String fileNameKey = file.getName().replace("DefinitionMap.dfprop", "Map.dfprop");
             DfPropFile dfPropFile = new DfPropFile();
-            map.put(file.getName(), dfPropFile.readMap(file.getAbsolutePath(), null));
-        }
+            map.put(fileNameKey, dfPropFile.readMap(file.getAbsolutePath(), null));
 
-        for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
-            if (!entry.getKey().endsWith("+.dfprop")) {
-                continue;
+            File plusFile = new File(file.getName().replace("Map.dfprop", "Map+.dfprop"));
+            if (plusFile.exists()) {
+                map.get(fileNameKey).putAll(dfPropFile.readMap(plusFile.getAbsolutePath(), null));
             }
+        });
 
-            String key = entry.getKey().replaceAll("\\+\\.dfprop", "\\.dfprop");
-            map.get(key).putAll(entry.getValue());
+        Map<String, Object> databaseInfoMap = map.get("databaseInfoMap.dfprop");
+        Map<String, Object> basicInfoMap = map.get("basicInfoMap.dfprop");
+        if (databaseInfoMap == null || basicInfoMap == null) {
+            throw new RuntimeException("dbflute client is invalid.");
         }
-
-        String schema = (String) map.get("databaseInfoMap.dfprop").get("schema");
+        String schema = (String) databaseInfoMap.get("schema");
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> variousMap = ((Map<String, Object>) map.get("databaseInfoMap.dfprop").get("variousMap"));
+        Map<String, Object> variousMap = ((Map<String, Object>) databaseInfoMap.get("variousMap"));
         if (variousMap != null) {
             @SuppressWarnings("unchecked")
             Map<String, Object> additionalSchemaMap = ((Map<String, Object>) variousMap.get("additionalSchemaMap"));
@@ -452,18 +464,18 @@ public class DbFluteClientLogic {
 
         ClientBean clientBean = new ClientBean();
         clientBean.setProject(project);
-        clientBean.setTargetLanguage((String) map.get("basicInfoMap.dfprop").get("targetLanguage"));
-        clientBean.setTargetContainer((String) map.get("basicInfoMap.dfprop").get("targetContainer"));
-        clientBean.setPackageBase((String) map.get("basicInfoMap.dfprop").get("packageBase"));
-        clientBean.setDatabase((String) map.get("basicInfoMap.dfprop").get("database"));
-        clientBean.setJdbcDriver((String) map.get("databaseInfoMap.dfprop").get("driver"));
-        clientBean.getDatabaseBean().setUrl((String) map.get("databaseInfoMap.dfprop").get("url"));
+        clientBean.setTargetLanguage((String) basicInfoMap.get("targetLanguage"));
+        clientBean.setTargetContainer((String) basicInfoMap.get("targetContainer"));
+        clientBean.setPackageBase((String) basicInfoMap.get("packageBase"));
+        clientBean.setDatabase((String) basicInfoMap.get("database"));
+        clientBean.setJdbcDriver((String) databaseInfoMap.get("driver"));
+        clientBean.getDatabaseBean().setUrl((String) databaseInfoMap.get("url"));
         clientBean.getDatabaseBean().setSchema(schema);
-        clientBean.getDatabaseBean().setUser((String) map.get("databaseInfoMap.dfprop").get("user"));
-        clientBean.getDatabaseBean().setPassword((String) map.get("databaseInfoMap.dfprop").get("password"));
-        if (map.get("replaceSchemaDefinitionMap.dfprop") != null) {
+        clientBean.getDatabaseBean().setUser((String) databaseInfoMap.get("user"));
+        clientBean.getDatabaseBean().setPassword((String) databaseInfoMap.get("password"));
+        if (map.get("replaceSchemaMap.dfprop") != null) {
             @SuppressWarnings("unchecked")
-            Map<String, Object> additionalUserMap = (Map<String, Object>) map.get("replaceSchemaDefinitionMap.dfprop").get("additionalUserMap");
+            Map<String, Object> additionalUserMap = (Map<String, Object>) map.get("replaceSchemaMap.dfprop").get("additionalUserMap");
             @SuppressWarnings("unchecked")
             Map<String, Object> systemUserDatabaseMap = (Map<String, Object>) additionalUserMap.get("system");
             if (systemUserDatabaseMap != null) {
@@ -494,7 +506,7 @@ public class DbFluteClientLogic {
             clientBean.setDbfluteVersion(matcher.group(2));
         }
 
-        Map<String, Object> documentMap = map.get("documentDefinitionMap.dfprop");
+        Map<String, Object> documentMap = map.get("documentMap.dfprop");
         OptionBean optionBean = clientBean.getOptionBean();
         if (documentMap != null) {
             optionBean.setDbCommentOnAliasBasis(Boolean.parseBoolean((String) documentMap.get("isDbCommentOnAliasBasis")));
@@ -504,7 +516,7 @@ public class DbFluteClientLogic {
             optionBean.setCheckProcedureDiff(Boolean.parseBoolean((String) documentMap.get("isCheckProcedureDiff")));
         }
 
-        Map<String, Object> outsideSqlMap = map.get("outsideSqlDefinitionMap.dfprop");
+        Map<String, Object> outsideSqlMap = map.get("outsideSqlMap.dfprop");
         if (outsideSqlMap != null) {
             optionBean.setGenerateProcedureParameterBean(Boolean.parseBoolean((String) outsideSqlMap.get("isGenerateProcedureParameterBean")));
         }
@@ -524,13 +536,14 @@ public class DbFluteClientLogic {
                 return;
             }
 
-            File documentDefinitionMapFile = new File(file, "documentDefinitionMap+.dfprop");
-            if (!documentDefinitionMapFile.exists() || !documentDefinitionMapFile.isFile()) {
+            File documentMapFile = new File(file, "documentMap+.dfprop");
+            if (!documentMapFile.exists() || !documentMapFile.isFile()) {
+                documentMapFile = new File(file, "documentDefinitionMap+.dfprop");
                 return;
             }
 
             DfPropFile dfPropFile = new DfPropFile();
-            Map<String, Object> readMap = dfPropFile.readMap(documentDefinitionMapFile.getAbsolutePath(), null);
+            Map<String, Object> readMap = dfPropFile.readMap(documentMapFile.getAbsolutePath(), null);
             @SuppressWarnings("all")
             Map<String, Object> schemaSyncCheckMap = (Map<String, Object>) readMap.get("schemaSyncCheckMap");
 

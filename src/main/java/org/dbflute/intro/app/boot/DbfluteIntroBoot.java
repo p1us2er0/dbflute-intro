@@ -15,11 +15,6 @@
  */
 package org.dbflute.intro.app.boot;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Properties;
-
 import org.lastaflute.jetty.JettyBoot;
 
 /**
@@ -40,30 +35,12 @@ public class DbfluteIntroBoot {
 
     private static int getPort() {
         String port = System.getProperty("port");
-
-        if (port == null) {
-            for (String app : Arrays.asList("dbfluteIntro", "dbflute")) {
-                String conf = app + "_config.properties";
-                try (InputStream inputStream = JettyBoot.class.getClassLoader().getResourceAsStream(conf)) {
-                    if (inputStream != null) {
-                        Properties properties = new Properties();
-                        properties.load(inputStream);
-                        port = properties.getProperty("server.port");
-                    }
-                    break;
-                } catch (IOException ignore) {
-                    continue;
-                }
-            }
-        }
-
         if (port != null) {
             try {
                 return Integer.parseInt(port);
             } catch (NumberFormatException ignore) {
             }
         }
-
         return DEFAULT_PORT;
     }
 }
