@@ -10,7 +10,7 @@ angular.module('dbflute-intro')
     $scope.clientBeanList = [];
     $scope.clientBean = null;
     $scope.editFlg = false;
-    $scope.testConnection = true;
+    $scope.option = {testConnection: true};
 
     $scope.manifest = function() {
         ApiFactory.manifest().then(function(response) {
@@ -119,7 +119,15 @@ angular.module('dbflute-intro')
     };
 
     $scope.addSchemaSyncCheckMap = function() {
-        $scope.clientBean.schemaSyncCheckMap['dummy'] = {};
+        var name = prompt("Please enter name");
+        if (!name) {
+            // 入力を促す
+            return;
+        }
+        if (!name) {
+            return;
+        }
+        $scope.clientBean.schemaSyncCheckMap[name] = {};
     }
 
     $scope.removeSchemaSyncCheckMap = function(name) {
