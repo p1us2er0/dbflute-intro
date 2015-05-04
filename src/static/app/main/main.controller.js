@@ -61,19 +61,22 @@ angular.module('dbflute-intro')
     };
 
     $scope.create = function(clientBean, testConnection) {
-        ApiFactory.clientCreate(clientBean, testConnection).then(function(response) {
-            $scope.findClientBeanList;
+        ApiFactory.createClient(clientBean, testConnection).then(function(response) {
+            $scope.editFlg = false;
+            $scope.findClientBeanList();
         });
     };
 
     $scope.update = function(clientBean, testConnection) {
-        ApiFactory.clientUpdate(clientBean, testConnection).then(function(response) {
-            $scope.findClientBeanList;
+        ApiFactory.updateClient(clientBean, testConnection).then(function(response) {
+            $scope.editFlg = false;
+            $scope.findClientBeanList();
         });
     };
 
-    $scope.delete = function(clientBean) {
-        ApiFactory.clientRemove(clientBean).then(function(response) {
+    $scope.remove = function(clientBean) {
+        ApiFactory.removeClient(clientBean).then(function(response) {
+            $scope.editFlg = false;
             $scope.clientBean = null;
             $scope.findClientBeanList();
         });

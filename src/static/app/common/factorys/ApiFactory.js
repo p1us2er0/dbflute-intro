@@ -33,24 +33,24 @@ angular.module('dbflute-intro').factory('ApiFactory',
                 url : 'api/client/list'
             });
         },
-        clientCreate: function(clientBean, testConnection) {
+        createClient: function(clientBean, testConnection) {
             return $http({
                 method : 'POST',
                 url : 'api/client/create',
                 data : {clientBean: clientBean, testConnection: testConnection}
             });
         },
-        clientUpdate: function(clientBean, testConnection) {
+        updateClient: function(clientBean, testConnection) {
             return $http({
                 method : 'POST',
                 url : 'api/client/update',
                 data : {clientBean: clientBean, testConnection: testConnection}
             });
         },
-        clientRemove: function(params) {
+        removeClient: function(clientBean) {
             return $http({
                 method : 'POST',
-                url : 'api/client/delete/' + params.project
+                url : 'api/client/delete/' + clientBean.project
             });
         },
         downloadEngine: function(params) {
