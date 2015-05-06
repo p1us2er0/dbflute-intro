@@ -203,18 +203,9 @@ dbflute-intro-demo/dbflute-intro/dbflute_exampledb/schema
 # git clone
 git clone https://github.com/p1us2er0/dbflute-intro.git
 
-# run only once
-cd dbflute-intro/gradle/sh
-sh git_clone_lasta.sh
-
-## refresh
-# refresh library (git pull & maven install)
-cd dbflute-intro/gradle/sh
-sh update_lastaflute.sh
-
 # refresh app
 cd dbflute-intro
-./gradlew cleanEclipse eclipse npmInstall bowerInstall
+./gradlew refresh
 
 ## run
 # build
