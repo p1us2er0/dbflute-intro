@@ -110,8 +110,8 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     // #app_customize you can customize the user trace style
     private String buildAccessUserTrace(AccessContextResource resource) {
         final StringBuilder sb = new StringBuilder();
-        sb.append(myUserType()).append(":");
-        sb.append(myUserBean().map(bean -> bean.getUserId()).orElseGet(() -> -1L));
+        sb.append(myUserType().map(userType -> userType + ":").orElse(""));
+        sb.append(getUserBean().map(bean -> bean.getUserId()).orElseGet(() -> -1L));
         sb.append(",").append(myAppType()).append(",").append(resource.getModuleName());
         final String trace = sb.toString();
         final int traceColumnSize = 200;

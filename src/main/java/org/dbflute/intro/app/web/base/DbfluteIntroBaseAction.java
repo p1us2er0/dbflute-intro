@@ -54,7 +54,7 @@ public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction {
     }
 
     @Override
-    protected OptionalThing<UserBean> myUserBean() { // for framework
+    protected OptionalThing<? extends UserBean> getUserBean() {
         return OptionalObject.empty(); // #app_customize return empty if login is unused
     }
 

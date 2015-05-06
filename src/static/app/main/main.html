@@ -1,11 +1,6 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 <div class="container">
   <div class="row">
-    <div class="col-sm-6 col-md-4" ng-repeat="(key, value) in manifest">
-      {{key}} = {{value}}
-    </div>
-  </div>
-  <div class="row">
     <div class="col-sm-3">
       <div>
         プロジェクト
@@ -288,6 +283,16 @@
           <input type="button" class="btn btn-primary" ng-click="task(clientBean, 'doc')" value="DBスキーマ(再)構築 (ReplaceSchema)" />
         </div>
       </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 col-md-4">
+      システム情報
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 col-md-4" ng-repeat="(key, value) in manifest">
+      {{key}} = {{value}}
     </div>
   </div>
 </div>

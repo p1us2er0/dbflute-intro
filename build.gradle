@@ -29,11 +29,12 @@ ext {
             slf4j : '1.7.12',
             logback : '1.1.3',
 
-            lastaflute : '0.6.0-RC2',
-            dbflute : '1.1.0-sp3-RC2',
+            lastaflute : '0.6.0-RC6',
+            dbflute : '1.1.0-sp3-RC3',
 
             junit : '4.12',
-            utflute : '0.5.0-sp3'
+            utflute : '0.5.0-sp3',
+            jettyboot : '0.3.0'
         ]
 }
 
@@ -54,14 +55,13 @@ dependencies {
     runtime "ch.qos.logback:logback-classic:${versions.logback}"
 
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
-    runtime 'javax.el:javax.el-api:3.0.0'
     compile 'javax.transaction:javax.transaction-api:1.2'
 
     compile "org.dbflute:dbflute-runtime:${versions.dbflute}"
     compile "org.lastaflute:lastaflute:${versions.lastaflute}"
 
-    providedCompile 'org.eclipse.jetty:jetty-webapp:9.2.10.v20150310'
-    providedCompile 'org.eclipse.jetty:jetty-annotations:9.2.10.v20150310'
+    providedCompile "org.dbflute.jetty:jetty-boot:${versions.jettyboot}"
+    providedRuntime "ch.qos.logback:logback-classic:${versions.logback}"
 }
 
 mainClassName = 'org.dbflute.intro.app.boot.DbfluteIntroBoot'
@@ -71,9 +71,12 @@ war {
         configurations.providedCompile.collect {
             it.isDirectory() ? it : project.zipTree(it)
         }
+        configurations.providedRuntime.collect {
+            it.isDirectory() ? it : project.zipTree(it)
+        }
     }
 
-    from fileTree(dir: sourceSets.main.output.classesDir, includes: ["${mainClassName.replace('.', '/')}.class", 'org/lastaflute/jetty/JettyBoot.class'])
+    from fileTree(dir: sourceSets.main.output.classesDir, includes: ["${mainClassName.replace('.', '/')}.class"])
     from fileTree(dir: file('dist'), include: '**/**')
 
     includeEmptyDirs = false

@@ -15,7 +15,7 @@
  */
 package org.dbflute.intro.app.boot;
 
-import org.lastaflute.jetty.JettyBoot;
+import org.dbflute.jetty.JettyBoot;
 
 /**
  * @author p1us2er0
@@ -25,12 +25,12 @@ public class DbfluteIntroBoot {
     protected static final int DEFAULT_PORT = 9000;
 
     public static void main(String[] args) {
-        JettyBoot jettyBoot = new JettyBoot(getPort());
+        JettyBoot jettyBoot = new JettyBoot(getPort(), "dbflute-intro");
         jettyBoot.asDevelopment();
-        if (!Boolean.getBoolean("browseOnDesktop")) {
-            jettyBoot.suppressBrowseOnDesktop();
+        if (Boolean.getBoolean("browseOnDesktop")) {
+            jettyBoot.browseOnDesktop();
         }
-        jettyBoot.boot();
+        jettyBoot.bootAwait();
     }
 
     private static int getPort() {
