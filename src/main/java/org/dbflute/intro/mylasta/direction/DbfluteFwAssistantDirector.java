@@ -92,7 +92,7 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
     }
 
     protected DbfluteSecurityResourceProvider createSecurityResourceProvider() { // #change_it
-        final InvertibleCryptographer inver = InvertibleCryptographer.createAesCipher("dbflute:dockside");
+        final InvertibleCryptographer inver = InvertibleCryptographer.createAesCipher("dbflute:dbfluteintro");
         final OneWayCryptographer oneWay = OneWayCryptographer.createSha1Cryptographer();
         return new DbfluteSecurityResourceProvider(inver, oneWay);
     }
