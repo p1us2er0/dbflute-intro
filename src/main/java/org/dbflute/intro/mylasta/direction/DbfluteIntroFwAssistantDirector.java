@@ -23,13 +23,14 @@ import java.util.List;
 public class DbfluteIntroFwAssistantDirector extends DbfluteFwAssistantDirector {
 
     @Override
-    protected String getDomainConfigFile() {
-        return "dbfluteIntro_config.properties";
+    protected void setupAppConfig(List<String> nameList) {
+        nameList.add("dbfluteintro_config.properties"); // base point
+        nameList.add("dbfluteintro_env.properties");
     }
 
     @Override
-    protected void setupDomainMessage(List<String> nameList) {
-        nameList.add("dbfluteIntro_message"); // concrete name
-        nameList.add("dbfluteIntro_label");
+    protected void setupAppMessage(List<String> nameList) {
+        nameList.add("dbfluteintro_message"); // base point
+        nameList.add("dbfluteintro_label");
     }
 }

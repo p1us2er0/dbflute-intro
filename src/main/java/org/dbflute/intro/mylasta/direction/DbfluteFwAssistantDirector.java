@@ -15,14 +15,12 @@
  */
 package org.dbflute.intro.mylasta.direction;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteActionAdjustmentProvider;
-import org.dbflute.intro.mylasta.direction.sponsor.DbfluteApiResultProvider;
+import org.dbflute.intro.mylasta.direction.sponsor.DbfluteApiFailureHook;
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteBootProcessCallback;
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteCookieResourceProvider;
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteSecurityResourceProvider;
@@ -30,13 +28,13 @@ import org.dbflute.intro.mylasta.direction.sponsor.DbfluteTimeResourceProvider;
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteUserLocaleProcessProvider;
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteUserTimeZoneProcessProvider;
 import org.lastaflute.core.direction.CachedFwAssistantDirector;
-import org.lastaflute.core.direction.OptionalAssistDirection;
-import org.lastaflute.core.direction.OptionalCoreDirection;
+import org.lastaflute.core.direction.FwAssistDirection;
+import org.lastaflute.core.direction.FwCoreDirection;
 import org.lastaflute.core.security.InvertibleCryptographer;
 import org.lastaflute.core.security.OneWayCryptographer;
-import org.lastaflute.db.direction.OptionalDbDirection;
-import org.lastaflute.web.api.ApiResultProvider;
-import org.lastaflute.web.direction.OptionalWebDirection;
+import org.lastaflute.db.direction.FwDbDirection;
+import org.lastaflute.web.api.ApiFailureHook;
+import org.lastaflute.web.direction.FwWebDirection;
 
 /**
  * @author p1us2er0
@@ -61,80 +59,42 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
     //                                                                              Assist
     //                                                                              ======
     @Override
-    protected OptionalAssistDirection prepareOptionalAssistDirection() {
-        final OptionalAssistDirection direction = new OptionalAssistDirection();
-        prepareConfiguration(direction);
-        return direction;
+    protected void prepareAssistDirection(FwAssistDirection direction) {
+        direction.directConfig(nameList -> setupAppConfig(nameList), DBFLUTE_CONFIG_FILE, DBFLUTE_ENV_FILE);
     }
 
-    protected void prepareConfiguration(OptionalAssistDirection direction) {
-        direction.directConfiguration(getDomainConfigFile(), getExtendsConfigFiles());
-    }
-
-    protected abstract String getDomainConfigFile();
-
-    protected String[] getExtendsConfigFiles() {
-        return new String[] { DBFLUTE_CONFIG_FILE, DBFLUTE_ENV_FILE };
-    }
+    protected abstract void setupAppConfig(List<String> nameList);
 
     // ===================================================================================
     //                                                                                Core
     //                                                                                ====
     @Override
-    protected OptionalCoreDirection prepareOptionalCoreDirection() {
-        final OptionalCoreDirection direction = new OptionalCoreDirection();
-        prepareFramework(direction);
-        prepareSecurity(direction);
-        prepareTime(direction);
-        return direction;
-    }
-
-    // -----------------------------------------------------
-    //                                             Framework
-    //                                             ---------
-    protected void prepareFramework(OptionalCoreDirection direction) {
-        // this configuration is on dbflute_env.properties
-        // because this is true only when development
+    protected void prepareCoreDirection(FwCoreDirection direction) {
+        // this configuration is on dbflute_env.properties because this is true only when development
         direction.directDevelopmentHere(dbfluteConfig.isDevelopmentHere());
 
-        // titles are from configurations
+        // titles of the application for logging are from configurations
         direction.directLoggingTitle(dbfluteConfig.getDomainTitle(), dbfluteConfig.getEnvironmentTitle());
 
-        // this configuration is on sea_env.properties
-        // because it has no influence to production
+        // this configuration is on sea_env.properties because it has no influence to production
         // even if you set true manually and forget to set false back
         direction.directFrameworkDebug(dbfluteConfig.isFrameworkDebug()); // basically false
 
         // you can add your own process when your application is booting
         direction.directBootProcessCallback(createBootProcessCallback());
+
+        direction.directSecurity(createSecurityResourceProvider());
+        direction.directTime(createTimeResourceProvider());
     }
 
     protected DbfluteBootProcessCallback createBootProcessCallback() {
         return new DbfluteBootProcessCallback();
     }
 
-    // -----------------------------------------------------
-    //                                              Security
-    //                                              --------
-    protected void prepareSecurity(OptionalCoreDirection direction) {
-        direction.directSecurity(createSecurityResourceProvider());
-    }
-
-    protected DbfluteSecurityResourceProvider createSecurityResourceProvider() { // #change_it AES, SHA1 for now
-        final InvertibleCryptographer invertibleCryptographer = InvertibleCryptographer.createAesCipher(getPrimarySecurityWord());
-        final OneWayCryptographer oneWayCryptographer = OneWayCryptographer.createSha1Cryptographer();
-        return new DbfluteSecurityResourceProvider(invertibleCryptographer, oneWayCryptographer);
-    }
-
-    protected String getPrimarySecurityWord() {
-        return "dbflute:dbfluteIntro"; // #change_it hard coding for now
-    }
-
-    // -----------------------------------------------------
-    //                                                  Time
-    //                                                  ----
-    protected void prepareTime(OptionalCoreDirection direction) {
-        direction.directTime(createTimeResourceProvider());
+    protected DbfluteSecurityResourceProvider createSecurityResourceProvider() { // #change_it
+        final InvertibleCryptographer inver = InvertibleCryptographer.createAesCipher("dbflute:dockside");
+        final OneWayCryptographer oneWay = OneWayCryptographer.createSha1Cryptographer();
+        return new DbfluteSecurityResourceProvider(inver, oneWay);
     }
 
     protected DbfluteTimeResourceProvider createTimeResourceProvider() {
@@ -144,31 +104,22 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
     // ===================================================================================
     //                                                                                 DB
     //                                                                                ====
+
     @Override
-    protected OptionalDbDirection prepareOptionalDbDirection() {
-        final OptionalDbDirection direction = new OptionalDbDirection();
-        return direction;
+    protected void prepareDbDirection(FwDbDirection direction) {
+
     }
 
     // ===================================================================================
     //                                                                                Web
     //                                                                               =====
     @Override
-    protected OptionalWebDirection prepareOptionalWebDirection() {
-        final OptionalWebDirection direction = new OptionalWebDirection();
-        prepareRequest(direction);
-        prepareCookie(direction);
-        prepareAdjustment(direction);
-        prepareMessage(direction);
-        prepareApiCall(direction);
-        return direction;
-    }
-
-    // -----------------------------------------------------
-    //                                               Servlet
-    //                                               -------
-    protected void prepareRequest(OptionalWebDirection direction) {
+    protected void prepareWebDirection(FwWebDirection direction) {
         direction.directRequest(createUserLocaleProcessProvider(), createUserTimeZoneProcessProvider());
+        direction.directCookie(createCookieResourceProvider());
+        direction.directAdjustment(createActionAdjustmentProvider());
+        direction.directMessage(nameList -> setupAppMessage(nameList), DBFLUTE_LABEL_NAME, DBFLUTE_MESSAGE_NAME);
+        direction.directApiCall(createApiFailureHook());
     }
 
     protected DbfluteUserLocaleProcessProvider createUserLocaleProcessProvider() {
@@ -179,48 +130,18 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
         return new DbfluteUserTimeZoneProcessProvider();
     }
 
-    protected void prepareCookie(OptionalWebDirection direction) {
-        direction.directCookie(createCookieResourceProvider());
-    }
-
-    protected DbfluteCookieResourceProvider createCookieResourceProvider() { // #change_it AES for now
-        final InvertibleCryptographer cryptographer = InvertibleCryptographer.createAesCipher(getCookieSecurityWord());
-        return new DbfluteCookieResourceProvider(dbfluteConfig, cryptographer);
-    }
-
-    protected String getCookieSecurityWord() {
-        return "dbfluteIntro:dbflute"; // #change_it hard coding for now
-    }
-
-    // -----------------------------------------------------
-    //                                                Action
-    //                                                ------
-    protected void prepareAdjustment(OptionalWebDirection direction) {
-        direction.directAdjustment(createActionAdjustmentProvider());
+    protected DbfluteCookieResourceProvider createCookieResourceProvider() { // #change_it
+        final InvertibleCryptographer cr = InvertibleCryptographer.createAesCipher("dbfluteintro:dbflute");
+        return new DbfluteCookieResourceProvider(dbfluteConfig, cr);
     }
 
     protected DbfluteActionAdjustmentProvider createActionAdjustmentProvider() {
         return new DbfluteActionAdjustmentProvider();
     }
 
-    protected void prepareMessage(OptionalWebDirection direction) {
-        final List<String> nameList = new ArrayList<String>();
-        setupDomainMessage(nameList);
-        nameList.addAll(Arrays.asList(getExtendsMessageNames()));
-        direction.directMessage(nameList.remove(0), nameList.toArray(new String[0]));
+    protected ApiFailureHook createApiFailureHook() {
+        return new DbfluteApiFailureHook();
     }
 
-    protected abstract void setupDomainMessage(List<String> nameList);
-
-    protected String[] getExtendsMessageNames() {
-        return new String[] { DBFLUTE_LABEL_NAME, DBFLUTE_MESSAGE_NAME };
-    }
-
-    protected void prepareApiCall(OptionalWebDirection direction) {
-        direction.directApiCall(createApiResultProvider());
-    }
-
-    protected ApiResultProvider createApiResultProvider() {
-        return new DbfluteApiResultProvider();
-    }
+    protected abstract void setupAppMessage(List<String> nameList);
 }
