@@ -46,7 +46,7 @@ public interface DbfluteIntroConfig extends DbfluteIntroEnv {
      * Get the value for the key 'domain.title'. <br>
      * The value is, e.g. DbfluteIntro <br>
      * comment: @Override The title of domain the application for logging
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getDomainTitle();
 
@@ -54,7 +54,7 @@ public interface DbfluteIntroConfig extends DbfluteIntroEnv {
      * Get the value for the key 'cookie.auto.login.dockside.key'. <br>
      * The value is, e.g. DbfluteIntro <br>
      * comment: The cookie key of auto-login for Dockside
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getCookieAutoLoginDocksideKey();
 

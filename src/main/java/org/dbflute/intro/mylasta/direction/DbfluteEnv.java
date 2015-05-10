@@ -55,7 +55,7 @@ public interface DbfluteEnv {
      * Get the value for the key 'lasta_di.smart.deploy.mode'. <br>
      * The value is, e.g. hot <br>
      * comment: The mode of Lasta Di's smart-deploy, should be cool in production (e.g. hot, cool, warm)
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getLastaDiSmartDeployMode();
 
@@ -63,7 +63,7 @@ public interface DbfluteEnv {
      * Get the value for the key 'development.here'. <br>
      * The value is, e.g. true <br>
      * comment: Is development environment here? (used for various purpose, you should set false if unknown)
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getDevelopmentHere();
 
@@ -79,7 +79,7 @@ public interface DbfluteEnv {
      * Get the value for the key 'environment.title'. <br>
      * The value is, e.g. Local Development <br>
      * comment: The title of environment (e.g. local or integartion or production)
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getEnvironmentTitle();
 
@@ -87,7 +87,7 @@ public interface DbfluteEnv {
      * Get the value for the key 'framework.debug'. <br>
      * The value is, e.g. false <br>
      * comment: Does it enable the Framework internal debug? (true only when emergency)
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getFrameworkDebug();
 
@@ -103,7 +103,7 @@ public interface DbfluteEnv {
      * Get the value for the key 'time.adjust.time.millis'. <br>
      * The value is, e.g. 0 <br>
      * comment: The milliseconds for (relative or absolute) adjust time (set only when test) @LongType *dynamic in development
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getTimeAdjustTimeMillis();
 
@@ -111,7 +111,7 @@ public interface DbfluteEnv {
      * Get the value for the key 'time.adjust.time.millis' as {@link Long}. <br>
      * The value is, e.g. 0 <br>
      * comment: The milliseconds for (relative or absolute) adjust time (set only when test) @LongType *dynamic in development
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      * @throws NumberFormatException When the property is not long.
      */
     Long getTimeAdjustTimeMillisAsLong();

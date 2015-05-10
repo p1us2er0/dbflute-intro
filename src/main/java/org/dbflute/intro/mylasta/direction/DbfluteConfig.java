@@ -73,7 +73,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'domain.title'. <br>
      * The value is, e.g. should be overridden by each domain <br>
      * comment: The title of domain the application for logging
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getDomainTitle();
 
@@ -81,7 +81,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'cookie.default.path'. <br>
      * The value is, e.g. / <br>
      * comment: The default path of cookie (basically '/' if no context path)
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getCookieDefaultPath();
 
@@ -89,7 +89,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'cookie.default.expire'. <br>
      * The value is, e.g. 31556926 <br>
      * comment: The default expire of cookie in seconds e.g. 31556926: one year, 86400: one day
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getCookieDefaultExpire();
 
@@ -97,7 +97,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'cookie.default.expire' as {@link Integer}. <br>
      * The value is, e.g. 31556926 <br>
      * comment: The default expire of cookie in seconds e.g. 31556926: one year, 86400: one day
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      * @throws NumberFormatException When the property is not integer.
      */
     Integer getCookieDefaultExpireAsInteger();
@@ -106,7 +106,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'cookie.eternal.expire'. <br>
      * The value is, e.g. 315360000 <br>
      * comment: The eternal expire of cookie in seconds e.g. 315360000: ten year, 86400: one day
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getCookieEternalExpire();
 
@@ -114,7 +114,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'cookie.eternal.expire' as {@link Integer}. <br>
      * The value is, e.g. 315360000 <br>
      * comment: The eternal expire of cookie in seconds e.g. 315360000: ten year, 86400: one day
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      * @throws NumberFormatException When the property is not integer.
      */
     Integer getCookieEternalExpireAsInteger();
@@ -123,7 +123,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'paging.page.size'. <br>
      * The value is, e.g. 4 <br>
      * comment: The size of one page for paging
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getPagingPageSize();
 
@@ -131,7 +131,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'paging.page.size' as {@link Integer}. <br>
      * The value is, e.g. 4 <br>
      * comment: The size of one page for paging
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      * @throws NumberFormatException When the property is not integer.
      */
     Integer getPagingPageSizeAsInteger();
@@ -140,7 +140,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'paging.page.range.size'. <br>
      * The value is, e.g. 3 <br>
      * comment: The size of page range for paging
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getPagingPageRangeSize();
 
@@ -148,7 +148,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'paging.page.range.size' as {@link Integer}. <br>
      * The value is, e.g. 3 <br>
      * comment: The size of page range for paging
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      * @throws NumberFormatException When the property is not integer.
      */
     Integer getPagingPageRangeSizeAsInteger();
@@ -157,7 +157,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'paging.page.range.fill.limit'. <br>
      * The value is, e.g. true <br>
      * comment: The option 'fillLimit' of page range for paging
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getPagingPageRangeFillLimit();
 
@@ -173,7 +173,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'minimum.year'. <br>
      * The value is, e.g. 1930 <br>
      * comment: The minimum year of this project
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getMinimumYear();
 
@@ -181,7 +181,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'minimum.year' as {@link Integer}. <br>
      * The value is, e.g. 1930 <br>
      * comment: The minimum year of this project
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      * @throws NumberFormatException When the property is not integer.
      */
     Integer getMinimumYearAsInteger();
@@ -190,7 +190,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'dbflute.public.properties.url'. <br>
      * The value is, e.g. http://dbflute.org/meta/public.properties <br>
      * comment: Dbflute public properties url
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getDbflutePublicPropertiesUrl();
 
@@ -198,7 +198,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'targetLanguage'. <br>
      * The value is, e.g. java,csharp,scala <br>
      * comment: targetLanguage
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getTargetLanguage();
 
@@ -206,7 +206,7 @@ public interface DbfluteConfig extends DbfluteEnv {
      * Get the value for the key 'targetContainer'. <br>
      * The value is, e.g. seasar,spring,guice,cdi,lasta_di <br>
      * comment: targetContainer
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (basically NotNull: because of generated)
      */
     String getTargetContainer();
 

@@ -13,34 +13,23 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.dbflute.intro.app.web.base.messages;
+package org.dbflute.intro.mylasta.action;
 
-import org.lastaflute.web.ruts.message.ActionMessages;
+import org.dbflute.intro.mylasta.action.DbfluteMessages;
 
 /**
  * The keys for message.
  * @author FreeGen
  */
-public class DbfluteLabels extends ActionMessages {
+public class DbfluteIntroLabels extends DbfluteMessages {
 
     /** The serial version UID for object serialization. (Default) */
     private static final long serialVersionUID = 1L;
 
     /**
-     * Assert the property is not null.
-     * @param property The value of the property. (NotNull)
-     */
-    protected void assertPropertyNotNull(String property) {
-        if (property == null) {
-            String msg = "The argument 'property' for message should not be null.";
-            throw new IllegalArgumentException(msg);
-        }
-    }
-
-    /**
      * The definition of keys for labels.
      * @author FreeGen
      */
-    public static interface LabelKey {
+    public static interface LabelKey extends DbfluteMessages.LabelKey {
     }
 }

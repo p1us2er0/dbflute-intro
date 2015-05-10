@@ -15,7 +15,7 @@
  */
 package org.dbflute.intro.app.web.base;
 
-import org.dbflute.intro.app.web.base.messages.DbfluteIntroMessages;
+import org.dbflute.intro.mylasta.action.DbfluteIntroMessages;
 import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
 import org.lastaflute.web.callback.ActionRuntimeMeta;
