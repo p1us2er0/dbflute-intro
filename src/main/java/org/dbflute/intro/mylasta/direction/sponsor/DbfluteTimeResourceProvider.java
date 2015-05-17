@@ -47,7 +47,7 @@ public class DbfluteTimeResourceProvider implements TimeResourceProvider {
     //                                                                      ==============
     public BusinessTimeHandler provideBusinessTimeHandler(TimeManager timeManager) {
         return new TypicalBusinessTimeHandler(() -> {
-            return timeManager.getCurrentMillis();
+            return timeManager.currentMillis();
         }, () -> {
             return DbfluteUserTimeZoneProcessProvider.centralTimeZone;
         });

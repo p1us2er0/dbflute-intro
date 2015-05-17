@@ -32,7 +32,6 @@ localdb/
 localap/
 
 # DBFlute
-mydbflute/
 latest-data.zip
 /dbflute_*
 /dbflute-intro.jar

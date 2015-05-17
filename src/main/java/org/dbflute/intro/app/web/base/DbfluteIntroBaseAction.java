@@ -20,11 +20,13 @@ import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
 import org.lastaflute.web.callback.ActionRuntimeMeta;
 import org.lastaflute.web.login.UserBean;
+import org.lastaflute.web.validation.ActionValidator;
+import org.lastaflute.web.validation.LaValidatableApi;
 
 /**
  * @author p1us2er0
  */
-public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction {
+public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction implements LaValidatableApi<DbfluteIntroMessages> {
 
     // ===================================================================================
     //                                                                          Definition
@@ -36,8 +38,8 @@ public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction {
     //                                                                           Attribute
     //                                                                           =========
     @Override
-    public final void godHandFinally(ActionRuntimeMeta runtimeMeta) {
-        super.godHandFinally(runtimeMeta);
+    public final void hookFinally(ActionRuntimeMeta runtimeMeta) {
+        super.hookFinally(runtimeMeta);
     }
 
     // ===================================================================================
@@ -64,10 +66,16 @@ public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction {
     }
 
     // ===================================================================================
-    //                                                                             Message
-    //                                                                             =======
+    //                                                                          Validation
+    //                                                                          ==========
+    @SuppressWarnings("unchecked")
     @Override
-    protected DbfluteIntroMessages createMessages() { // application may call
+    public ActionValidator<DbfluteIntroMessages> createValidator() {
+        return super.createValidator();
+    }
+
+    @Override
+    public DbfluteIntroMessages createMessages() { // application may call
         return new DbfluteIntroMessages(); // overriding to change return type to concrete-class
     }
 }

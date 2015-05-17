@@ -87,7 +87,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
 
     @Execute
     public JsonResponse<Void> create(ClientForm clientForm) {
-        validate(clientForm, () -> dispatchApiValidationError());
+        validateApi(clientForm, messages -> {});
         ClientBean clientBean = clientForm.clientBean;
         if (clientForm.testConnection) {
             dbFluteClientLogic.testConnection(clientBean);
@@ -98,7 +98,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
 
     @Execute
     public JsonResponse<Void> update(ClientForm clientForm) {
-        validate(clientForm, () -> dispatchApiValidationError());
+        validateApi(clientForm, messages -> {});
         ClientBean clientBean = clientForm.clientBean;
         if (clientForm.testConnection) {
             dbFluteClientLogic.testConnection(clientBean);

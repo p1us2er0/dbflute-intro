@@ -56,34 +56,34 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     private DbfluteConfig dbfluteConfig;
 
     // ===================================================================================
-    //                                                                            Callback
-    //                                                                            ========
+    //                                                                               Hook
+    //                                                                              ======
     // to suppress unexpected override by sub-class
     // you should remove the 'final' if you need to override this
     @Override
-    public final ActionResponse godHandActionPrologue(ActionRuntimeMeta runtimeMeta) {
-        return super.godHandActionPrologue(runtimeMeta);
+    public final ActionResponse godHandPrologue(ActionRuntimeMeta runtimeMeta) {
+        return super.godHandPrologue(runtimeMeta);
     }
 
     @Override
-    public final ActionResponse godHandExceptionMonologue(ActionRuntimeMeta runtimeMeta) {
-        return super.godHandExceptionMonologue(runtimeMeta);
+    public final ActionResponse godHandMonologue(ActionRuntimeMeta runtimeMeta) {
+        return super.godHandMonologue(runtimeMeta);
     }
 
     @Override
-    public final void godHandActionEpilogue(ActionRuntimeMeta runtimeMeta) {
-        super.godHandActionEpilogue(runtimeMeta);
+    public final void godHandEpilogue(ActionRuntimeMeta runtimeMeta) {
+        super.godHandEpilogue(runtimeMeta);
     }
 
     // #app_customize you can customize the god-hand callback
     @Override
-    public ActionResponse godHandBefore(ActionRuntimeMeta runtimeMeta) { // application's super class may override
-        return super.godHandBefore(runtimeMeta);
+    public ActionResponse hookBefore(ActionRuntimeMeta runtimeMeta) { // application may override
+        return super.hookBefore(runtimeMeta);
     }
 
     @Override
-    public void godHandFinally(ActionRuntimeMeta runtimeMeta) { // application's super class may override
-        super.godHandFinally(runtimeMeta);
+    public void hookFinally(ActionRuntimeMeta runtimeMeta) { // application may override
+        super.hookFinally(runtimeMeta);
     }
 
     // ===================================================================================
@@ -101,7 +101,7 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     protected AccessContextArranger newAccessContextArranger() { // for framework
         return resource -> {
             final AccessContext context = new AccessContext();
-            context.setAccessLocalDateTimeProvider(() -> getCurrentDateTime());
+            context.setAccessLocalDateTimeProvider(() -> currentDateTime());
             context.setAccessUserProvider(() -> buildAccessUserTrace(resource));
             return context;
         };

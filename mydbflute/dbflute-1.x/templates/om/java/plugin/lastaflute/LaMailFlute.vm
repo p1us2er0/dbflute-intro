@@ -1,0 +1,34 @@
+${manager.allClassCopyright}package ${request.package};
+
+import org.lastaflute.core.mail.LaTypicalPostcard;
+import org.lastaflute.core.mail.MPCall;
+import org.lastaflute.core.mail.Postbox;
+
+/**
+ * The postcard for MailFlute on LastaFlute.
+ * @author FreeGen
+ */
+public class ${table.className} extends LaTypicalPostcard {
+
+    public static final String PATH = "${table.domainPath}";
+
+    public static void droppedInto(Postbox postbox, MPCall<${table.className}> postcardLambda) {
+        ${table.className} postcard = new ${table.className}();
+        postcardLambda.write(postcard);
+        postbox.post(postcard);
+    }
+
+    protected String getBodyFile() {
+        return PATH;
+    }
+
+    protected String[] getPropertyNames() {
+        return new String[] {${table.propertyNameCommaString}};
+    }
+#foreach ($property in $table.propertyList)
+
+    public void set${property.capCalemName}(String ${property.uncapCalemName}) {
+        registerVariable("${property.propertyName}", ${property.uncapCalemName});
+    }
+#end
+}
