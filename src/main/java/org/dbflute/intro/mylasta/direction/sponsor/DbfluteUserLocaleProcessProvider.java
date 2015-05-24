@@ -19,7 +19,7 @@ import java.util.Locale;
 
 import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
-import org.lastaflute.web.callback.ActionRuntimeMeta;
+import org.lastaflute.web.callback.ActionRuntime;
 import org.lastaflute.web.servlet.request.RequestManager;
 import org.lastaflute.web.servlet.request.UserLocaleProcessProvider;
 
@@ -34,7 +34,7 @@ public class DbfluteUserLocaleProcessProvider implements UserLocaleProcessProvid
     }
 
     @Override
-    public OptionalThing<Locale> findBusinessLocale(ActionRuntimeMeta runtimeMeta, RequestManager requestManager) {
+    public OptionalThing<Locale> findBusinessLocale(ActionRuntime runtime, RequestManager requestManager) {
         return OptionalObject.empty(); // to next determination
     }
 

@@ -26,7 +26,7 @@ import org.dbflute.optional.OptionalThing;
 import org.dbflute.util.DfCollectionUtil;
 import org.lastaflute.web.api.ApiFailureHook;
 import org.lastaflute.web.api.ApiFailureResource;
-import org.lastaflute.web.callback.ActionRuntimeMeta;
+import org.lastaflute.web.callback.ActionRuntime;
 import org.lastaflute.web.response.ApiResponse;
 import org.lastaflute.web.response.JsonResponse;
 
@@ -36,36 +36,39 @@ import org.lastaflute.web.response.JsonResponse;
 public class DbfluteApiFailureHook implements ApiFailureHook {
 
     @Override
-    public ApiResponse handleLoginRequiredFailure(ApiFailureResource resource, ActionRuntimeMeta meta) {
-        return new JsonResponse<ErrorBean>(createErrorBean(resource.getPropertyMessageMap()))
-                .httpStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    public ApiResponse handleLoginRequiredFailure(ApiFailureResource resource, ActionRuntime runtime) {
+        return createErrorResponse(resource.getPropertyMessageMap(), HttpServletResponse.SC_UNAUTHORIZED);
     }
 
     @Override
-    public ApiResponse handleValidationError(ApiFailureResource resource, ActionRuntimeMeta meta) {
-        return new JsonResponse<ErrorBean>(createErrorBean(resource.getPropertyMessageMap()))
-                .httpStatus(HttpServletResponse.SC_BAD_REQUEST);
+    public ApiResponse handleValidationError(ApiFailureResource resource, ActionRuntime runtime) {
+        return createErrorResponse(resource.getPropertyMessageMap(), HttpServletResponse.SC_BAD_REQUEST);
     }
 
     @Override
-    public ApiResponse handleApplicationException(ApiFailureResource resource, ActionRuntimeMeta meta,
+    public ApiResponse handleApplicationException(ApiFailureResource resource, ActionRuntime runtime, RuntimeException cause) {
+        return createErrorResponse(resource.getPropertyMessageMap(), HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Override
+    public OptionalThing<ApiResponse> handleClientException(ApiFailureResource resource, ActionRuntime runtime,
             RuntimeException cause) {
-        return new JsonResponse<ErrorBean>(createErrorBean(resource.getPropertyMessageMap()))
-                .httpStatus(HttpServletResponse.SC_BAD_REQUEST);
+        Map<String, List<String>> messages = DfCollectionUtil.newHashMap();
+        messages.put("#", DfCollectionUtil.newArrayList(cause.getMessage()));
+        return OptionalObject.of(createErrorResponse(messages, HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
     }
 
     @Override
-    public OptionalThing<ApiResponse> handleSystemException(HttpServletResponse response, ActionRuntimeMeta meta,
+    public OptionalThing<ApiResponse> handleServerException(ApiFailureResource resource, ActionRuntime runtime,
             Throwable cause) {
         Map<String, List<String>> messages = DfCollectionUtil.newHashMap();
         messages.put("#", DfCollectionUtil.newArrayList(cause.getMessage()));
-        return OptionalObject.of(new JsonResponse<ErrorBean>(createErrorBean(messages))
-                .httpStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+        return OptionalObject.of(createErrorResponse(messages, HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
     }
 
-    protected ErrorBean createErrorBean(Map<String, List<String>> messages) {
+    protected ApiResponse createErrorResponse(Map<String, List<String>> messages, int httpStatus) {
         ErrorBean errorBean = new ErrorBean();
         errorBean.setMessages(messages);
-        return errorBean;
+        return new JsonResponse<ErrorBean>(errorBean).httpStatus(httpStatus);
     }
 }

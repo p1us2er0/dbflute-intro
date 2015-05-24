@@ -19,7 +19,7 @@ import java.util.TimeZone;
 
 import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
-import org.lastaflute.web.callback.ActionRuntimeMeta;
+import org.lastaflute.web.callback.ActionRuntime;
 import org.lastaflute.web.servlet.request.RequestManager;
 import org.lastaflute.web.servlet.request.UserTimeZoneProcessProvider;
 
@@ -41,7 +41,7 @@ public class DbfluteUserTimeZoneProcessProvider implements UserTimeZoneProcessPr
     }
 
     @Override
-    public OptionalThing<TimeZone> findBusinessTimeZone(ActionRuntimeMeta runtimeMeta, RequestManager requestManager) {
+    public OptionalThing<TimeZone> findBusinessTimeZone(ActionRuntime runtime, RequestManager requestManager) {
         return OptionalObject.empty();
     }
 

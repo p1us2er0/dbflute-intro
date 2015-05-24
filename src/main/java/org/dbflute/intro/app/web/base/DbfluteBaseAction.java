@@ -32,7 +32,7 @@ import org.dbflute.optional.OptionalThing;
 import org.lastaflute.db.dbflute.accesscontext.AccessContextArranger;
 import org.lastaflute.db.dbflute.accesscontext.AccessContextResource;
 import org.lastaflute.web.TypicalAction;
-import org.lastaflute.web.callback.ActionRuntimeMeta;
+import org.lastaflute.web.callback.ActionRuntime;
 import org.lastaflute.web.login.LoginManager;
 import org.lastaflute.web.response.ActionResponse;
 import org.lastaflute.web.response.render.RenderData;
@@ -61,29 +61,29 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     // to suppress unexpected override by sub-class
     // you should remove the 'final' if you need to override this
     @Override
-    public final ActionResponse godHandPrologue(ActionRuntimeMeta runtimeMeta) {
-        return super.godHandPrologue(runtimeMeta);
+    public final ActionResponse godHandPrologue(ActionRuntime runtime) {
+        return super.godHandPrologue(runtime);
     }
 
     @Override
-    public final ActionResponse godHandMonologue(ActionRuntimeMeta runtimeMeta) {
-        return super.godHandMonologue(runtimeMeta);
+    public final ActionResponse godHandMonologue(ActionRuntime runtime) {
+        return super.godHandMonologue(runtime);
     }
 
     @Override
-    public final void godHandEpilogue(ActionRuntimeMeta runtimeMeta) {
-        super.godHandEpilogue(runtimeMeta);
+    public final void godHandEpilogue(ActionRuntime runtime) {
+        super.godHandEpilogue(runtime);
     }
 
     // #app_customize you can customize the god-hand callback
     @Override
-    public ActionResponse hookBefore(ActionRuntimeMeta runtimeMeta) { // application may override
-        return super.hookBefore(runtimeMeta);
+    public ActionResponse hookBefore(ActionRuntime runtime) { // application may override
+        return super.hookBefore(runtime);
     }
 
     @Override
-    public void hookFinally(ActionRuntimeMeta runtimeMeta) { // application may override
-        super.hookFinally(runtimeMeta);
+    public void hookFinally(ActionRuntime runtime) { // application may override
+        super.hookFinally(runtime);
     }
 
     // ===================================================================================

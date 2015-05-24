@@ -18,7 +18,7 @@ package org.dbflute.intro.app.web.base;
 import org.dbflute.intro.mylasta.action.DbfluteIntroMessages;
 import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
-import org.lastaflute.web.callback.ActionRuntimeMeta;
+import org.lastaflute.web.callback.ActionRuntime;
 import org.lastaflute.web.login.UserBean;
 import org.lastaflute.web.validation.ActionValidator;
 import org.lastaflute.web.validation.LaValidatableApi;
@@ -38,8 +38,8 @@ public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction implement
     //                                                                           Attribute
     //                                                                           =========
     @Override
-    public final void hookFinally(ActionRuntimeMeta runtimeMeta) {
-        super.hookFinally(runtimeMeta);
+    public final void hookFinally(ActionRuntime runtime) {
+        super.hookFinally(runtime);
     }
 
     // ===================================================================================
