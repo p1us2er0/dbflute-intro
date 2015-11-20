@@ -69,10 +69,9 @@ dependencies {
     compile "org.lastaflute:lastaflute:${versions.lastaflute}"
 
     providedCompile "org.dbflute.jetty:jetty-boot:${versions.jettyboot}"
-    providedRuntime "ch.qos.logback:logback-classic:${versions.logback}"
 }
 
-mainClassName = 'org.dbflute.intro.app.boot.DbfluteIntroBoot'
+mainClassName = 'org.dbflute.intro.DbfluteIntroBoot'
 
 war {
     from {

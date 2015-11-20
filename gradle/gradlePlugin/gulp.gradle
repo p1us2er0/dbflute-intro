@@ -66,7 +66,7 @@ task cacheKey(dependsOn: gulp_build) << {
     file('dist/cacheKey.json').text = json.toString()
 }
 
-['classes' : ['gulp_build', 'manifest', 'cacheKey'], 'clean' : 'gulp_clean', 'run' : 'gulp_serve', 'test' : 'gulp_test'].each {
+['classes' : ['gulp_build', 'manifest', 'cacheKey'], 'clean' : 'gulp_clean'].each {
     if (!tasks.findByName(it.key)) {
         task(it.key) {
 
