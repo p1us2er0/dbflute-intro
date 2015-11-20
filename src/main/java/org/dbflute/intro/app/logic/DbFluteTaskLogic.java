@@ -51,8 +51,6 @@ public class DbFluteTaskLogic {
         }
 
         boolean result = dbfluteTaskList.stream().allMatch(processBuilder -> {
-            processBuilder.directory(new File(DbFluteIntroLogic.BASE_DIR_PATH, "dbflute_" + project));
-
             Map<String, String> environment = processBuilder.environment();
             environment.put("pause_at_end", "n");
             environment.put("answer", "y");

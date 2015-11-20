@@ -49,7 +49,50 @@ app.config(function($httpProvider) {
                 }
 
                 if (response.status === 400) {
-                    $rootScope.messages = angular.isArray(response.data) ? response.data : [response.data];
+                    if (response.data.messages) {
+                        var messageList = new Array();
+                        var convertCamelToSnake = function(key) {
+                            return key.replace(/([A-Z])/g,
+                                function(s) {
+                                    return '_' + s.charAt(0).toLowerCase();
+                                }
+                            );
+                        };
+                        for (var key in response.data.messages) {
+                            for (var i in response.data.messages[key]) {
+                                var message = response.data.messages[key][i];
+
+                                // リストを含む場合の処理
+                                if (key.match(/List/)) {
+                                    // indexを含むリストの場合
+                                    if (key.match(/[0-9]/)) {
+                                        var newKey = '';
+                                        var splitList = key.split(/[0-9]/);
+                                        for (var i in splitList) {
+                                            newKey += splitList[i].replace(/[0-9]/,'');
+                                        }
+                                        key = newKey;
+                                    } else {
+                                        key += '[]';
+                                    }
+                                }
+
+                                // TODO
+                                if (key.lastIndexOf('.')) {
+                                    key = key.substring(key.lastIndexOf('.') + 1);
+                                }
+                                var propertyName = convertCamelToSnake(key).toUpperCase();
+                                propertyName = "LABEL_" + propertyName;
+                                var $translate = $injector.get('$translate')
+                                var symbol = ($translate.instant(propertyName) === '') ? '' : '：';
+                                messageList.push($translate.instant(propertyName) + symbol + message + '\r\n');
+                            }
+                        }
+                        $rootScope.messages = messageList;
+
+                    } else {
+                        $rootScope.messages = angular.isArray(response.data) ? response.data : [response.data];
+                    }
                 }
 
                 if (response.status === 401) {
