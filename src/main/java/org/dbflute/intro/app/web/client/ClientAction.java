@@ -86,31 +86,31 @@ public class ClientAction extends DbfluteIntroBaseAction {
     }
 
     @Execute
-    public JsonResponse<Void> create(ClientForm clientForm) {
-        validateApi(clientForm, messages -> {});
-        ClientBean clientBean = clientForm.clientBean;
-        if (clientForm.testConnection) {
+    public JsonResponse<Void> create(ClientBody clientBody) {
+        validate(clientBody, messages -> {});
+        ClientBean clientBean = clientBody.clientBean;
+        if (clientBody.testConnection) {
             dbFluteClientLogic.testConnection(clientBean);
         }
-        dbFluteClientLogic.createClient(clientBean, clientForm.testConnection);
-        return JsonResponse.empty();
+        dbFluteClientLogic.createClient(clientBean, clientBody.testConnection);
+        return JsonResponse.asEmptyBody();
     }
 
     @Execute
-    public JsonResponse<Void> update(ClientForm clientForm) {
-        validateApi(clientForm, messages -> {});
-        ClientBean clientBean = clientForm.clientBean;
-        if (clientForm.testConnection) {
+    public JsonResponse<Void> update(ClientBody clientBody) {
+        validate(clientBody, messages -> {});
+        ClientBean clientBean = clientBody.clientBean;
+        if (clientBody.testConnection) {
             dbFluteClientLogic.testConnection(clientBean);
         }
-        dbFluteClientLogic.updateClient(clientBean, clientForm.testConnection);
-        return JsonResponse.empty();
+        dbFluteClientLogic.updateClient(clientBean, clientBody.testConnection);
+        return JsonResponse.asEmptyBody();
     }
 
     @Execute
     public JsonResponse<Void> delete(String project) {
         dbFluteClientLogic.deleteClient(project);
-        return JsonResponse.empty();
+        return JsonResponse.asEmptyBody();
     }
 
     @Execute
@@ -125,7 +125,7 @@ public class ClientAction extends DbfluteIntroBaseAction {
         }
 
         dbFluteTaskLogic.execute(project, task, env, outputStream);
-        return JsonResponse.skip();
+        return JsonResponse.asEmptyBody();
     }
 
     @Execute
@@ -144,14 +144,11 @@ public class ClientAction extends DbfluteIntroBaseAction {
     }
 
     protected StreamResponse createHtmlStreamResponse(File file) {
-
         StreamResponse streamResponse = new StreamResponse("");
         streamResponse.contentType("text/html; charset=UTF-8");
-        try {
-            streamResponse.stream(FileUtils.openInputStream(file));
-        } catch (IOException e) {
-            streamResponse.httpStatus(HttpServletResponse.SC_NOT_FOUND);
-        }
+        streamResponse.stream(writtenStream -> {
+            writtenStream.write(FileUtils.openInputStream(file));
+        });
 
         return streamResponse;
     }

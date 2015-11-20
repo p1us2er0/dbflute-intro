@@ -16,10 +16,10 @@
 package org.dbflute.intro.app.web.base;
 
 import org.dbflute.intro.mylasta.action.DbfluteIntroMessages;
-import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
-import org.lastaflute.web.callback.ActionRuntime;
+import org.lastaflute.db.dbflute.accesscontext.AccessContextResource;
 import org.lastaflute.web.login.UserBean;
+import org.lastaflute.web.ruts.process.ActionRuntime;
 import org.lastaflute.web.validation.ActionValidator;
 import org.lastaflute.web.validation.LaValidatableApi;
 
@@ -31,21 +31,24 @@ public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction implement
     // ===================================================================================
     //                                                                          Definition
     //                                                                          ==========
-    /** The application type for DbfluteIntro, e.g. used by access context. */
+    /** The application type for Front, e.g. used by access context. */
     protected static final String APP_TYPE = "DbfluteIntro";
+
+    /** The user type for Member, e.g. used by access context. */
+    protected static final String USER_TYPE = "None";
 
     // ===================================================================================
     //                                                                           Attribute
     //                                                                           =========
-    @Override
-    public final void hookFinally(ActionRuntime runtime) {
-        super.hookFinally(runtime);
-    }
 
     // ===================================================================================
     //                                                                            Callback
     //                                                                            ========
     // #app_customize you can customize the god-hand callback
+    @Override
+    public final void hookFinally(ActionRuntime runtime) {
+        super.hookFinally(runtime);
+    }
 
     // ===================================================================================
     //                                                                         My Resource
@@ -55,14 +58,32 @@ public abstract class DbfluteIntroBaseAction extends DbfluteBaseAction implement
         return APP_TYPE;
     }
 
+    /**
+     * Get the bean of login user on session. (for application)
+     * @return The optional thing of found user bean. (NotNull, EmptyAllowed: when not login)
+     */
     @Override
-    protected OptionalThing<? extends UserBean> getUserBean() {
-        return OptionalObject.empty(); // #app_customize return empty if login is unused
+    protected OptionalThing<? extends UserBean<?>> getUserBean() { // application may call
+        return OptionalThing.empty();
     }
 
     @Override
     protected OptionalThing<String> myUserType() { // for framework
-        return OptionalObject.empty(); // #app_customize return empty if login is unused
+        return OptionalThing.of(USER_TYPE); // #app_customize return empty if login is unused
+    }
+
+    // ===================================================================================
+    //                                                                      Access Context
+    //                                                                      ==============
+    protected String buildAccessUserTrace(AccessContextResource resource) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(resource.getModuleName());
+        final String trace = sb.toString();
+        final int traceColumnSize = 200;
+        if (trace.length() > traceColumnSize) {
+            return trace.substring(0, traceColumnSize);
+        }
+        return trace;
     }
 
     // ===================================================================================

@@ -15,35 +15,30 @@
  */
 package org.dbflute.intro.app.web.base;
 
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.TimeZone;
 
 import javax.annotation.Resource;
 
-import org.dbflute.Entity;
-import org.dbflute.cbean.result.PagingResultBean;
 import org.dbflute.helper.HandyDate;
 import org.dbflute.hook.AccessContext;
 import org.dbflute.intro.mylasta.direction.DbfluteConfig;
-import org.dbflute.intro.mylasta.paging.PagingNavi;
-import org.dbflute.optional.OptionalObject;
 import org.dbflute.optional.OptionalThing;
 import org.lastaflute.db.dbflute.accesscontext.AccessContextArranger;
 import org.lastaflute.db.dbflute.accesscontext.AccessContextResource;
 import org.lastaflute.web.TypicalAction;
-import org.lastaflute.web.callback.ActionRuntime;
 import org.lastaflute.web.login.LoginManager;
 import org.lastaflute.web.response.ActionResponse;
-import org.lastaflute.web.response.render.RenderData;
+import org.lastaflute.web.ruts.process.ActionRuntime;
 import org.lastaflute.web.servlet.request.RequestManager;
+import org.lastaflute.web.token.CsrfManager;
 
 /**
  * @author p1us2er0
  */
 public abstract class DbfluteBaseAction extends TypicalAction {
-
-    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[] {};
 
     // ===================================================================================
     //                                                                           Attribute
@@ -51,6 +46,9 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     /** The manager of request. (NotNull) */
     @Resource
     private RequestManager requestManager;
+
+    @Resource
+    private CsrfManager csrfManager;
 
     @Resource
     private DbfluteConfig dbfluteConfig;
@@ -78,12 +76,18 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     // #app_customize you can customize the god-hand callback
     @Override
     public ActionResponse hookBefore(ActionRuntime runtime) { // application may override
+        if (!dbfluteConfig.isDevelopmentHere()) {
+            Method executeMethod = runtime.getExecuteMethod();
+            if (runtime.isApiExecute() && !executeMethod.isAnnotationPresent(CsrfTokenVerifySkip.class)) {
+                csrfManager.verifyToken();
+            }
+        }
         return super.hookBefore(runtime);
     }
 
     @Override
-    public void hookFinally(ActionRuntime runtime) { // application may override
-        super.hookFinally(runtime);
+    public void hookFinally(ActionRuntime runtimeMeta) {
+        super.hookFinally(runtimeMeta);
     }
 
     // ===================================================================================
@@ -91,7 +95,7 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     //                                                                         ===========
     @Override
     protected OptionalThing<LoginManager> myLoginManager() { // for framework
-        return OptionalObject.empty(); // #app_customize if empty, login is unused
+        return OptionalThing.empty(); // #app_customize if empty, login is unused
     }
 
     // ===================================================================================
@@ -103,15 +107,24 @@ public abstract class DbfluteBaseAction extends TypicalAction {
             final AccessContext context = new AccessContext();
             context.setAccessLocalDateTimeProvider(() -> currentDateTime());
             context.setAccessUserProvider(() -> buildAccessUserTrace(resource));
+            context.setAccessProcessProvider(() -> buildAccessProcessTrace(resource));
             return context;
         };
     }
 
     // #app_customize you can customize the user trace style
-    private String buildAccessUserTrace(AccessContextResource resource) {
+    protected abstract String buildAccessUserTrace(AccessContextResource resource);
+
+    // #app_customize you can customize the user trace style
+    private String buildAccessProcessTrace(AccessContextResource resource) {
         final StringBuilder sb = new StringBuilder();
-        sb.append(myUserType().map(userType -> userType + ":").orElse(""));
-        sb.append(getUserBean().map(bean -> bean.getUserId()).orElseGet(() -> -1L));
+        sb.append(myUserType()).append(":");
+        getUserBean().ifPresent(usrBean -> {
+            sb.append(usrBean.getUserId());
+        }).orElse(() -> {
+            sb.append(-1);
+        });
+
         sb.append(",").append(myAppType()).append(",").append(resource.getModuleName());
         final String trace = sb.toString();
         final int traceColumnSize = 200;
@@ -125,35 +138,6 @@ public abstract class DbfluteBaseAction extends TypicalAction {
     //                                                                              Paging
     //                                                                              ======
     // #app_customize you can customize the paging navigation logic
-    /**
-     * Register the paging navigation as page-range.
-     * @param data The data object to render the HTML. (NotNull)
-     * @param page The selected page as bean of paging result. (NotNull)
-     * @param queryForm The form for query string added to link. (NullAllowed)
-     */
-    protected void registerPagingNavi(RenderData data, PagingResultBean<? extends Entity> page, Object queryForm) { // application may call
-        data.register("pagingNavi", preparePagingNavi(page, queryForm));
-    }
-
-    /**
-     * Prepare the paging navigation as page-range.
-     * @param page The paging result bean for the paging data. (NotNull)
-     * @return The paging navigation prepared for the paging data. (NotNull)
-     * @param queryForm The form for query string added to link. (NullAllowed)
-     */
-    protected PagingNavi preparePagingNavi(PagingResultBean<? extends Entity> page, Object queryForm) { // application may call
-        return new PagingNavi(page, op -> {
-            op.rangeSize(dbfluteConfig.getPagingPageRangeSizeAsInteger());
-            if (dbfluteConfig.isPagingPageRangeFillLimit()) {
-                op.fillLimit();
-            }
-        }, myPagignLinkPaths(), queryForm);
-    }
-
-    protected Object[] myPagignLinkPaths() {
-        return EMPTY_OBJECT_ARRAY;
-    }
-
     /**
      * Get page size (record count of one page) for paging.
      * @return The integer as page size. (NotZero, NotMinus)
@@ -223,5 +207,9 @@ public abstract class DbfluteBaseAction extends TypicalAction {
 
     protected TimeZone getConversionTimeZone() {
         return requestManager.getUserTimeZone();
+    }
+
+    protected LocalDateTime toLocalDateTime(LocalDate localDate) {
+        return localDate == null ? null : new HandyDate(localDate).getLocalDateTime();
     }
 }

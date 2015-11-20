@@ -31,12 +31,10 @@ public class ${request.className} extends ActionMessages {
     private static final long serialVersionUID = 1L;
 #foreach ($column in $table.columnList)
 #if (!$column.isExtends)
-#if (!$column.isLabel)
 #if (!$column.isOverride)
 
     /** The key of the message: ${column.propertyValue} */
     public static final String ${column.defName} = "{${column.propertyKey}}";
-#end
 #end
 #end
 #end
@@ -84,7 +82,7 @@ public class ${request.className} extends ActionMessages {
 #end
     public ${request.className} add${column.capCamelName}(String property) {
         assertPropertyNotNull(property);
-        add(property, new ActionMessage(${column.defName}, (Object[])null));
+        add(property, new ActionMessage(${column.defName}));
         return this;
     }
 #end
@@ -104,24 +102,4 @@ public class ${request.className} extends ActionMessages {
         }
     }
 #end
-
-    /**
-     * The definition of keys for labels.
-     * @author FreeGen
-     */
-#if ($request.tableMap.superClassPackage)
-    public static interface LabelKey extends ${request.tableMap.superClassSimpleName}.LabelKey {
-#else
-    public static interface LabelKey {
-#end
-#foreach ($column in $table.columnList)
-#if (!$column.isExtends)
-#if ($column.isLabel)
-
-        /** The key of the label: ${column.propertyValue} */
-        String ${column.defName} = "${column.propertyKey}";
-#end
-#end
-#end
-    }
 }

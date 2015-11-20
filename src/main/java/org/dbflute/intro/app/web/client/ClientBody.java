@@ -19,13 +19,11 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.dbflute.intro.app.bean.ClientBean;
-import org.lastaflute.web.api.JsonBody;
 
 /**
  * @author p1us2er0
  */
-@JsonBody
-public class ClientForm {
+public class ClientBody {
 
     @NotNull
     @Valid

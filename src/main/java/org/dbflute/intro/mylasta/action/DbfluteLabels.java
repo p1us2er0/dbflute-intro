@@ -36,11 +36,4 @@ public class DbfluteLabels extends ActionMessages {
             throw new IllegalArgumentException(msg);
         }
     }
-
-    /**
-     * The definition of keys for labels.
-     * @author FreeGen
-     */
-    public static interface LabelKey {
-    }
 }

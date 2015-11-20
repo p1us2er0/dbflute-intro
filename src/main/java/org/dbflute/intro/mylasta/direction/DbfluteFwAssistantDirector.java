@@ -21,8 +21,8 @@ import javax.annotation.Resource;
 
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteActionAdjustmentProvider;
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteApiFailureHook;
-import org.dbflute.intro.mylasta.direction.sponsor.DbfluteBootProcessCallback;
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteCookieResourceProvider;
+import org.dbflute.intro.mylasta.direction.sponsor.DbfluteCurtainBeforeHook;
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteSecurityResourceProvider;
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteTimeResourceProvider;
 import org.dbflute.intro.mylasta.direction.sponsor.DbfluteUserLocaleProcessProvider;
@@ -81,19 +81,19 @@ public abstract class DbfluteFwAssistantDirector extends CachedFwAssistantDirect
         direction.directFrameworkDebug(dbfluteConfig.isFrameworkDebug()); // basically false
 
         // you can add your own process when your application is booting
-        direction.directBootProcessCallback(createBootProcessCallback());
+        direction.directCurtainBefore(createCurtainBefore());
 
         direction.directSecurity(createSecurityResourceProvider());
         direction.directTime(createTimeResourceProvider());
     }
 
-    protected DbfluteBootProcessCallback createBootProcessCallback() {
-        return new DbfluteBootProcessCallback();
+    protected DbfluteCurtainBeforeHook createCurtainBefore() {
+        return new DbfluteCurtainBeforeHook();
     }
 
     protected DbfluteSecurityResourceProvider createSecurityResourceProvider() { // #change_it
         final InvertibleCryptographer inver = InvertibleCryptographer.createAesCipher("dbflute:dbfluteintro");
-        final OneWayCryptographer oneWay = OneWayCryptographer.createSha1Cryptographer();
+        final OneWayCryptographer oneWay = OneWayCryptographer.createSha256Cryptographer();
         return new DbfluteSecurityResourceProvider(inver, oneWay);
     }
 

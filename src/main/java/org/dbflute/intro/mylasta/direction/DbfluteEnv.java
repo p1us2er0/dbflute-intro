@@ -16,6 +16,7 @@
 package org.dbflute.intro.mylasta.direction;
 
 import org.lastaflute.core.direction.ObjectiveConfig;
+import org.lastaflute.core.direction.exception.ConfigPropertyNotFoundException;
 
 /**
  * @author FreeGen
@@ -40,14 +41,16 @@ public interface DbfluteEnv {
     /**
      * Get the value of property as {@link String}.
      * @param propertyKey The key of the property. (NotNull)
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (NotNull: if not found, exception)
+     * @throws ConfigPropertyNotFoundException When the property is not found.
      */
     String get(String propertyKey);
 
     /**
      * Is the property true?
      * @param propertyKey The key of the property which is boolean type. (NotNull)
-     * @return The determination, true or false. (if the property can be true, returns true)
+     * @return The determination, true or false. (if not found, exception)
+     * @throws ConfigPropertyNotFoundException When the property is not found.
      */
     boolean is(String propertyKey);
 
@@ -55,7 +58,7 @@ public interface DbfluteEnv {
      * Get the value for the key 'lasta_di.smart.deploy.mode'. <br>
      * The value is, e.g. hot <br>
      * comment: The mode of Lasta Di's smart-deploy, should be cool in production (e.g. hot, cool, warm)
-     * @return The value of found property. (basically NotNull: because of generated)
+     * @return The value of found property. (NotNull: if not found, exception but basically no way)
      */
     String getLastaDiSmartDeployMode();
 
@@ -63,7 +66,7 @@ public interface DbfluteEnv {
      * Get the value for the key 'development.here'. <br>
      * The value is, e.g. true <br>
      * comment: Is development environment here? (used for various purpose, you should set false if unknown)
-     * @return The value of found property. (basically NotNull: because of generated)
+     * @return The value of found property. (NotNull: if not found, exception but basically no way)
      */
     String getDevelopmentHere();
 
@@ -71,7 +74,7 @@ public interface DbfluteEnv {
      * Is the property for the key 'development.here' true? <br>
      * The value is, e.g. true <br>
      * comment: Is development environment here? (used for various purpose, you should set false if unknown)
-     * @return The determination, true or false. (if the property can be true, returns true)
+     * @return The determination, true or false. (if not found, exception but basically no way)
      */
     boolean isDevelopmentHere();
 
@@ -79,7 +82,7 @@ public interface DbfluteEnv {
      * Get the value for the key 'environment.title'. <br>
      * The value is, e.g. Local Development <br>
      * comment: The title of environment (e.g. local or integartion or production)
-     * @return The value of found property. (basically NotNull: because of generated)
+     * @return The value of found property. (NotNull: if not found, exception but basically no way)
      */
     String getEnvironmentTitle();
 
@@ -87,7 +90,7 @@ public interface DbfluteEnv {
      * Get the value for the key 'framework.debug'. <br>
      * The value is, e.g. false <br>
      * comment: Does it enable the Framework internal debug? (true only when emergency)
-     * @return The value of found property. (basically NotNull: because of generated)
+     * @return The value of found property. (NotNull: if not found, exception but basically no way)
      */
     String getFrameworkDebug();
 
@@ -95,7 +98,7 @@ public interface DbfluteEnv {
      * Is the property for the key 'framework.debug' true? <br>
      * The value is, e.g. false <br>
      * comment: Does it enable the Framework internal debug? (true only when emergency)
-     * @return The determination, true or false. (if the property can be true, returns true)
+     * @return The determination, true or false. (if not found, exception but basically no way)
      */
     boolean isFrameworkDebug();
 
@@ -103,7 +106,7 @@ public interface DbfluteEnv {
      * Get the value for the key 'time.adjust.time.millis'. <br>
      * The value is, e.g. 0 <br>
      * comment: The milliseconds for (relative or absolute) adjust time (set only when test) @LongType *dynamic in development
-     * @return The value of found property. (basically NotNull: because of generated)
+     * @return The value of found property. (NotNull: if not found, exception but basically no way)
      */
     String getTimeAdjustTimeMillis();
 
@@ -111,7 +114,7 @@ public interface DbfluteEnv {
      * Get the value for the key 'time.adjust.time.millis' as {@link Long}. <br>
      * The value is, e.g. 0 <br>
      * comment: The milliseconds for (relative or absolute) adjust time (set only when test) @LongType *dynamic in development
-     * @return The value of found property. (basically NotNull: because of generated)
+     * @return The value of found property. (NotNull: if not found, exception but basically no way)
      * @throws NumberFormatException When the property is not long.
      */
     Long getTimeAdjustTimeMillisAsLong();

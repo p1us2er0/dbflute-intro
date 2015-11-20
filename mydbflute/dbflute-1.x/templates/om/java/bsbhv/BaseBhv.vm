@@ -214,8 +214,12 @@ public abstract class ${myClassName} extends ${table.baseBehaviorExtendsClassNam
      * @throws EntityDuplicatedException When the entity has been duplicated.
      * @throws SelectEntityConditionNotFoundException When the condition for selecting an entity is not found.
      */
-    public ${table.filterSelectEntityOptionalReturnIfNeeds($myExtendedObjectClassName)} selectEntity(CBCall<${myConditionBeanClassName}> cbLambda) {
+    public ${table.filterLambdaSelectEntityOptionalReturnIfNeeds($myExtendedObjectClassName)} selectEntity(CBCall<${myConditionBeanClassName}> cbLambda) {
+#if ($table.needsLambdaSelectEntityForcedlyOptional())
+        return doSelectOptionalEntity(createCB(cbLambda), typeOfSelectedEntity());
+#else
         return facadeSelectEntity(createCB(cbLambda));
+#end
     }
 
 #end
@@ -1797,6 +1801,47 @@ public abstract class ${myClassName} extends ${table.baseBehaviorExtendsClassNam
         return doQueryDelete(cb, createDeleteOption(opLambda));
     }
 #end
+#if ($database.isZeroUpdateCheckExistenceForPassing())
+
+    @Override
+    protected int delegateUpdate(Entity entity, UpdateOption<? extends ConditionBean> option) {
+        // ignore optimistic lock failure because optimistic lock column is
+        // always updated so 'changed' count cannot be zero, means no problem
+        // and possible twice check but ignore it because of very rare case
+        int result = super.delegateUpdate(entity, option);
+        return checkZeroUpdateExistence(entity, result);
+    }
+
+    @Override
+    protected int delegateUpdateNonstrict(Entity entity, UpdateOption<? extends ConditionBean> option) {
+        int result = super.delegateUpdateNonstrict(entity, option);
+        return checkZeroUpdateExistence(entity, result);
+    }
+
+    protected int checkZeroUpdateExistence(Entity entity, int result) {
+        if (result == 0) {
+            boolean hasPK = entity.hasPrimaryKeyValue();
+            java.util.Set<String> uniqueProps = entity.myuniqueDrivenProperties();
+            if (hasPK || !uniqueProps.isEmpty()) { // basically true (but no check)
+                int count = countZeroUpdateExistence(entity, hasPK, uniqueProps);
+                return count > 0 ? 1 : 0; // success(1) means that the update has zero changed
+            }
+        }
+        return result;
+    }
+
+    protected int countZeroUpdateExistence(Entity entity, boolean hasPK, java.util.Set<String> uniqueProps) {
+        return selectCount(cb -> {
+            if (hasPK) {
+                cb.acceptPrimaryKeyMap(asDBMeta().extractPrimaryKeyMap(entity));
+            } else {
+                for (String uq : uniqueProps) {
+                    cb.query().invokeQueryEqual(uq, asDBMeta().findColumnInfo(uq).read(entity));
+                }
+            }
+        });
+    }
+#end
 #else
 #if ($table.isAvailableNonPrimaryKeyWritable())
 
@@ -1869,7 +1914,7 @@ public abstract class ${myClassName} extends ${table.baseBehaviorExtendsClassNam
     //                                                                     ===============
 #if ($table.hasBehaviorFilterBeforeInsertColumn())
     @Override
-    protected void filterEntityOfInsert(Entity tgt, InsertOption<? extends ConditionBean> op) {
+    protected void filterEntityOfInsert(Entity tgt, org.dbflute.optional.OptionalThing<InsertOption<? extends ConditionBean>> op) {
         super.filterEntityOfInsert(tgt, op);
         ${myExtendedObjectClassName} et = downcast(tgt);
 #foreach ($column in $table.behaviorFilterBeforeInsertColumnList)
@@ -1880,7 +1925,7 @@ public abstract class ${myClassName} extends ${table.baseBehaviorExtendsClassNam
 #if ($table.isWritable())
 #if ($table.hasBehaviorFilterBeforeUpdateColumn())
     @Override
-    protected void filterEntityOfUpdate(Entity tgt, UpdateOption<? extends ConditionBean> op) {
+    protected void filterEntityOfUpdate(Entity tgt, org.dbflute.optional.OptionalThing<UpdateOption<? extends ConditionBean>> op) {
         super.filterEntityOfUpdate(tgt, op);
         ${myExtendedObjectClassName} et = downcast(tgt);
 #foreach ($column in $table.behaviorFilterBeforeUpdateColumnList)

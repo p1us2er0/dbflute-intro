@@ -47,12 +47,12 @@ public class EngineAction extends DbfluteIntroBaseAction {
     @Execute
     public JsonResponse<Void> download(String version) {
         dbFluteEngineLogic.download(version);
-        return JsonResponse.empty();
+        return JsonResponse.asEmptyBody();
     }
 
     @Execute
     public JsonResponse<Void> remove(String version) {
         dbFluteEngineLogic.remove(version);
-        return JsonResponse.empty();
+        return JsonResponse.asEmptyBody();
     }
 }

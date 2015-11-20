@@ -15,6 +15,9 @@
 ##
 ${database.allClassCopyright}package ${glPackageBaseCommon};
 
+#if ($database.isTargetContainerSeasar() || $database.isTargetContainerLastaDi())
+import javax.annotation.Resource;
+#end
 import javax.sql.DataSource;
 
 import org.dbflute.bhv.core.InvokerAssistant;
@@ -531,8 +534,9 @@ public class ${glImplementedInvokerAssistant} implements InvokerAssistant {
     // ===================================================================================
     //                                                                            Accessor
     //                                                                            ========
-#if ($database.isTargetContainerLastaDi())
-    @javax.annotation.Resource
+#if ($database.isTargetContainerSeasar() || $database.isTargetContainerLastaDi())
+## also seasar for Lasta migration
+    @Resource
 #end
     public void setDataSource(DataSource dataSource) {
         _dataSource = dataSource;
@@ -542,8 +546,8 @@ public class ${glImplementedInvokerAssistant} implements InvokerAssistant {
     // when the initializer is extended by DBFlute property
     // so this variable is actually unused in this class
     // (needs to be injected only when the DI container is set by its DI setting file)
-#if ($database.isTargetContainerLastaDi())
-    @javax.annotation.Resource
+#if ($database.isTargetContainerSeasar() || $database.isTargetContainerLastaDi())
+    @Resource
 #end
     public void setIntroduction(${glDBFluteInitializer} introduction) {
         _introduction = introduction;

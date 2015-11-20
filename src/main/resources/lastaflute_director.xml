@@ -3,5 +3,5 @@
     "http://dbflute.org/meta/lastadi10.dtd">
 <components>
     <component name="assistantDirector" class="org.dbflute.intro.mylasta.direction.DbfluteIntroFwAssistantDirector"/>
-    <component name="dbfluteIntroConfig" class="org.dbflute.intro.mylasta.direction.DbfluteIntroConfig$SimpleImpl" />
+    <component name="dbfluteIntroConfig" class="org.dbflute.intro.mylasta.direction.DbfluteIntroConfig$SimpleImpl"/>
 </components>

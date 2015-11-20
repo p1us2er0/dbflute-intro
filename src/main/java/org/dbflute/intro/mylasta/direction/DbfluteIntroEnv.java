@@ -16,6 +16,7 @@
 package org.dbflute.intro.mylasta.direction;
 
 import org.dbflute.intro.mylasta.direction.DbfluteConfig;
+import org.lastaflute.core.direction.exception.ConfigPropertyNotFoundException;
 
 /**
  * @author FreeGen
@@ -25,14 +26,16 @@ public interface DbfluteIntroEnv extends DbfluteConfig {
     /**
      * Get the value of property as {@link String}.
      * @param propertyKey The key of the property. (NotNull)
-     * @return The value of found property. (NullAllowed: if null, not found)
+     * @return The value of found property. (NotNull: if not found, exception)
+     * @throws ConfigPropertyNotFoundException When the property is not found.
      */
     String get(String propertyKey);
 
     /**
      * Is the property true?
      * @param propertyKey The key of the property which is boolean type. (NotNull)
-     * @return The determination, true or false. (if the property can be true, returns true)
+     * @return The determination, true or false. (if not found, exception)
+     * @throws ConfigPropertyNotFoundException When the property is not found.
      */
     boolean is(String propertyKey);
 
