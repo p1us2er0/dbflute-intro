@@ -3,6 +3,32 @@
 angular.module('dbflute-intro')
         .controller('MainCtrl', function ($scope, $window, $modal, ApiFactory) {
 
+    // レスポンスの型を変換 Bean -> Body
+    var convertParam = function(param) {
+        var tempParam = angular.copy(param);
+        for (var key in tempParam) {
+            if (key.indexOf('Bean') >= 0) {
+                var old = key;
+                var data = tempParam[key];
+                key = key.replace('Bean', 'Body');
+                tempParam[key] = data;
+                delete tempParam[old];
+            }
+
+            if (tempParam[key] instanceof Array) {
+                if (tempParam[key][0] instanceof Array || tempParam[key][0] instanceof Object) {
+                    for (var i in tempParam[key]) {
+                        convertParam(tempParam[key][i]);
+                    }
+                }
+            } else if (tempParam[key] instanceof Object) {
+                convertParam(tempParam[key]);
+            }
+        }
+
+        return tempParam;
+    };
+
     $scope.manifest = {};
     $scope.publicProperties = [];
     $scope.versions = [];
@@ -61,21 +87,21 @@ angular.module('dbflute-intro')
     };
 
     $scope.create = function(clientBean, testConnection) {
-        ApiFactory.createClient(clientBean, testConnection).then(function(response) {
+        ApiFactory.createClient(convertParam(clientBean), testConnection).then(function(response) {
             $scope.editFlg = false;
             $scope.findClientBeanList();
         });
     };
 
     $scope.update = function(clientBean, testConnection) {
-        ApiFactory.updateClient(clientBean, testConnection).then(function(response) {
+        ApiFactory.updateClient(convertParam(clientBean), testConnection).then(function(response) {
             $scope.editFlg = false;
             $scope.findClientBeanList();
         });
     };
 
     $scope.remove = function(clientBean) {
-        ApiFactory.removeClient(clientBean).then(function(response) {
+        ApiFactory.removeClient(convertParam(clientBean)).then(function(response) {
             $scope.editFlg = false;
             $scope.clientBean = null;
             $scope.findClientBeanList();

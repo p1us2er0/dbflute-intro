@@ -23,8 +23,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.dbflute.intro.app.bean.ErrorBean;
 import org.dbflute.intro.mylasta.action.DbfluteIntroMessages;
+import org.dbflute.intro.mylasta.bean.ErrorBean;
 import org.dbflute.optional.OptionalThing;
 import org.dbflute.util.DfCollectionUtil;
 import org.dbflute.util.DfStringUtil;

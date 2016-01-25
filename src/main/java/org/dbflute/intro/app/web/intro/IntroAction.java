@@ -19,7 +19,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.dbflute.intro.app.logic.DbFluteIntroLogic;
+import org.dbflute.intro.app.logic.simple.DbFluteIntroLogic;
 import org.dbflute.intro.app.web.base.DbfluteIntroBaseAction;
 import org.lastaflute.web.Execute;
 import org.lastaflute.web.response.JsonResponse;

@@ -13,15 +13,10 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.dbflute.intro.app.bean;
-
-import java.util.List;
-import java.util.Map;
+package org.dbflute.intro.unit;
 
 /**
- * @author p1us2er0
+ * @author t-awane
  */
-public interface MessageBean {
-
-    Map<String, List<String>> getMessages();
+public abstract class DbfluteIntroBaseTestCase extends DbfluteBaseTestCase {
 }

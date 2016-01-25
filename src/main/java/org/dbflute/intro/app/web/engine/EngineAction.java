@@ -20,7 +20,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
-import org.dbflute.intro.app.logic.DbFluteEngineLogic;
+import org.dbflute.intro.app.logic.simple.DbFluteEngineLogic;
 import org.dbflute.intro.app.web.base.DbfluteIntroBaseAction;
 import org.lastaflute.web.Execute;
 import org.lastaflute.web.response.JsonResponse;

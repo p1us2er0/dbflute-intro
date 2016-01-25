@@ -13,21 +13,19 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.dbflute.intro.app.web.client;
+package org.dbflute.intro.mylasta;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.dbflute.intro.app.bean.ClientBean;
+import org.dbflute.intro.unit.DbfluteIntroBaseTestCase;
 
 /**
- * @author p1us2er0
+ * @author t-awane
  */
-public class ClientBody {
+public class DbfluteIntroLastaDocTest extends DbfluteIntroBaseTestCase {
 
-    @NotNull
-    @Valid
-    public ClientBean clientBean;
-
-    public boolean testConnection = true;
+    /**
+     * ドキュメントをテストします。
+     */
+    public void test_document() {
+        saveLastaDocMeta();
+    }
 }

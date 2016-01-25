@@ -53,7 +53,7 @@ public interface DbfluteConfig extends DbfluteEnv {
     /** The key of the configuration. e.g. java,csharp,scala */
     String TARGET_LANGUAGE = "targetLanguage";
 
-    /** The key of the configuration. e.g. seasar,spring,guice,cdi,lasta_di */
+    /** The key of the configuration. e.g. lasta_di,seasar,spring,guice,cdi */
     String TARGET_CONTAINER = "targetContainer";
 
     /**
@@ -207,7 +207,7 @@ public interface DbfluteConfig extends DbfluteEnv {
 
     /**
      * Get the value for the key 'targetContainer'. <br>
-     * The value is, e.g. seasar,spring,guice,cdi,lasta_di <br>
+     * The value is, e.g. lasta_di,seasar,spring,guice,cdi <br>
      * comment: targetContainer
      * @return The value of found property. (NotNull: if not found, exception but basically no way)
      */

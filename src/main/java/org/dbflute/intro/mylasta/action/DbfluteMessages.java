@@ -39,7 +39,7 @@ public class DbfluteMessages extends DbfluteLabels {
     /** The key of the message: {value}${inclusive == true ? '以上' : 'より大きな値'}で入力してください。 */
     public static final String CONSTRAINTS_DecimalMin_MESSAGE = "{constraints.DecimalMin.message}";
 
-    /** The key of the message: numeric value out of bounds (<{integer} digits>.<{fraction} digits> expected) */
+    /** The key of the message: numeric value out of bounds (&lt;{integer} digits&gt;.&lt;{fraction} digits&gt; expected) */
     public static final String CONSTRAINTS_Digits_MESSAGE = "{constraints.Digits.message}";
 
     /** The key of the message: 未来日付を入れてください。 */
@@ -110,6 +110,12 @@ public class DbfluteMessages extends DbfluteLabels {
 
     /** The key of the message: URLの形式入力してください。 */
     public static final String CONSTRAINTS_URL_MESSAGE = "{constraints.URL.message}";
+
+    /** The key of the message: 入力してください。 */
+    public static final String CONSTRAINTS_Required_MESSAGE = "{constraints.Required.message}";
+
+    /** The key of the message: {propertyType}で入力してください。 */
+    public static final String CONSTRAINTS_TypeAny_MESSAGE = "{constraints.TypeAny.message}";
 
     /** The key of the message: {value}人以上を入力してください。 */
     public static final String APP_VALIDATOR_MinPeopleNum_MESSAGE = "{app.validator.MinPeopleNum.message}";
@@ -279,6 +285,9 @@ public class DbfluteMessages extends DbfluteLabels {
     /** The key of the message: システムエラーが発生しました。 */
     public static final String ERRORS_APP_SYSTEM_ERROR = "{errors.app.system.error}";
 
+    /** The key of the message: システムエラーが発生しました。 */
+    public static final String ERRORS_APP_DATABASE_CONNECTION = "{errors.app.database.connection}";
+
     /**
      * Add the created action message for the key 'constraints.AssertFalse.message' with parameters.
      * <pre>
@@ -341,7 +350,7 @@ public class DbfluteMessages extends DbfluteLabels {
     /**
      * Add the created action message for the key 'constraints.Digits.message' with parameters.
      * <pre>
-     * message: numeric value out of bounds (<{integer} digits>.<{fraction} digits> expected)
+     * message: numeric value out of bounds (&lt;{integer} digits&gt;.&lt;{fraction} digits&gt; expected)
      * </pre>
      * @param property The property name for the message. (NotNull)
      * @param integer The parameter integer for message. (NotNull)
@@ -691,6 +700,35 @@ public class DbfluteMessages extends DbfluteLabels {
     public DbfluteMessages addConstraintsUrlMessage(String property) {
         assertPropertyNotNull(property);
         add(property, new ActionMessage(CONSTRAINTS_URL_MESSAGE));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'constraints.Required.message' with parameters.
+     * <pre>
+     * message: 入力してください。
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addConstraintsRequiredMessage(String property) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(CONSTRAINTS_Required_MESSAGE));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'constraints.TypeAny.message' with parameters.
+     * <pre>
+     * message: {propertyType}で入力してください。
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @param propertyType The parameter propertyType for message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addConstraintsTypeAnyMessage(String property, String propertyType) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(CONSTRAINTS_TypeAny_MESSAGE, propertyType));
         return this;
     }
 
@@ -1499,6 +1537,20 @@ public class DbfluteMessages extends DbfluteLabels {
     public DbfluteMessages addErrorsAppSystemError(String property) {
         assertPropertyNotNull(property);
         add(property, new ActionMessage(ERRORS_APP_SYSTEM_ERROR));
+        return this;
+    }
+
+    /**
+     * Add the created action message for the key 'errors.app.database.connection' with parameters.
+     * <pre>
+     * message: システムエラーが発生しました。
+     * </pre>
+     * @param property The property name for the message. (NotNull)
+     * @return this. (NotNull)
+     */
+    public DbfluteMessages addErrorsAppDatabaseConnection(String property) {
+        assertPropertyNotNull(property);
+        add(property, new ActionMessage(ERRORS_APP_DATABASE_CONNECTION));
         return this;
     }
 }

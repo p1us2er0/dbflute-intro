@@ -1,5 +1,5 @@
 ##
-## Copyright 2014-2014 the original author or authors.
+## Copyright 2014-2016 the original author or authors.
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public interface ${glCDef} extends Classification {
 #if ($classificationElement.isDeprecated())
         @Deprecated
 #end
-        ${classificationElement.name}($database.buildClassificationCodeAliasSisterCodeVariables($classificationElement))
+        ${classificationElement.name}($classificationElement.buildClassificationCodeAliasSisterCodeVariables())
 #set ($count = $count + 1)
 #end
         ;
@@ -156,7 +156,7 @@ public interface ${glCDef} extends Classification {
 
         /**
          * Get the list of all classification elements. (returns new copied list)
-         * @return The list of all classification elements. (NotNull)
+         * @return The snapshot list of all classification elements. (NotNull)
          */
         public static List<${classificationName}> listAll() {
             return new ArrayList<${classificationName}>(Arrays.asList(values()));
@@ -169,7 +169,7 @@ public interface ${glCDef} extends Classification {
          * ${group.groupCommentForJavaDocNest} <br>
 #end
          * ${group.buildElementDisp()}
-         * @return The list of classification elements in the group. (NotNull)
+         * @return The snapshot list of classification elements in the group. (NotNull)
          */
         public static List<${classificationName}> listOf${group.groupNameInitCap}() {
             return new ArrayList<${classificationName}>(Arrays.asList(${group.buildCDefArgExp()}));
@@ -179,7 +179,7 @@ public interface ${glCDef} extends Classification {
         /**
          * Get the list of classification elements in the specified group. (returns new copied list) <br>
          * @param groupName The string of group name, which is case-sensitive. (NullAllowed: if null, returns empty list)
-         * @return The list of classification elements in the group. (NotNull)
+         * @return The snapshot list of classification elements in the group. (NotNull, EmptyAllowed: if the group is not found)
          */
         public static List<${classificationName}> groupOf(String groupName) {
 #foreach ($group in $classificationTop.groupList)
@@ -259,6 +259,14 @@ public interface ${glCDef} extends Classification {
             if ("${classificationName}".equals(name())) { return ClassificationUndefinedHandlingType.${classificationTop.undefinedHandlingType}; }
 #end
             return ClassificationUndefinedHandlingType.LOGGING; // as default
+        }
+
+        public static ${glCDef}.DefMeta meta(String classificationName) { // instead of valueOf()
+            if (classificationName == null) { throw new IllegalArgumentException("The argument 'classificationName' should not be null."); }
+#foreach ($classificationName in $database.classificationNameList)
+            if ("${classificationName}".equalsIgnoreCase(classificationName)) { return ${glCDef}.DefMeta.${classificationName}; }
+#end
+            throw new IllegalStateException("Unknown classification: " + classificationName);
         }
     }
 }

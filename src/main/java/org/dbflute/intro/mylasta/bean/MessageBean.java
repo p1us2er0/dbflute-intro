@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.dbflute.intro.app.bean;
+package org.dbflute.intro.mylasta.bean;
 
 import java.util.List;
 import java.util.Map;
@@ -21,16 +21,7 @@ import java.util.Map;
 /**
  * @author p1us2er0
  */
-public class ErrorBean implements MessageBean {
+public interface MessageBean {
 
-    private Map<String, List<String>> messages;
-
-    @Override
-    public Map<String, List<String>> getMessages() {
-        return messages;
-    }
-
-    public void setMessages(Map<String, List<String>> messages) {
-        this.messages = messages;
-    }
+    Map<String, List<String>> getMessages();
 }

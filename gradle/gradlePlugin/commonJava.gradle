@@ -5,6 +5,13 @@ tasks.withType(AbstractCompile) {
     targetCompatibility = versions.jdk
 }
 
+// methodParameters generate
+compileJava {
+    options.compilerArgs << '-parameters'
+    options.fork = true
+    options.forkOptions.executable = 'javac'
+}
+
 task sourcesJar(type: Jar, dependsOn:classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
