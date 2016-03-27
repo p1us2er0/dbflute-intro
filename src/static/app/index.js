@@ -24,6 +24,8 @@ app.config(function($translateProvider) {
         suffix: '.json'
     });
 
+    $translateProvider.useSanitizeValueStrategy(null);
+
     $translateProvider.preferredLanguage('ja');
     $translateProvider.fallbackLanguage('en');
     $translateProvider.useMissingTranslationHandlerLog();
@@ -110,7 +112,7 @@ app.config(function($httpProvider) {
                 }
 
                 if (!dialog && $rootScope.messages) {
-                    dialog = $injector.get('$modal').open({templateUrl: 'resultView.html', scope: $rootScope});
+                    dialog = $injector.get('$uibModal').open({templateUrl: 'resultView.html', scope: $rootScope});
                     dialog.result.then(function () {
                             dialog = null;
                             if (reload) {

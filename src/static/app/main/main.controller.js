@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('dbflute-intro')
-        .controller('MainCtrl', function ($scope, $window, $modal, ApiFactory) {
+        .controller('MainCtrl', function ($scope, $window, $uibModal, ApiFactory) {
 
     // レスポンスの型を変換 Bean -> Body
     var convertParam = function(param) {
@@ -133,7 +133,7 @@ angular.module('dbflute-intro')
     };
 
     $scope.downloadModal = function() {
-        var downloadInstance = $modal.open({
+        var downloadInstance = $uibModal.open({
             templateUrl: 'app/main/download.html',
             controller: 'DownloadInstanceController',
             resolve: {
@@ -182,7 +182,7 @@ angular.module('dbflute-intro')
 });
 
 angular.module('dbflute-intro').controller('DownloadInstanceController',
-        function($scope, $modalInstance, publicProperties, ApiFactory) {
+        function($scope, $uibModalInstance, publicProperties, ApiFactory) {
     'use strict';
 
     $scope.downloading = false;
@@ -231,7 +231,7 @@ angular.module('dbflute-intro').controller('DownloadInstanceController',
             $scope.downloading = false;
 
             ApiFactory.engineVersions().then(function(response) {
-                $modalInstance.close(response.data);
+                $uibModalInstance.close(response.data);
             });
         });
     };

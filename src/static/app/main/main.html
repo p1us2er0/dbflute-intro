@@ -28,8 +28,8 @@
     <div class="col-sm-6" ng-show="clientBean">
       <div class="row">
         <div class="col-sm-12">
-          <tabset>
-            <tab heading="基本">
+          <uib-tabset>
+            <uib-tab heading="基本">
               <form class="form-horizontal">
                 <div class="form-group">
                   <label class="col-sm-4 control-label">{{'LABEL_PROJECT' | translate:translationData}}</label>
@@ -117,7 +117,7 @@
                 </div>
               </form>
             </tab>
-            <tab heading="{{'LABEL_SYSTEM_USER_DATABASE' | translate:translationData}}">
+            <uib-tab heading="{{'LABEL_SYSTEM_USER_DATABASE' | translate:translationData}}">
               <form class="form-horizontal">
                 <div class="form-group">
                   <label class="col-sm-4 control-label">{{'LABEL_URL' | translate:translationData}}</label>
@@ -149,7 +149,7 @@
                 </div>
               </form>
             </tab>
-            <tab heading="{{'LABEL_OPTION' | translate:translationData}}">
+            <uib-tab heading="{{'LABEL_OPTION' | translate:translationData}}">
               <form class="form-horizontal">
                 <div class="form-group">
                   <label class="col-sm-4 control-label">{{'LABEL_DB_COMMENT_ON_ALIAS_BASIS' | translate:translationData}}</label>
@@ -204,10 +204,10 @@
                 </div>
               </form>
             </tab>
-            <tab heading="{{'LABEL_SCHEMA_SYNC_CHECK' | translate:translationData}}">
+            <uib-tab heading="{{'LABEL_SCHEMA_SYNC_CHECK' | translate:translationData}}">
               <input type="button" class="btn btn-primary" value="追加" ng-click="addSchemaSyncCheckMap()" ng-show="editFlg" />
-              <tabset>
-                <tab heading="{{key}}" ng-repeat="(key, databaseBean) in clientBean.schemaSyncCheckMap">
+              <uib-tabset>
+                <uib-tab heading="{{key}}" ng-repeat="(key, databaseBean) in clientBean.schemaSyncCheckMap">
                   <form class="form-horizontal">
                     <div class="form-group">
                       <label class="col-sm-4 control-label">{{'LABEL_URL' | translate:translationData}}</label>
@@ -239,10 +239,10 @@
                     </div>
                     <input type="button" class="btn btn-primary" value="削除" ng-click="removeSchemaSyncCheckMap(key)" ng-show="editFlg" />
                   </form>
-                </tab>
-              </tabset>
-            </tab>
-          </tabset>
+                </uib-tab>
+              </uib-tabset>
+            </uib-tab>
+          </uib-tabset>
         </div>
       </div>
     </div>
