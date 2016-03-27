@@ -1,3 +1,4 @@
+'use strict';
 angular.module('dbflute-intro').factory('ApiFactory',
         function ($rootScope, $http) {
     'use strict';

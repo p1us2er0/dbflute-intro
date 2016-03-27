@@ -1,9 +1,27 @@
 'use strict';
+window.onerror = function (message, url, lineNumber) {
+    alert("画面の処理中にエラーが発生しました。");
+    return false;
+};
 
-var app = angular.module('dbflute-intro',
-        ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ui.router', 'ui.bootstrap', 'ngStorage', 'pascalprecht.translate']);
+angular.module('dbflute-intro', [
+        'ngAnimate',
+        'ngCookies',
+        'ngTouch',
+        'ngSanitize',
+        'ui.router',
+        'ui.bootstrap',
+        'ngStorage',
+        'pascalprecht.translate']);
 
-app.config(function ($stateProvider, $urlRouterProvider) {
+angular.module('dbflute-intro').factory("$exceptionHandler", function ($log) {
+    return function (exception, cause) {
+        $log.error(exception);
+        alert("画面の処理中にエラーが発生しました。");
+    };
+});
+
+angular.module('dbflute-intro').config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider
         .state('home', {
             url: '/',
@@ -18,7 +36,7 @@ app.config(function ($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
 });
 
-app.config(function($translateProvider) {
+angular.module('dbflute-intro').config(function($translateProvider) {
     $translateProvider.useStaticFilesLoader({
         prefix: 'assets/i18n/locale-',
         suffix: '.json'
@@ -32,7 +50,7 @@ app.config(function($translateProvider) {
 //    $translateProvider.useLocalStorage();
 });
 
-app.config(function($httpProvider) {
+angular.module('dbflute-intro').config(function($httpProvider) {
     $httpProvider.interceptors.push(
             ['$q', '$rootScope', '$injector',
             function($q, $rootScope, $injector) {

@@ -1,6 +1,7 @@
 'use strict';
 
 var gulp = require('gulp');
+var revMtime = require('gulp-rev-mtime');
 
 var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
@@ -12,7 +13,7 @@ module.exports = function(options) {
       options.src + '/{app,components}/**/*.html',
       options.tmp + '/serve/{app,components}/**/*.html'
     ])
-      .pipe($.minifyHtml({
+      .pipe($.htmlmin({
         empty: true,
         spare: true,
         quotes: true
@@ -34,24 +35,20 @@ module.exports = function(options) {
     var htmlFilter = $.filter('*.html', { restore: true });
     var jsFilter = $.filter('**/*.js', { restore: true });
     var cssFilter = $.filter('**/*.css', { restore: true });
-    var assets;
 
     return gulp.src(options.tmp + '/serve/*.html')
       .pipe($.inject(partialsInjectFile, partialsInjectOptions))
-      .pipe(assets = $.useref.assets())
-      .pipe($.rev())
+      .pipe($.useref())
       .pipe(jsFilter)
       .pipe($.ngAnnotate())
       .pipe($.uglify({ preserveComments: $.uglifySaveLicense })).on('error', options.errorHandler('Uglify'))
       .pipe(jsFilter.restore)
       .pipe(cssFilter)
+      .pipe($.replace('../../bower_components/bootstrap-sass-official/assets/fonts/bootstrap/', '../fonts/'))
       .pipe($.csso())
       .pipe(cssFilter.restore)
-      .pipe(assets.restore())
-      .pipe($.useref())
-      .pipe($.revReplace())
       .pipe(htmlFilter)
-      .pipe($.minifyHtml({
+      .pipe($.htmlmin({
         empty: true,
         spare: true,
         quotes: true,
@@ -71,6 +68,16 @@ module.exports = function(options) {
       .pipe(gulp.dest(options.dist + '/fonts/'));
   });
 
+  gulp.task('rev', ['html', 'fonts', 'other'], function () {
+    return gulp.src(options.dist + '/index.html')
+      .pipe(revMtime({
+          'cwd': options.dist + '/',
+          'suffix': 'rev',
+          'fileTypes': ['js']
+        }))
+      .pipe(gulp.dest(options.dist + '/'));
+  });
+
   gulp.task('other', function () {
     return gulp.src([
       options.src + '/**/*',
@@ -83,5 +90,5 @@ module.exports = function(options) {
     $.del([options.dist + '/', options.tmp + '/'], done);
   });
 
-  gulp.task('build', ['html', 'fonts', 'other']);
+  gulp.task('build', ['html', 'fonts', 'other', 'rev']);
 };
