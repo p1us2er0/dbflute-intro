@@ -39,7 +39,7 @@
   "LABEL_FILE_CHOOSE" : "ファイル選択",
   "LABEL_DBFLUTE_VERSION" : "DBFluteバージョン",
   "LABEL_SYSTEM_USER_DATABASE" : "システムユーザ",
-  "LABEL_JDBC_DRIVER" : "JDBC DRIVER",
+  "LABEL_JDBC_DRIVER" : "JDBCドライバ",
   "LABEL_URL" : "URL",
   "LABEL_SCHEMA" : "スキーマ",
   "LABEL_USER" : "ユーザ",

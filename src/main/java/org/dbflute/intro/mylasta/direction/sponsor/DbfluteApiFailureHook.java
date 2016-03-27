@@ -28,7 +28,6 @@ import org.dbflute.intro.mylasta.bean.ErrorBean;
 import org.dbflute.optional.OptionalThing;
 import org.dbflute.util.DfCollectionUtil;
 import org.dbflute.util.DfStringUtil;
-import org.lastaflute.core.exception.LaApplicationException;
 import org.lastaflute.core.json.exception.JsonPropertyDateTimeParseFailureException;
 import org.lastaflute.core.json.exception.JsonPropertyNumberParseFailureException;
 import org.lastaflute.core.json.exception.JsonPropertyParseFailureException;
@@ -59,19 +58,6 @@ public class DbfluteApiFailureHook implements ApiFailureHook {
     public ApiResponse handleApplicationException(ApiFailureResource resource, RuntimeException cause) {
         Map<String, List<String>> messages = DfCollectionUtil.newHashMap();
         messages.putAll(resource.getPropertyMessageMap());
-        if (cause instanceof LaApplicationException) {
-            LaApplicationException laApplicationException = (LaApplicationException) cause;
-            String errorKey = laApplicationException.getErrorKey();
-            Object[] errorArgs = laApplicationException.getErrorArgs();
-            if (DfStringUtil.is_NotNull_and_NotEmpty(errorKey)) {
-                if (errorArgs == null) {
-                    geMessageManager().findMessage(resource.getRequestManager().getUserLocale(), errorKey);
-                } else {
-                    geMessageManager().findMessage(resource.getRequestManager().getUserLocale(), errorKey, errorArgs);
-                }
-            }
-        }
-
         if (cause instanceof LoginUnauthorizedException) {
             return createErrorResponse(messages, HttpServletResponse.SC_UNAUTHORIZED);
         } else {

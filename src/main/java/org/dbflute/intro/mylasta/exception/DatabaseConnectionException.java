@@ -15,8 +15,7 @@ public class DatabaseConnectionException extends LaApplicationException {
      */
     public DatabaseConnectionException(String debugMsg) {
         super(debugMsg);
-        messageKey = DbfluteMessages.ERRORS_APP_DATABASE_CONNECTION;
-        args = new Object[0];
+        saveMessage(DbfluteMessages.ERRORS_APP_DATABASE_CONNECTION, new Object[0]);
     }
 
     /**
@@ -25,7 +24,6 @@ public class DatabaseConnectionException extends LaApplicationException {
      */
     public DatabaseConnectionException(String debugMsg, Throwable cause) {
         super(debugMsg, cause);
-        messageKey = DbfluteMessages.ERRORS_APP_DATABASE_CONNECTION;
-        args = new Object[0];
+        saveMessage(DbfluteMessages.ERRORS_APP_DATABASE_CONNECTION, new Object[0]);
     }
 }
